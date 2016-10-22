@@ -8,7 +8,6 @@
 
 import Foundation
 import Cocoa
-import Z80VirtualMachineKit
 
 class KeyEventHandler {
     static func getChar(event: NSEvent) -> Character {

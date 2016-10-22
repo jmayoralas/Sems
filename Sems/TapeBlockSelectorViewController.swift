@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import Z80VirtualMachineKit
 
 final class TapeBlockSelectorViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
     @IBOutlet weak var tapeBlockList: NSTableView!
