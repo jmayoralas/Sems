@@ -7,14 +7,38 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D243CAE1DBBE2E500EB6043 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9A1DBBE2E500EB6043 /* Bus.swift */; };
+		1D243CAF1DBBE2E500EB6043 /* BusComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9B1DBBE2E500EB6043 /* BusComponent.swift */; };
+		1D243CB01DBBE2E500EB6043 /* BusComponentBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9C1DBBE2E500EB6043 /* BusComponentBase.swift */; };
+		1D243CB11DBBE2E500EB6043 /* GenericIODevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9D1DBBE2E500EB6043 /* GenericIODevice.swift */; };
+		1D243CB21DBBE2E500EB6043 /* Ram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9E1DBBE2E500EB6043 /* Ram.swift */; };
+		1D243CB31DBBE2E500EB6043 /* Rom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9F1DBBE2E500EB6043 /* Rom.swift */; };
+		1D243CB41DBBE2E500EB6043 /* ControlUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CA11DBBE2E500EB6043 /* ControlUnit.swift */; };
+		1D243CB51DBBE2E500EB6043 /* ControlUnit_opcodes_cb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CA21DBBE2E500EB6043 /* ControlUnit_opcodes_cb.swift */; };
+		1D243CB61DBBE2E500EB6043 /* ControlUnit_opcodes_ed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CA31DBBE2E500EB6043 /* ControlUnit_opcodes_ed.swift */; };
+		1D243CB71DBBE2E500EB6043 /* ControlUnit_opcodes_none.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CA41DBBE2E500EB6043 /* ControlUnit_opcodes_none.swift */; };
+		1D243CB81DBBE2E500EB6043 /* ControlUnit_opcodes_xx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CA51DBBE2E500EB6043 /* ControlUnit_opcodes_xx.swift */; };
+		1D243CB91DBBE2E500EB6043 /* ControlUnit_opcodes_xxcb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CA61DBBE2E500EB6043 /* ControlUnit_opcodes_xxcb.swift */; };
+		1D243CBA1DBBE2E500EB6043 /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CA71DBBE2E500EB6043 /* extensions.swift */; };
+		1D243CBB1DBBE2E500EB6043 /* types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CA81DBBE2E500EB6043 /* types.swift */; };
+		1D243CBC1DBBE2E500EB6043 /* Z80.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CA91DBBE2E500EB6043 /* Z80.swift */; };
+		1D243CBD1DBBE2E500EB6043 /* Ula.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CAB1DBBE2E500EB6043 /* Ula.swift */; };
+		1D243CBE1DBBE2E500EB6043 /* ULAIo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CAC1DBBE2E500EB6043 /* ULAIo.swift */; };
+		1D243CBF1DBBE2E500EB6043 /* ULAMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CAD1DBBE2E500EB6043 /* ULAMemory.swift */; };
+		1D243CC31DBBE3BE00EB6043 /* AudioStreamer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CC01DBBE3BE00EB6043 /* AudioStreamer.swift */; };
+		1D243CC41DBBE3BE00EB6043 /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CC11DBBE3BE00EB6043 /* Clock.swift */; };
+		1D243CC51DBBE3BE00EB6043 /* VmScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CC21DBBE3BE00EB6043 /* VmScreen.swift */; };
+		1D243CC71DBBE9E000EB6043 /* VirtualMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CC61DBBE9E000EB6043 /* VirtualMachine.swift */; };
+		1D243CCD1DBBEBE600EB6043 /* Tape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CC91DBBEBE600EB6043 /* Tape.swift */; };
+		1D243CCE1DBBEBE600EB6043 /* TapeBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CCA1DBBEBE600EB6043 /* TapeBlock.swift */; };
+		1D243CCF1DBBEBE600EB6043 /* TapeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CCB1DBBEBE600EB6043 /* TapeData.swift */; };
+		1D243CD01DBBEBE600EB6043 /* TapeLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CCC1DBBEBE600EB6043 /* TapeLoader.swift */; };
 		1D429D481D22E6A6003DA7FC /* KeyEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D429D471D22E6A6003DA7FC /* KeyEventHandler.swift */; };
 		1DAD32081D7D979200B6BF57 /* TapeBlockSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DAD32071D7D979200B6BF57 /* TapeBlockSelectorViewController.swift */; };
 		1DF397EA1D21929F00045D06 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF397E91D21929F00045D06 /* AppDelegate.swift */; };
 		1DF397EC1D21929F00045D06 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF397EB1D21929F00045D06 /* ViewController.swift */; };
 		1DF397EE1D21929F00045D06 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1DF397ED1D21929F00045D06 /* Assets.xcassets */; };
 		1DF397F11D21929F00045D06 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1DF397EF1D21929F00045D06 /* Main.storyboard */; };
-		1DF397F91D2192CE00045D06 /* Z80VirtualMachineKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF397F81D2192CE00045D06 /* Z80VirtualMachineKit.framework */; };
-		1DF397FA1D2192CE00045D06 /* Z80VirtualMachineKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF397F81D2192CE00045D06 /* Z80VirtualMachineKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,7 +48,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				1DF397FA1D2192CE00045D06 /* Z80VirtualMachineKit.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -32,6 +55,32 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1D243C9A1DBBE2E500EB6043 /* Bus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
+		1D243C9B1DBBE2E500EB6043 /* BusComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusComponent.swift; sourceTree = "<group>"; };
+		1D243C9C1DBBE2E500EB6043 /* BusComponentBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusComponentBase.swift; sourceTree = "<group>"; };
+		1D243C9D1DBBE2E500EB6043 /* GenericIODevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericIODevice.swift; sourceTree = "<group>"; };
+		1D243C9E1DBBE2E500EB6043 /* Ram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ram.swift; sourceTree = "<group>"; };
+		1D243C9F1DBBE2E500EB6043 /* Rom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rom.swift; sourceTree = "<group>"; };
+		1D243CA11DBBE2E500EB6043 /* ControlUnit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit.swift; sourceTree = "<group>"; };
+		1D243CA21DBBE2E500EB6043 /* ControlUnit_opcodes_cb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_cb.swift; sourceTree = "<group>"; };
+		1D243CA31DBBE2E500EB6043 /* ControlUnit_opcodes_ed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_ed.swift; sourceTree = "<group>"; };
+		1D243CA41DBBE2E500EB6043 /* ControlUnit_opcodes_none.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_none.swift; sourceTree = "<group>"; };
+		1D243CA51DBBE2E500EB6043 /* ControlUnit_opcodes_xx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_xx.swift; sourceTree = "<group>"; };
+		1D243CA61DBBE2E500EB6043 /* ControlUnit_opcodes_xxcb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_xxcb.swift; sourceTree = "<group>"; };
+		1D243CA71DBBE2E500EB6043 /* extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
+		1D243CA81DBBE2E500EB6043 /* types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = types.swift; sourceTree = "<group>"; };
+		1D243CA91DBBE2E500EB6043 /* Z80.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Z80.swift; sourceTree = "<group>"; };
+		1D243CAB1DBBE2E500EB6043 /* Ula.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ula.swift; sourceTree = "<group>"; };
+		1D243CAC1DBBE2E500EB6043 /* ULAIo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ULAIo.swift; sourceTree = "<group>"; };
+		1D243CAD1DBBE2E500EB6043 /* ULAMemory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ULAMemory.swift; sourceTree = "<group>"; };
+		1D243CC01DBBE3BE00EB6043 /* AudioStreamer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioStreamer.swift; sourceTree = "<group>"; };
+		1D243CC11DBBE3BE00EB6043 /* Clock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
+		1D243CC21DBBE3BE00EB6043 /* VmScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VmScreen.swift; sourceTree = "<group>"; };
+		1D243CC61DBBE9E000EB6043 /* VirtualMachine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualMachine.swift; sourceTree = "<group>"; };
+		1D243CC91DBBEBE600EB6043 /* Tape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tape.swift; sourceTree = "<group>"; };
+		1D243CCA1DBBEBE600EB6043 /* TapeBlock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeBlock.swift; sourceTree = "<group>"; };
+		1D243CCB1DBBEBE600EB6043 /* TapeData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeData.swift; sourceTree = "<group>"; };
+		1D243CCC1DBBEBE600EB6043 /* TapeLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeLoader.swift; sourceTree = "<group>"; };
 		1D429D471D22E6A6003DA7FC /* KeyEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyEventHandler.swift; sourceTree = "<group>"; };
 		1DAD32071D7D979200B6BF57 /* TapeBlockSelectorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeBlockSelectorViewController.swift; sourceTree = "<group>"; };
 		1DF397E61D21929F00045D06 /* Sems.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sems.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -40,7 +89,6 @@
 		1DF397ED1D21929F00045D06 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1DF397F01D21929F00045D06 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1DF397F21D21929F00045D06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1DF397F81D2192CE00045D06 /* Z80VirtualMachineKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Z80VirtualMachineKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,17 +96,65 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1DF397F91D2192CE00045D06 /* Z80VirtualMachineKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1D243C991DBBE2E500EB6043 /* Bus */ = {
+			isa = PBXGroup;
+			children = (
+				1D243C9A1DBBE2E500EB6043 /* Bus.swift */,
+				1D243C9B1DBBE2E500EB6043 /* BusComponent.swift */,
+				1D243C9C1DBBE2E500EB6043 /* BusComponentBase.swift */,
+				1D243C9D1DBBE2E500EB6043 /* GenericIODevice.swift */,
+				1D243C9E1DBBE2E500EB6043 /* Ram.swift */,
+				1D243C9F1DBBE2E500EB6043 /* Rom.swift */,
+			);
+			path = Bus;
+			sourceTree = "<group>";
+		};
+		1D243CA01DBBE2E500EB6043 /* Cpu */ = {
+			isa = PBXGroup;
+			children = (
+				1D243CA11DBBE2E500EB6043 /* ControlUnit.swift */,
+				1D243CA21DBBE2E500EB6043 /* ControlUnit_opcodes_cb.swift */,
+				1D243CA31DBBE2E500EB6043 /* ControlUnit_opcodes_ed.swift */,
+				1D243CA41DBBE2E500EB6043 /* ControlUnit_opcodes_none.swift */,
+				1D243CA51DBBE2E500EB6043 /* ControlUnit_opcodes_xx.swift */,
+				1D243CA61DBBE2E500EB6043 /* ControlUnit_opcodes_xxcb.swift */,
+				1D243CA71DBBE2E500EB6043 /* extensions.swift */,
+				1D243CA81DBBE2E500EB6043 /* types.swift */,
+				1D243CA91DBBE2E500EB6043 /* Z80.swift */,
+			);
+			path = Cpu;
+			sourceTree = "<group>";
+		};
+		1D243CAA1DBBE2E500EB6043 /* Ula */ = {
+			isa = PBXGroup;
+			children = (
+				1D243CAB1DBBE2E500EB6043 /* Ula.swift */,
+				1D243CAC1DBBE2E500EB6043 /* ULAIo.swift */,
+				1D243CAD1DBBE2E500EB6043 /* ULAMemory.swift */,
+			);
+			path = Ula;
+			sourceTree = "<group>";
+		};
+		1D243CC81DBBEBE600EB6043 /* Tape */ = {
+			isa = PBXGroup;
+			children = (
+				1D243CC91DBBEBE600EB6043 /* Tape.swift */,
+				1D243CCA1DBBEBE600EB6043 /* TapeBlock.swift */,
+				1D243CCB1DBBEBE600EB6043 /* TapeData.swift */,
+				1D243CCC1DBBEBE600EB6043 /* TapeLoader.swift */,
+			);
+			path = Tape;
+			sourceTree = "<group>";
+		};
 		1DF397DD1D21929E00045D06 = {
 			isa = PBXGroup;
 			children = (
-				1DF397F81D2192CE00045D06 /* Z80VirtualMachineKit.framework */,
 				1DF397E81D21929F00045D06 /* Sems */,
 				1DF397E71D21929F00045D06 /* Products */,
 			);
@@ -75,13 +171,21 @@
 		1DF397E81D21929F00045D06 /* Sems */ = {
 			isa = PBXGroup;
 			children = (
-				1D429D471D22E6A6003DA7FC /* KeyEventHandler.swift */,
+				1D243CC61DBBE9E000EB6043 /* VirtualMachine.swift */,
 				1DF397E91D21929F00045D06 /* AppDelegate.swift */,
 				1DF397EB1D21929F00045D06 /* ViewController.swift */,
+				1D429D471D22E6A6003DA7FC /* KeyEventHandler.swift */,
+				1D243CC01DBBE3BE00EB6043 /* AudioStreamer.swift */,
+				1D243CC11DBBE3BE00EB6043 /* Clock.swift */,
+				1D243CC21DBBE3BE00EB6043 /* VmScreen.swift */,
+				1DAD32071D7D979200B6BF57 /* TapeBlockSelectorViewController.swift */,
+				1D243C991DBBE2E500EB6043 /* Bus */,
+				1D243CA01DBBE2E500EB6043 /* Cpu */,
+				1D243CAA1DBBE2E500EB6043 /* Ula */,
+				1D243CC81DBBEBE600EB6043 /* Tape */,
 				1DF397ED1D21929F00045D06 /* Assets.xcassets */,
 				1DF397EF1D21929F00045D06 /* Main.storyboard */,
 				1DF397F21D21929F00045D06 /* Info.plist */,
-				1DAD32071D7D979200B6BF57 /* TapeBlockSelectorViewController.swift */,
 			);
 			path = Sems;
 			sourceTree = "<group>";
@@ -159,9 +263,35 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D429D481D22E6A6003DA7FC /* KeyEventHandler.swift in Sources */,
+				1D243CBE1DBBE2E500EB6043 /* ULAIo.swift in Sources */,
+				1D243CBA1DBBE2E500EB6043 /* extensions.swift in Sources */,
+				1D243CCE1DBBEBE600EB6043 /* TapeBlock.swift in Sources */,
 				1DAD32081D7D979200B6BF57 /* TapeBlockSelectorViewController.swift in Sources */,
+				1D243CAF1DBBE2E500EB6043 /* BusComponent.swift in Sources */,
+				1D243CBF1DBBE2E500EB6043 /* ULAMemory.swift in Sources */,
+				1D243CB81DBBE2E500EB6043 /* ControlUnit_opcodes_xx.swift in Sources */,
 				1DF397EC1D21929F00045D06 /* ViewController.swift in Sources */,
 				1DF397EA1D21929F00045D06 /* AppDelegate.swift in Sources */,
+				1D243CC51DBBE3BE00EB6043 /* VmScreen.swift in Sources */,
+				1D243CB11DBBE2E500EB6043 /* GenericIODevice.swift in Sources */,
+				1D243CAE1DBBE2E500EB6043 /* Bus.swift in Sources */,
+				1D243CB01DBBE2E500EB6043 /* BusComponentBase.swift in Sources */,
+				1D243CBC1DBBE2E500EB6043 /* Z80.swift in Sources */,
+				1D243CC31DBBE3BE00EB6043 /* AudioStreamer.swift in Sources */,
+				1D243CB61DBBE2E500EB6043 /* ControlUnit_opcodes_ed.swift in Sources */,
+				1D243CB91DBBE2E500EB6043 /* ControlUnit_opcodes_xxcb.swift in Sources */,
+				1D243CC71DBBE9E000EB6043 /* VirtualMachine.swift in Sources */,
+				1D243CB71DBBE2E500EB6043 /* ControlUnit_opcodes_none.swift in Sources */,
+				1D243CCF1DBBEBE600EB6043 /* TapeData.swift in Sources */,
+				1D243CBD1DBBE2E500EB6043 /* Ula.swift in Sources */,
+				1D243CC41DBBE3BE00EB6043 /* Clock.swift in Sources */,
+				1D243CB51DBBE2E500EB6043 /* ControlUnit_opcodes_cb.swift in Sources */,
+				1D243CB31DBBE2E500EB6043 /* Rom.swift in Sources */,
+				1D243CBB1DBBE2E500EB6043 /* types.swift in Sources */,
+				1D243CB21DBBE2E500EB6043 /* Ram.swift in Sources */,
+				1D243CCD1DBBEBE600EB6043 /* Tape.swift in Sources */,
+				1D243CD01DBBEBE600EB6043 /* TapeLoader.swift in Sources */,
+				1D243CB41DBBE2E500EB6043 /* ControlUnit.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

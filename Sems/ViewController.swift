@@ -7,17 +7,16 @@
 //
 
 import Cocoa
-import Z80VirtualMachineKit
 
 private let kColorSpace = CGColorSpaceCreateDeviceRGB()
 private let kInstantLoadEnabled = "(Instant load enabled)"
 private let kInstantLoadDisabled = "(Instant load disabled)"
 
-class ViewController: NSViewController, Z80VirtualMachineStatus {
+class ViewController: NSViewController, VirtualMachineStatus {
     @IBOutlet weak var screenView: NSImageView!
     
     var screen: VmScreen!
-    var vm: Z80VirtualMachineKit!
+    var vm: VirtualMachine!
     let appVersionString = String(
         format: "Sems v%@.%@",
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String,
@@ -39,14 +38,13 @@ class ViewController: NSViewController, Z80VirtualMachineStatus {
 
     // MARK: Initialization
     func setup() {
-        screenView.imageScaling = .scaleProportionallyUpOrDown
+        self.screenView.imageScaling = .scaleProportionallyUpOrDown
+        self.screen = VmScreen(zoomFactor: 2)
         
-        screen = VmScreen(zoomFactor: 2)
+        self.vm = VirtualMachine(screen)
+        self.vm.delegate = self
         
-        vm = Z80VirtualMachineKit(screen)
-        vm.delegate = self
-        
-        loadRom()
+        self.loadRom()
         
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyDown(theEvent: theEvent)}
         NSEvent.addLocalMonitorForEvents(matching: .keyUp) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyUp(theEvent: theEvent)}
@@ -58,13 +56,7 @@ class ViewController: NSViewController, Z80VirtualMachineStatus {
         var buffer = [UInt8](repeating: 0, count: data.count)
         (data as NSData).getBytes(&buffer, length: data.count)
         
-        do {
-            try vm.loadRomAtAddress(0x0000, data: buffer)
-        } catch RomErrors.bufferLimitReach {
-            self.errorShow(messageText: "Memory full !!")
-        } catch {
-            self.errorShow(messageText: "Unknown error !!")
-        }
+        try! self.vm.loadRomAtAddress(0x0000, data: buffer)
     }
     
     private func errorShow(messageText: String) {
@@ -79,8 +71,8 @@ class ViewController: NSViewController, Z80VirtualMachineStatus {
     // MARK: Keyboard handling
     private func onKeyDown(theEvent: NSEvent) -> NSEvent? {
         if !theEvent.modifierFlags.contains(.command) {
-            if vm.isRunning() {
-                vm.keyDown(char: KeyEventHandler.getChar(event: theEvent))
+            if self.vm.isRunning() {
+                self.vm.keyDown(char: KeyEventHandler.getChar(event: theEvent))
                 return nil
             }
         }
@@ -89,16 +81,16 @@ class ViewController: NSViewController, Z80VirtualMachineStatus {
     }
     
     private func onKeyUp(theEvent: NSEvent) -> NSEvent? {
-        if vm.isRunning() {
-            vm.keyUp(char: KeyEventHandler.getChar(event: theEvent))
+        if self.vm.isRunning() {
+            self.vm.keyUp(char: KeyEventHandler.getChar(event: theEvent))
             return nil
         }
         return theEvent
     }
     
     private func onFlagsChanged(theEvent: NSEvent) -> NSEvent? {
-        if vm.isRunning() {
-            vm.specialKeyUpdate(special_keys: KeyEventHandler.getSpecialKeys(event: theEvent))
+        if self.vm.isRunning() {
+            self.vm.specialKeyUpdate(special_keys: KeyEventHandler.getSpecialKeys(event: theEvent))
             return nil
         }
         return theEvent
@@ -106,7 +98,15 @@ class ViewController: NSViewController, Z80VirtualMachineStatus {
     
     // MARK: Screen handling
     func Z80VMScreenRefresh() {
-        let bitmapContext = CGContext(data: &screen.buffer, width: screen.width, height: screen.height, bitsPerComponent: 8, bytesPerRow: 4 * screen.width, space: kColorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue)
+        let bitmapContext = CGContext(
+            data: &self.screen.buffer,
+            width: self.screen.width,
+            height: self.screen.height,
+            bitsPerComponent: 8,
+            bytesPerRow: 4 * self.screen.width,
+            space: kColorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue
+        )
         
         let cgImage = bitmapContext!.makeImage()
         
@@ -149,8 +149,8 @@ class ViewController: NSViewController, Z80VirtualMachineStatus {
             return
         }
         
-        if vm.tapeIsPlaying() {
-            vm.stopTape()
+        if self.vm.tapeIsPlaying() {
+            self.vm.stopTape()
         } else {
             do {
                 try vm.startTape()
@@ -163,7 +163,7 @@ class ViewController: NSViewController, Z80VirtualMachineStatus {
     }
     
     @IBAction func resetMachine(_ sender: AnyObject) {
-        vm.reset()
+        self.vm.reset()
     }
     
     @IBAction func warpEmulation(_ sender: AnyObject) {
