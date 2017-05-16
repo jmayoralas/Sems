@@ -2,7 +2,7 @@
 
 This a personal project oriented to learn to code in Swift.
 
-The target is to create a working ZX Spectrum emulator for Mac OS X.
+Sems stands for Spectrum Emulator Made in Swift. The target is to create a working ZX Spectrum emulator for Mac OS X.
 
 ## Current state
 
