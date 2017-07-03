@@ -128,7 +128,7 @@ let kBaseWidth = 320
     
     func updateFlashing() {
         for i in 0..<0x300 {
-            updateCharAtOffset(i, attribute: VmScreen.getAttribute(Int(memory.read(0x5800 + UInt16(i)))))
+            updateCharAtOffset(i, attribute: VmScreen.getAttribute(memory.read(0x5800 + UInt16(i))))
         }
     }
     
@@ -177,11 +177,11 @@ let kBaseWidth = 320
         }
     }
     
-    static func getAttribute(_ value: Int) -> Attribute {
+    static func getAttribute(_ value: UInt8) -> Attribute {
         return Attribute(
             flashing: (value & 0b10000000) > 0 ? true : false,
-            paperColor: colorTable[(value >> 3) & 0b00001111],
-            inkColor: colorTable[((value >> 3) & 0b00001000) | (value & 0b00000111)]
+            paperColor: colorTable[(Int(value) >> 3) & 0b00001111],
+            inkColor: colorTable[((Int(value) >> 3) & 0b00001000) | (Int(value) & 0b00000111)]
         )
     }
     

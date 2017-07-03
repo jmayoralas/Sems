@@ -151,11 +151,11 @@ final class Ula: InternalUlaOperationDelegate {
             let x = Int((local_address.low & 0b00011111))
             let y = Int(((local_address.high & 0b00011000) << 3) | ((local_address.low & 0b11100000) >> 2) | (local_address.high & 0b00000111))
             
-            let attribute_address = 0x5800 + x + (y / 8) * 32
-            screen.fillEightBitLineAt(char: x, line: y, value: value, attribute: VmScreen.getAttribute(Int(memory.read(UInt16(attribute_address)))))
+            let attribute_address = UInt16(0x5800 + x + (y / 8) * 32)
+            screen.fillEightBitLineAt(char: x, line: y, value: value, attribute: VmScreen.getAttribute(memory.read(attribute_address)))
         } else {
             // attr area
-            screen.updateCharAtOffset(Int(local_address) & 0x7FF, attribute: VmScreen.getAttribute(Int(value)))
+            screen.updateCharAtOffset(Int(local_address) & 0x7FF, attribute: VmScreen.getAttribute(value))
         }
     }
     
