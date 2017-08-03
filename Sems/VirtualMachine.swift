@@ -118,20 +118,7 @@ class VirtualMachine
     }
     
     public func step() {
-        if self.instantLoad && cpu.regs.pc == 0x056B && self.tape.tapeAvailable {
-            do {
-                try self.tapeLoaderHandler()
-                
-                self.cpu.regs.bc = 0xB001
-                self.cpu.regs.af_ = 0x0145
-                self.cpu.regs.f.setBit(C)
-            } catch {
-                self.cpu.regs.f.resetBit(C)
-            }
-            
-            self.cpu.regs.pc = 0x05E2
-        }
-        
+        self.tapeLoaderHook()
         self.cpu.step()
         self.ula.step()
         self.tape.step()
@@ -389,5 +376,21 @@ class VirtualMachine
         }
         
         return value
+    }
+    
+    private func tapeLoaderHook() {
+        if self.instantLoad && cpu.regs.pc == 0x056B && self.tape.tapeAvailable {
+            do {
+                try self.tapeLoaderHandler()
+                
+                self.cpu.regs.bc = 0xB001
+                self.cpu.regs.af_ = 0x0145
+                self.cpu.regs.f.setBit(C)
+            } catch {
+                self.cpu.regs.f.resetBit(C)
+            }
+            
+            self.cpu.regs.pc = 0x05E2
+        }
     }
 }
