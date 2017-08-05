@@ -137,11 +137,11 @@ final class Ula: InternalUlaOperationDelegate {
     
     // MARK: InternalUlaOperation delegate
     func memoryRead() {
-        self.computeContention()
+        self.clock.tCycles += self.getContentionDelay(tCycle: self.clock.frameTCycles - 1)
     }
     
     func memoryWrite(_ address: UInt16, value: UInt8) {
-        self.computeContention()
+        self.clock.tCycles += self.getContentionDelay(tCycle: self.clock.frameTCycles - 1)
     }
     
     func ioRead(_ address: UInt16) -> UInt8 {
@@ -163,13 +163,15 @@ final class Ula: InternalUlaOperationDelegate {
         borderColor = colorTable[Int(value) & 0x07]
     }
     
-    private func computeContention() {
-        let frameTCycle = self.clock.frameTCycles - 1
+    private func getContentionDelay(tCycle: Int) -> Int {
+        var delay = 0
         
-        if 14335 <= frameTCycle && frameTCycle < 57344 {
-            let index: Int = (frameTCycle - ((frameTCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
-            self.clock.tCycles += index < 128 ? self.contentionDelayTable[index] : 0
+        if 14335 <= tCycle && tCycle < 57344 {
+            let index: Int = (tCycle - ((tCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
+            delay = index < 128 ? self.contentionDelayTable[index] : 0
         }
+        
+        return delay
     }
     
     private func initContentionTable() {
