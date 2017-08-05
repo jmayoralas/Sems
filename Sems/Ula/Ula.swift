@@ -66,6 +66,8 @@ final class Ula: InternalUlaOperationDelegate {
         self.clock.frameTCycles += self.clock.tCycles
         self.lineTCycles += self.clock.tCycles
         
+        self.screen.step(tCycle: self.clock.frameTCycles)
+        
         if audioEnabled {
             // sample ioData plus tape signal to compute new audio data
             var signal = self.ioData
@@ -140,23 +142,6 @@ final class Ula: InternalUlaOperationDelegate {
     
     func memoryWrite(_ address: UInt16, value: UInt8) {
         self.computeContention()
-        
-        let local_address = address & 0x3FFF
-        if local_address > 0x1AFF {
-            return
-        }
-        
-        if local_address < 0x1800 {
-            // bitmap area
-            let x = Int((local_address.low & 0b00011111))
-            let y = Int(((local_address.high & 0b00011000) << 3) | ((local_address.low & 0b11100000) >> 2) | (local_address.high & 0b00000111))
-            
-            let attribute_address = UInt16(0x5800 + x + (y / 8) * 32)
-            screen.fillEightBitLineAt(char: x, line: y, value: value, attribute: VmScreen.getAttribute(memory.read(attribute_address)))
-        } else {
-            // attr area
-            screen.updateCharAtOffset(Int(local_address) & 0x7FF, attribute: VmScreen.getAttribute(value))
-        }
     }
     
     func ioRead(_ address: UInt16) -> UInt8 {

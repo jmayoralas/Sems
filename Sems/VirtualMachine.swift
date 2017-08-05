@@ -127,6 +127,7 @@ class VirtualMachine
             self.cpu.int = true
             
             if self.ula.screen.changed {
+                self.ula.screen.updateScreenBuffer()
                 self.delegate?.Z80VMScreenRefresh?()
             }
         } else {

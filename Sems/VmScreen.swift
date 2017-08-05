@@ -51,16 +51,21 @@ struct Attribute {
 let kBaseWidth = 320
 
 @objc final public class VmScreen: NSObject {
-    var memory: ULAMemory!
     var flashState: Bool = false
     
-    private var zoomFactor: Int
     public var width: Int
     public var height: Int
     
     public var buffer: [PixelData]
     
     var changed: Bool = false
+    
+    var memory: ULAMemory!
+    private var zoomFactor: Int
+    
+    private var lastTCycle: Int = 0
+    private var memoryScreen: Ram
+    private var addressUpdated: [UInt16]
     
     public init(zoomFactor: Int) {
         self.zoomFactor = zoomFactor
@@ -69,6 +74,9 @@ let kBaseWidth = 320
         height = width * 3 / 4
         
         buffer = VmScreen.initBuffer(zoomFactor: zoomFactor)
+        
+        memoryScreen = Ram(base_address: 16384, block_size: 0x1B00)
+        addressUpdated = []
     }
     
     public func setZoomFactor(zoomFactor: Int) {
@@ -84,6 +92,64 @@ let kBaseWidth = 320
     
     func beginFrame() {
         self.changed = false
+    }
+    
+    func step(tCycle: Int) {
+        
+        for i in self.lastTCycle...tCycle {
+            if let address = self.getMemoryAddress(tCycle: i) {
+                let attributeAddress = getAttributeAddress(address)!
+                
+                let newValue = memory.readNoContention(address)
+                let newAttribute = memory.readNoContention(attributeAddress)
+                
+                if newValue != memoryScreen.read(address) {
+                    memoryScreen.write(address, value: newValue)
+                    addressUpdated.append(address)
+                    changed = true
+                }
+                
+                if newAttribute != memoryScreen.read(attributeAddress) {
+                    memoryScreen.write(attributeAddress, value: newAttribute)
+                    addressUpdated.append(attributeAddress)
+                    changed = true
+                }
+            }
+        }
+        
+        self.lastTCycle = tCycle + 1
+        self.lastTCycle = (self.lastTCycle > kTicsPerFrame ? self.lastTCycle - kTicsPerFrame : self.lastTCycle)
+    }
+    
+    func updateScreenBuffer() {
+        for address in addressUpdated {
+            updateScreenBufferAt(address)
+        }
+        
+        addressUpdated = []
+        changed = true
+    }
+    
+    func updateScreenBufferAt(_ address: UInt16) {
+        let local_address = address & 0x3FFF
+        
+        if local_address > 0x1AFF {
+            return
+        }
+        
+        if local_address < 0x1800 {
+            // bitmap area
+            let x = Int((local_address.low & 0b00011111))
+            let y = Int(((local_address.high & 0b00011000) << 3) | ((local_address.low & 0b11100000) >> 2) | (local_address.high & 0b00000111))
+            
+            let attribute_address = UInt16(0x5800 + x + (y / 8) * 32)
+            
+            fillEightBitLineAt(char: x, line: y, value: memoryScreen.read(address), attribute: VmScreen.getAttribute(memoryScreen.read(attribute_address)))
+        } else {
+            // attr area
+            updateCharAtOffset(Int(local_address) & 0x7FF, attribute: VmScreen.getAttribute(memoryScreen.read(address)))
+        }
+
     }
     
     func fillEightBitLineAt(char x: Int, line y: Int, value: UInt8, attribute: Attribute) {
@@ -122,14 +188,16 @@ let kBaseWidth = 320
         let line_address_corrected = (line_address & 0xF800) | ((line_address & 0x700) >> 3) | ((line_address & 0xE0) << 3) | (line_address & 0x1F)
         
         for i in 0...7 {
-            fillEightBitLineAt(char: x, line: y + i, value: memory.read(line_address_corrected + UInt16(i * 0x100)), attribute: attribute)
+            fillEightBitLineAt(char: x, line: y + i, value: memoryScreen.read(line_address_corrected + UInt16(i * 0x100)), attribute: attribute)
         }
     }
     
     func updateFlashing() {
         for i in 0..<0x300 {
-            updateCharAtOffset(i, attribute: VmScreen.getAttribute(memory.read(0x5800 + UInt16(i))))
+            addressUpdated.append(0x5800 + UInt16(i))
         }
+        
+        changed = true
     }
     
     func updateBorder(line: Int, color: PixelData) {
@@ -171,7 +239,6 @@ let kBaseWidth = 320
             for j in 0 ..< zoomFactor {
                 if buffer[index + i + j * width] != pixelData {
                     buffer[index + i + j * width] = pixelData
-                    changed = true
                 }
             }
         }
@@ -191,4 +258,44 @@ let kBaseWidth = 320
         
         return [PixelData](repeating: kWhiteColor, count: width * height)
     }
+    
+    private func getMemoryAddress(tCycle: Int) -> UInt16? {
+        guard tCycle % 4 == 3 else {
+            return nil
+        }
+        
+        let line = (tCycle / 224 - 64)
+        
+        guard 0 <= line && line <= 191 else {
+            return nil
+        }
+        
+        let lineTCycleBase = 14336 + (224 * line)
+        let lineBaseAddress = 16384 + 32 * line
+        
+        let offset = (tCycle - lineTCycleBase) / 4
+        
+        guard 0 <= offset && offset <= 31 else {
+            return nil
+        }
+        
+        return UInt16(lineBaseAddress + offset)
+    }
+    
+    private func getAttributeAddress(_ address: UInt16) -> UInt16? {
+        var attribute_address: UInt16? = nil
+        
+        let local_address = address & 0x3FFF
+        
+        if local_address < 0x1800 {
+            // bitmap area
+            let x = Int((local_address.low & 0b00011111))
+            let y = Int(((local_address.high & 0b00011000) << 3) | ((local_address.low & 0b11100000) >> 2) | (local_address.high & 0b00000111))
+            
+            attribute_address = UInt16(0x5800 + x + (y / 8) * 32)
+        }
+        
+        return attribute_address
+    }
+
 }
