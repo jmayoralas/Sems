@@ -90,12 +90,7 @@ let kBaseWidth = 320
         }
     }
     
-    func beginFrame() {
-        self.changed = false
-    }
-    
     func step(tCycle: Int) {
-        
         for i in self.lastTCycle...tCycle {
             if let address = self.getMemoryAddress(tCycle: i) {
                 let attributeAddress = getAttributeAddress(address)!

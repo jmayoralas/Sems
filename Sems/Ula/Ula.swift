@@ -18,29 +18,16 @@ protocol InternalUlaOperationDelegate {
 final class Ula: InternalUlaOperationDelegate {
     var memory: ULAMemory!
     var io: ULAIo!
-    
     var screen: VmScreen
-    
     let clock: Clock
     
     private var borderColor: PixelData = kWhiteColor
-    
-    private var newFrame = true
-    private var lineTCycles: Int = 0
-    private var screenLine: Int = 1
-    
     private var frames: Int = 0
-    
     private var key_buffer = [UInt8](repeatElement(0xFF, count: 8))
-    
     private var audioStreamer: AudioStreamer!
-    
     private var ioData: UInt8 = 0
-    
     private var audioEnabled = true
-    
     private var tapeLevel: Int = 0
-    
     private var contentionDelayTable = [Int](repeatElement(0, count: 128))
     
     init(screen: VmScreen, clock: Clock) {
@@ -58,13 +45,7 @@ final class Ula: InternalUlaOperationDelegate {
     }
     
     func step() {
-        if newFrame {
-            newFrame = false
-            screen.beginFrame()
-        }
-        
         self.clock.frameTCycles += self.clock.tCycles
-        self.lineTCycles += self.clock.tCycles
         
         self.screen.step(tCycle: self.clock.frameTCycles)
         
@@ -75,17 +56,10 @@ final class Ula: InternalUlaOperationDelegate {
             
             self.audioStreamer.updateSample(tCycle: self.clock.frameTCycles, value: signal)
         }
-
-        if self.lineTCycles > kTicsPerLine {
-            self.screen.updateBorder(line: screenLine, color: borderColor)
-            
-            self.screenLine += 1
-            self.lineTCycles -= kTicsPerLine
-            
-            if self.screenLine > kScreenLines {
-                self.frameCompleted()
-                self.screenLine = 1
-            }
+        
+        if clock.frameTCycles >= kTicsPerFrame {
+            frameCompleted()
+            clock.frameTCycles -= kTicsPerFrame
         }
     }
     
@@ -117,7 +91,6 @@ final class Ula: InternalUlaOperationDelegate {
         }
     }
     
-    // MARK: Screen management
     private func frameCompleted() {
         if self.audioEnabled {
             self.audioStreamer.endFrame()
@@ -130,9 +103,6 @@ final class Ula: InternalUlaOperationDelegate {
             self.screen.updateFlashing()
             self.frames = 0
         }
-        
-        self.newFrame = true
-        self.clock.frameTCycles -= kTicsPerFrame
     }
     
     // MARK: InternalUlaOperation delegate
