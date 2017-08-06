@@ -260,7 +260,7 @@ let kBaseWidth = 320
     }
     
     private func getMemoryAddress(tCycle: Int) -> UInt16? {
-        guard tCycle % 4 == 3 else {
+        guard tCycle % 4 == 1 else {
             return nil
         }
         
