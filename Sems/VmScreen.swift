@@ -92,24 +92,7 @@ let kBaseWidth = 320
     
     func step(tCycle: Int) {
         for i in self.lastTCycle...tCycle {
-            if let address = self.getMemoryAddress(tCycle: i) {
-                let attributeAddress = getAttributeAddress(address)!
-                
-                let newValue = memory.readNoContention(address)
-                let newAttribute = memory.readNoContention(attributeAddress)
-                
-                if newValue != memoryScreen.read(address) {
-                    memoryScreen.write(address, value: newValue)
-                    addressUpdated.append(address)
-                    changed = true
-                }
-                
-                if newAttribute != memoryScreen.read(attributeAddress) {
-                    memoryScreen.write(attributeAddress, value: newAttribute)
-                    addressUpdated.append(attributeAddress)
-                    changed = true
-                }
-            }
+            processTCycle(tCycle: i)
         }
         
         self.lastTCycle = tCycle + 1
@@ -126,29 +109,32 @@ let kBaseWidth = 320
     }
     
     func updateScreenBufferAt(_ address: UInt16) {
-        let local_address = address & 0x3FFF
-        
-        if local_address > 0x1AFF {
+        guard 0x4000 <= address && address <= 0x5AFF else {
             return
         }
         
-        if local_address < 0x1800 {
-            // bitmap area
-            let x = Int((local_address.low & 0b00011111))
-            let y = Int(((local_address.high & 0b00011000) << 3) | ((local_address.low & 0b11100000) >> 2) | (local_address.high & 0b00000111))
-            
-            let attribute_address = UInt16(0x5800 + x + (y / 8) * 32)
-            
-            fillEightBitLineAt(char: x, line: y, value: memoryScreen.read(address), attribute: VmScreen.getAttribute(memoryScreen.read(attribute_address)))
+        if address < 0x5800 {
+            // btimap area
+            fillEightBitLineAt(address: address)
         } else {
             // attr area
-            updateCharAtOffset(Int(local_address) & 0x7FF, attribute: VmScreen.getAttribute(memoryScreen.read(address)))
+            updateCharAt(address: address)
         }
 
     }
     
-    func fillEightBitLineAt(char x: Int, line y: Int, value: UInt8, attribute: Attribute) {
+    func fillEightBitLineAt(address: UInt16) {
+        guard let coord = getXYForAddress(address) else {
+            return
+        }
         
+        let value = memoryScreen.read(address)
+        let attribute = VmScreen.getAttribute(memoryScreen.read(getAttributeAddress(address)!))
+        
+        fillEightBitLineAt(coord: coord, value: value, attribute: attribute)
+    }
+
+    func fillEightBitLineAt(coord: (x: Int, y: Int), value: UInt8, attribute: Attribute) {
         let inkColor: PixelData!
         let paperColor: PixelData!
         
@@ -160,13 +146,11 @@ let kBaseWidth = 320
             paperColor = attribute.paperColor
         }
         
-        let bitmap_x = x * 8 + 32
-        let bitmap_y = y + 24
-        
+        let bitmapCoord = (x: coord.x * 8 + 32, y: coord.y + 24)
         var bit = 0
         
         for i in (0...7).reversed() {
-            let index = getBufferIndex(bitmap_x + bit, bitmap_y)
+            let index = getBufferIndex(bitmapCoord.x + bit, bitmapCoord.y)
             let pixelData: PixelData = ((Int(value) & 1 << i) > 0) ? inkColor : paperColor
             
             setBuffer(atIndex: index, withPixelData: pixelData)
@@ -174,16 +158,19 @@ let kBaseWidth = 320
             bit += 1
         }
     }
-    
-    func updateCharAtOffset(_ offset: Int, attribute: Attribute) {
-        let y = (offset / 32) * 8
-        let x = offset % 32
+
+    func updateCharAt(address: UInt16) {
+        let local_address = address & 0x3FFF
+        let offset = Int(local_address) & 0x7FF
+        let coord = (x: offset % 32, y: (offset / 32) * 8)
+        let attribute = VmScreen.getAttribute(memoryScreen.read(address))
         
-        let line_address = UInt16(0x4000 + y * 32 + x)
+        let line_address = UInt16(0x4000 + coord.y * 32 + coord.x)
         let line_address_corrected = (line_address & 0xF800) | ((line_address & 0x700) >> 3) | ((line_address & 0xE0) << 3) | (line_address & 0x1F)
         
         for i in 0...7 {
-            fillEightBitLineAt(char: x, line: y + i, value: memoryScreen.read(line_address_corrected + UInt16(i * 0x100)), attribute: attribute)
+            let coord_i = (coord.x, coord.y + i)
+            fillEightBitLineAt(coord: coord_i, value: memoryScreen.read(line_address_corrected + UInt16(i * 0x100)), attribute: attribute)
         }
     }
     
@@ -278,19 +265,48 @@ let kBaseWidth = 320
     }
     
     private func getAttributeAddress(_ address: UInt16) -> UInt16? {
-        var attribute_address: UInt16? = nil
-        
-        let local_address = address & 0x3FFF
-        
-        if local_address < 0x1800 {
-            // bitmap area
-            let x = Int((local_address.low & 0b00011111))
-            let y = Int(((local_address.high & 0b00011000) << 3) | ((local_address.low & 0b11100000) >> 2) | (local_address.high & 0b00000111))
-            
-            attribute_address = UInt16(0x5800 + x + (y / 8) * 32)
+        guard let coord = getXYForAddress(address) else {
+            return nil
         }
         
-        return attribute_address
+        return UInt16(0x5800 + coord.x + (coord.y / 8) * 32)
     }
 
+    private func processTCycle(tCycle: Int) {
+        guard let address = self.getMemoryAddress(tCycle: tCycle) else {
+            return
+        }
+
+        let attributeAddress = getAttributeAddress(address)!
+        
+        let newValue = memory.readNoContention(address)
+        let newAttribute = memory.readNoContention(attributeAddress)
+        
+        saveByteIntoBuffer(address: address, byte: newValue)
+        saveByteIntoBuffer(address: attributeAddress, byte: newAttribute)
+    }
+    
+    private func saveByteIntoBuffer(address: UInt16, byte: UInt8) {
+        guard byte != memoryScreen.read(address) else {
+            return
+        }
+        
+        memoryScreen.write(address, value: byte)
+        addressUpdated.append(address)
+        
+        changed = true
+    }
+    
+    private func getXYForAddress(_ address: UInt16) -> (x: Int, y: Int)? {
+        let local_address = address & 0x3FFF
+
+        guard local_address < 0x1800 else {
+            return nil
+        }
+        
+        return (
+            Int((local_address.low & 0b00011111)),
+            Int(((local_address.high & 0b00011000) << 3) | ((local_address.low & 0b11100000) >> 2) | (local_address.high & 0b00000111))
+        )
+    }
 }
