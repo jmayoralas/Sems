@@ -50,6 +50,11 @@ struct Attribute {
 
 let kBaseWidth = 320
 
+struct BorderData {
+    let color: PixelData
+    let tCycle: Int
+}
+
 @objc final public class VmScreen: NSObject {
     var flashState: Bool = false
     
@@ -65,7 +70,9 @@ let kBaseWidth = 320
     
     private var lastTCycle: Int = 0
     private var memoryScreen: Ram
-    private var addressUpdated: [UInt16]
+    private var addressUpdated: [UInt16] = []
+    private var borderUpdated: [BorderData] = []
+    private var lastBorderColor: PixelData = kWhiteColor
     
     public init(zoomFactor: Int) {
         self.zoomFactor = zoomFactor
@@ -76,7 +83,6 @@ let kBaseWidth = 320
         buffer = VmScreen.initBuffer(zoomFactor: zoomFactor)
         
         memoryScreen = Ram(base_address: 16384, block_size: 0x1B00)
-        addressUpdated = []
     }
     
     public func setZoomFactor(zoomFactor: Int) {
@@ -99,16 +105,47 @@ let kBaseWidth = 320
         self.lastTCycle = (self.lastTCycle > kTicsPerFrame ? self.lastTCycle - kTicsPerFrame : self.lastTCycle)
     }
     
+    func updateFlashing() {
+        for i in 0..<0x300 {
+            addressUpdated.append(0x5800 + UInt16(i))
+        }
+        
+        changed = true
+    }
+    
+    func setBorderData(borderData: BorderData) {
+        if borderUpdated.count == 0 || borderUpdated[borderUpdated.count - 1].color != borderData.color {
+            borderUpdated.append(borderData)
+            
+            changed = true
+        }
+        
+    }
+    
     func updateScreenBuffer() {
+        // update bitmap
         for address in addressUpdated {
             updateScreenBufferAt(address)
         }
         
+        //update border
+        var tCycle = 1
+        
+        for borderData in borderUpdated {
+            updateBorder(fromTCycle: tCycle, untilTCycle: borderData.tCycle, withPixelData: lastBorderColor)
+            lastBorderColor = borderData.color
+            tCycle = borderData.tCycle
+        }
+        
+        updateBorder(fromTCycle: tCycle, untilTCycle: 64512, withPixelData: lastBorderColor)
+        
         addressUpdated = []
-        changed = true
+        borderUpdated = []
+        
+        changed = false
     }
     
-    func updateScreenBufferAt(_ address: UInt16) {
+    private func updateScreenBufferAt(_ address: UInt16) {
         guard 0x4000 <= address && address <= 0x5AFF else {
             return
         }
@@ -123,7 +160,7 @@ let kBaseWidth = 320
 
     }
     
-    func fillEightBitLineAt(address: UInt16) {
+    private func fillEightBitLineAt(address: UInt16) {
         guard let coord = getXYForAddress(address) else {
             return
         }
@@ -134,7 +171,7 @@ let kBaseWidth = 320
         fillEightBitLineAt(coord: coord, value: value, attribute: attribute)
     }
 
-    func fillEightBitLineAt(coord: (x: Int, y: Int), value: UInt8, attribute: Attribute) {
+    private func fillEightBitLineAt(coord: (x: Int, y: Int), value: UInt8, attribute: Attribute) {
         let inkColor: PixelData!
         let paperColor: PixelData!
         
@@ -159,7 +196,7 @@ let kBaseWidth = 320
         }
     }
 
-    func updateCharAt(address: UInt16) {
+    private func updateCharAt(address: UInt16) {
         let local_address = address & 0x3FFF
         let offset = Int(local_address) & 0x7FF
         let coord = (x: offset % 32, y: (offset / 32) * 8)
@@ -173,40 +210,19 @@ let kBaseWidth = 320
             fillEightBitLineAt(coord: coord_i, value: memoryScreen.read(line_address_corrected + UInt16(i * 0x100)), attribute: attribute)
         }
     }
-    
-    func updateFlashing() {
-        for i in 0..<0x300 {
-            addressUpdated.append(0x5800 + UInt16(i))
+
+    private func updateBorder(fromTCycle: Int, untilTCycle: Int, withPixelData pixelData: PixelData) {
+        let topBufferTCycle = (untilTCycle <= 62640 ? untilTCycle : 62640)
+        
+        guard fromTCycle < topBufferTCycle else {
+            return
         }
         
-        changed = true
-    }
-    
-    func updateBorder(line: Int, color: PixelData) {
-        if 36 <= line && line <= 239 + 36 {
-            // the line is on the visible area of the screen
-            // update border color if we have to
-            let bitmapLine = line - 36
-            var index = getBufferIndex(0, bitmapLine)
-            
-            // the bitmapLine background color has changed ?
-            if buffer[index] != color {
-                if 24 <= bitmapLine && bitmapLine < 24 + 192 {
-                    // bitmap border
-                    for i in 0..<32 {
-                        index = getBufferIndex(i, bitmapLine)
-                        setBuffer(atIndex: index, withPixelData: color)
-                    }
-                    for i in 256 + 32..<320 {
-                        index = getBufferIndex(i, bitmapLine)
-                        setBuffer(atIndex: index, withPixelData: color)
-                    }
-                } else {
-                    // above and below bitmap area border
-                    for i in 0..<320 {
-                        index = getBufferIndex(i, bitmapLine)
-                        setBuffer(atIndex: index, withPixelData: color)
-                    }
+        for tCycle in fromTCycle...topBufferTCycle - 1 {
+            if let coord = getBorderXY(tCycle: tCycle) {
+                for i in 0...7 {
+                    let index = getBufferIndex(coord.x + i, coord.y)
+                    setBuffer(atIndex: index, withPixelData: pixelData)
                 }
             }
         }
@@ -309,4 +325,37 @@ let kBaseWidth = 320
             Int(((local_address.high & 0b00011000) << 3) | ((local_address.low & 0b11100000) >> 2) | (local_address.high & 0b00000111))
         )
     }
+    
+    private func getBorderXY(tCycle: Int) -> (x:Int, y:Int)? {
+        guard tCycle >= 16 * 224 - 24 else {
+            return nil
+        }
+        
+        let y = (tCycle + 24) / 224 - 16
+        
+        let lineTCycleBase = 3584 + y * 224 // left border first pixel
+        let x = (tCycle + 24 - lineTCycleBase) / 4
+        
+        guard 2 <= x && x <= 44 - 2 else {
+            return nil
+        }
+        
+        guard 24 <= y && y <= 288 - 24 else {
+            return nil
+        }
+        
+        let res_x  = (x - 2) * 8
+        let res_y = y - 24
+        
+        if res_x >= 32 && res_x < 288 && res_y >= 24 && res_y < 216 {
+            return nil
+        }
+        
+        return (res_x, res_y)
+    }
+
+
+
+
+
 }

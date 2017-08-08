@@ -21,7 +21,6 @@ final class Ula: InternalUlaOperationDelegate {
     var screen: VmScreen
     let clock: Clock
     
-    private var borderColor: PixelData = kWhiteColor
     private var frames: Int = 0
     private var key_buffer = [UInt8](repeatElement(0xFF, count: 8))
     private var audioStreamer: AudioStreamer!
@@ -107,11 +106,11 @@ final class Ula: InternalUlaOperationDelegate {
     
     // MARK: InternalUlaOperation delegate
     func memoryRead() {
-        self.clock.tCycles += self.getContentionDelay(tCycle: self.clock.frameTCycles - 1)
+        computeContention()
     }
     
     func memoryWrite(_ address: UInt16, value: UInt8) {
-        self.clock.tCycles += self.getContentionDelay(tCycle: self.clock.frameTCycles - 1)
+        computeContention()
     }
     
     func ioRead(_ address: UInt16) -> UInt8 {
@@ -130,14 +129,14 @@ final class Ula: InternalUlaOperationDelegate {
         self.ioData = value
         
         // get the border color from value
-        borderColor = colorTable[Int(value) & 0x07]
+        screen.setBorderData(borderData: BorderData(color: colorTable[Int(value) & 0x07], tCycle: clock.frameTCycles))
     }
     
     private func getContentionDelay(tCycle: Int) -> Int {
         var delay = 0
         
         if 14335 <= tCycle && tCycle < 57344 {
-            let index: Int = (tCycle - ((tCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
+            let index = (tCycle - ((tCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
             delay = index < 128 ? self.contentionDelayTable[index] : 0
         }
         
@@ -157,5 +156,9 @@ final class Ula: InternalUlaOperationDelegate {
             }
             
         }
+    }
+    
+    private func computeContention() {
+        self.clock.frameTCycles += self.getContentionDelay(tCycle: self.clock.frameTCycles)
     }
 }
