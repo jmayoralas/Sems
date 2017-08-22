@@ -124,23 +124,8 @@ struct BorderData {
     
     func updateScreenBuffer() {
         // update bitmap
-        for address in addressUpdated {
-            updateScreenBufferAt(address)
-        }
-        
-        //update border
-        var tCycle = 1
-        
-        for borderData in borderUpdated {
-            updateBorder(fromTCycle: tCycle, untilTCycle: borderData.tCycle, withPixelData: lastBorderColor)
-            lastBorderColor = borderData.color
-            tCycle = borderData.tCycle
-        }
-        
-        updateBorder(fromTCycle: tCycle, untilTCycle: 64512, withPixelData: lastBorderColor)
-        
-        addressUpdated = []
-        borderUpdated = []
+        updateBitmap()
+        updateBorder()
         
         changed = false
     }
@@ -219,6 +204,10 @@ struct BorderData {
         }
         
         for tCycle in fromTCycle...topBufferTCycle - 1 {
+            guard tCycle % 4 == 0 else {
+                continue
+            }
+            
             if let coord = getBorderXY(tCycle: tCycle) {
                 for i in 0...7 {
                     let index = getBufferIndex(coord.x + i, coord.y)
@@ -336,11 +325,11 @@ struct BorderData {
         let lineTCycleBase = 3584 + y * 224 // left border first pixel
         let x = (tCycle + 24 - lineTCycleBase) / 4
         
-        guard 2 <= x && x <= 44 - 2 else {
+        guard 2 <= x && x < 44 - 2 else {
             return nil
         }
         
-        guard 24 <= y && y <= 288 - 24 else {
+        guard 24 <= y && y < 288 - 24 else {
             return nil
         }
         
@@ -354,8 +343,30 @@ struct BorderData {
         return (res_x, res_y)
     }
 
+    private func updateBitmap() {
+        for address in addressUpdated {
+            updateScreenBufferAt(address)
+        }
+        
+        addressUpdated = []
+    }
 
-
+    private func updateBorder() {
+        //update border
+        var tCycle = 64512
+        
+        for borderData in borderUpdated.reversed() {
+            if tCycle == 64512 {
+                lastBorderColor = borderData.color
+            }
+            updateBorder(fromTCycle: borderData.tCycle, untilTCycle: tCycle, withPixelData: borderData.color)
+            tCycle = borderData.tCycle
+        }
+        
+        updateBorder(fromTCycle: 0, untilTCycle: tCycle, withPixelData: lastBorderColor)
+        
+        borderUpdated = []
+    }
 
 
 }
