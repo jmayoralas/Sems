@@ -114,6 +114,8 @@ final class Ula: InternalUlaOperationDelegate {
     }
     
     func ioRead(_ address: UInt16) -> UInt8 {
+        computeIOContention(address: address)
+        
         var dataReturned: UInt8 = 0b10111111
         dataReturned.bit(6, newVal: self.tapeLevel)
         
@@ -126,6 +128,7 @@ final class Ula: InternalUlaOperationDelegate {
     }
     
     func ioWrite(_ address: UInt16, value: UInt8)  {
+        computeIOContention(address: address)
         self.ioData = value
         
         // get the border color from value
@@ -160,5 +163,28 @@ final class Ula: InternalUlaOperationDelegate {
     
     private func computeContention() {
         self.clock.frameTCycles += self.getContentionDelay(tCycle: self.clock.frameTCycles)
+    }
+    
+    private func computeIOContention(address: UInt16) {
+        var contentionCount = 0
+
+        if 0x40 <= address.high && address.high <= 0x7F {
+            if address & 1 == 1 {
+                // C:1 C:1 C:1 C:1
+                contentionCount = 4
+            } else {
+                // C:1 C:3
+                contentionCount = 2
+            }
+        } else {
+            if address & 1 == 0 {
+                // N:1 C:3
+                contentionCount = 1
+            }
+        }
+        
+        for _ in 1...contentionCount {
+            computeContention()
+        }
     }
 }
