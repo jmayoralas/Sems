@@ -71,8 +71,7 @@ struct BorderData {
     private var lastTCycle: Int = 0
     private var memoryScreen: Ram
     private var addressUpdated: [UInt16] = []
-    private var borderUpdated: [BorderData] = []
-    private var lastBorderColor: PixelData = kWhiteColor
+    private var currentBorderColor: PixelData = kWhiteColor
     
     public init(zoomFactor: Int) {
         self.zoomFactor = zoomFactor
@@ -114,19 +113,12 @@ struct BorderData {
     }
     
     func setBorderData(borderData: BorderData) {
-        if borderUpdated.count == 0 || borderUpdated[borderUpdated.count - 1].color != borderData.color {
-            borderUpdated.append(borderData)
-            
-            changed = true
-        }
-        
+        currentBorderColor = borderData.color
+        changed = true
     }
     
     func updateScreenBuffer() {
-        // update bitmap
         updateBitmap()
-        updateBorder()
-        
         changed = false
     }
     
@@ -278,6 +270,14 @@ struct BorderData {
     }
 
     private func processTCycle(tCycle: Int) {
+        if let coord = getBorderXY(tCycle: tCycle) {
+            if buffer[getBufferIndex(coord.x, coord.y)] != currentBorderColor {
+                for i in 0...7 {
+                    setBuffer(atIndex: getBufferIndex(coord.x + i, coord.y), withPixelData: currentBorderColor)
+                }
+            }
+        }
+        
         guard let address = self.getMemoryAddress(tCycle: tCycle) else {
             return
         }
@@ -350,23 +350,5 @@ struct BorderData {
         
         addressUpdated = []
     }
-
-    private func updateBorder() {
-        //update border
-        var tCycle = 64512
-        
-        for borderData in borderUpdated.reversed() {
-            if tCycle == 64512 {
-                lastBorderColor = borderData.color
-            }
-            updateBorder(fromTCycle: borderData.tCycle, untilTCycle: tCycle, withPixelData: borderData.color)
-            tCycle = borderData.tCycle
-        }
-        
-        updateBorder(fromTCycle: 0, untilTCycle: tCycle, withPixelData: lastBorderColor)
-        
-        borderUpdated = []
-    }
-
 
 }
