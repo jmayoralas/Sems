@@ -37,9 +37,7 @@ final class IoBus: BusBase {
     private var io_components: [BusComponentBase]
     
     init() {
-        let dummy_component = BusComponent(base_address: 0x0000, block_size: 0x0000)
-        io_components = Array(repeating: dummy_component, count: 0x100)
-        
+        io_components = Array(repeating: BusComponent(base_address: 0x0000, block_size: 0x0000), count: 0x100)
         super.init(base_address: 0x0000, block_size: 0x100)
     }
     
