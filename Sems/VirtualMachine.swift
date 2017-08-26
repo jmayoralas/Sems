@@ -123,10 +123,11 @@ class VirtualMachine
         self.ula.step()
         self.tape.step()
         
-        if self.cpu.clock.frameTCycles <= 32 {
+        if self.cpu.clock.frameTCycles < 32 {
             self.cpu.int = true
             
             if self.ula.screen.changed {
+                self.ula.screen.updateScreenBuffer()
                 self.delegate?.Z80VMScreenRefresh?()
             }
         } else {

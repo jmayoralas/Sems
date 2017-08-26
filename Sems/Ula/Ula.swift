@@ -18,29 +18,15 @@ protocol InternalUlaOperationDelegate {
 final class Ula: InternalUlaOperationDelegate {
     var memory: ULAMemory!
     var io: ULAIo!
-    
     var screen: VmScreen
-    
     let clock: Clock
     
-    private var borderColor: PixelData = kWhiteColor
-    
-    private var newFrame = true
-    private var lineTCycles: Int = 0
-    private var screenLine: Int = 1
-    
     private var frames: Int = 0
-    
     private var key_buffer = [UInt8](repeatElement(0xFF, count: 8))
-    
     private var audioStreamer: AudioStreamer!
-    
     private var ioData: UInt8 = 0
-    
     private var audioEnabled = true
-    
     private var tapeLevel: Int = 0
-    
     private var contentionDelayTable = [Int](repeatElement(0, count: 128))
     
     init(screen: VmScreen, clock: Clock) {
@@ -58,13 +44,9 @@ final class Ula: InternalUlaOperationDelegate {
     }
     
     func step() {
-        if newFrame {
-            newFrame = false
-            screen.beginFrame()
-        }
-        
         self.clock.frameTCycles += self.clock.tCycles
-        self.lineTCycles += self.clock.tCycles
+        
+        self.screen.step(tCycle: self.clock.frameTCycles)
         
         if audioEnabled {
             // sample ioData plus tape signal to compute new audio data
@@ -73,17 +55,10 @@ final class Ula: InternalUlaOperationDelegate {
             
             self.audioStreamer.updateSample(tCycle: self.clock.frameTCycles, value: signal)
         }
-
-        if self.lineTCycles > kTicsPerLine {
-            self.screen.updateBorder(line: screenLine, color: borderColor)
-            
-            self.screenLine += 1
-            self.lineTCycles -= kTicsPerLine
-            
-            if self.screenLine > kScreenLines {
-                self.frameCompleted()
-                self.screenLine = 1
-            }
+        
+        if clock.frameTCycles >= kTicsPerFrame {
+            frameCompleted()
+            clock.frameTCycles -= kTicsPerFrame
         }
     }
     
@@ -115,7 +90,6 @@ final class Ula: InternalUlaOperationDelegate {
         }
     }
     
-    // MARK: Screen management
     private func frameCompleted() {
         if self.audioEnabled {
             self.audioStreamer.endFrame()
@@ -128,35 +102,15 @@ final class Ula: InternalUlaOperationDelegate {
             self.screen.updateFlashing()
             self.frames = 0
         }
-        
-        self.newFrame = true
-        self.clock.frameTCycles -= kTicsPerFrame
     }
     
     // MARK: InternalUlaOperation delegate
     func memoryRead() {
-        self.computeContention()
+        computeContention()
     }
     
     func memoryWrite(_ address: UInt16, value: UInt8) {
-        self.computeContention()
-        
-        let local_address = address & 0x3FFF
-        if local_address > 0x1AFF {
-            return
-        }
-        
-        if local_address < 0x1800 {
-            // bitmap area
-            let x = Int((local_address.low & 0b00011111))
-            let y = Int(((local_address.high & 0b00011000) << 3) | ((local_address.low & 0b11100000) >> 2) | (local_address.high & 0b00000111))
-            
-            let attribute_address = UInt16(0x5800 + x + (y / 8) * 32)
-            screen.fillEightBitLineAt(char: x, line: y, value: value, attribute: VmScreen.getAttribute(memory.read(attribute_address)))
-        } else {
-            // attr area
-            screen.updateCharAtOffset(Int(local_address) & 0x7FF, attribute: VmScreen.getAttribute(value))
-        }
+        computeContention()
     }
     
     func ioRead(_ address: UInt16) -> UInt8 {
@@ -175,16 +129,18 @@ final class Ula: InternalUlaOperationDelegate {
         self.ioData = value
         
         // get the border color from value
-        borderColor = colorTable[Int(value) & 0x07]
+        screen.setBorderData(borderData: BorderData(color: colorTable[Int(value) & 0x07], tCycle: clock.frameTCycles))
     }
     
-    private func computeContention() {
-        let frameTCycle = self.clock.frameTCycles - 1
+    private func getContentionDelay(tCycle: Int) -> Int {
+        var delay = 0
         
-        if 14335 <= frameTCycle && frameTCycle < 57344 {
-            let index: Int = (frameTCycle - ((frameTCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
-            self.clock.tCycles += index < 128 ? self.contentionDelayTable[index] : 0
+        if 14335 <= tCycle && tCycle < 57344 {
+            let index = (tCycle - ((tCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
+            delay = index < 128 ? self.contentionDelayTable[index] : 0
         }
+        
+        return delay
     }
     
     private func initContentionTable() {
@@ -200,5 +156,9 @@ final class Ula: InternalUlaOperationDelegate {
             }
             
         }
+    }
+    
+    private func computeContention() {
+        self.clock.frameTCycles += self.getContentionDelay(tCycle: self.clock.frameTCycles)
     }
 }

@@ -25,4 +25,8 @@ final class ULAMemory : Ram {
         self.ulaDelegate.memoryRead()
         return super.read(address)
     }
+    
+    func readNoContention(_ address: UInt16) -> UInt8 {
+        return super.read(address)
+    }
 }
