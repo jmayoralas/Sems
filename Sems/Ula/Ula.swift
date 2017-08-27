@@ -27,7 +27,6 @@ final class Ula: InternalUlaOperationDelegate {
     private var ioData: UInt8 = 0
     private var audioEnabled = true
     private var tapeLevel: Int = 0
-    private var contentionDelayTable = [Int](repeatElement(0, count: 128))
     
     init(screen: VmScreen, clock: Clock) {
         self.screen = screen
@@ -39,8 +38,6 @@ final class Ula: InternalUlaOperationDelegate {
         self.io = ULAIo(delegate: self)
         
         self.screen.memory = memory
-        
-        self.initContentionTable()
     }
     
     func step() {
@@ -106,11 +103,11 @@ final class Ula: InternalUlaOperationDelegate {
     
     // MARK: InternalUlaOperation delegate
     func memoryRead() {
-        computeContention()
+        clock.applyContention()
     }
     
     func memoryWrite(_ address: UInt16, value: UInt8) {
-        computeContention()
+        clock.applyContention()
     }
     
     func ioRead(_ address: UInt16) -> UInt8 {
@@ -130,35 +127,5 @@ final class Ula: InternalUlaOperationDelegate {
         
         // get the border color from value
         screen.setBorderData(borderData: BorderData(color: colorTable[Int(value) & 0x07], tCycle: clock.frameTCycles))
-    }
-    
-    private func getContentionDelay(tCycle: Int) -> Int {
-        var delay = 0
-        
-        if 14335 <= tCycle && tCycle < 57344 {
-            let index = (tCycle - ((tCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
-            delay = index < 128 ? self.contentionDelayTable[index] : 0
-        }
-        
-        return delay
-    }
-    
-    private func initContentionTable() {
-        var delay = 7
-        
-        for i in 0 ..< self.contentionDelayTable.count {
-            delay -= 1
-            
-            if delay >= 0 {
-                self.contentionDelayTable[i] = delay
-            } else {
-                delay = 7
-            }
-            
-        }
-    }
-    
-    private func computeContention() {
-        self.clock.frameTCycles += self.getContentionDelay(tCycle: self.clock.frameTCycles)
     }
 }
