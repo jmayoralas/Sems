@@ -119,7 +119,13 @@ class VirtualMachine
     
     public func step() {
         self.tapeLoaderHook()
-        self.cpu.step()
+        
+        clock.tCycles = 0
+        
+        if !clock.isContentionInProgress() {
+            self.cpu.step()
+        }
+        
         self.ula.step()
         self.tape.step()
         

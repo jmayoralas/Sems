@@ -102,8 +102,6 @@ class Z80 {
     
     // gets next opcode from PC and executes it
     func step() {
-        self.clock.tCycles = 0
-        
         // check for non maskable interrupt
         guard !self.nonMaskableInterrupt() else {
             return

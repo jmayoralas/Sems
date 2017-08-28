@@ -65,6 +65,8 @@ final class IoBus: BusBase {
         // port addressed by low byte of address
         io_components[Int(address & 0x00FF)].write(address, value: value)
         
+        clock.applyIOContention(address: address)
+        
         super.write(address, value: value)
     }
     
@@ -73,6 +75,8 @@ final class IoBus: BusBase {
         
         // port addressed by low byte of address
         last_data = io_components[Int(address & 0x00FF)].read(address)
+        
+        clock.applyIOContention(address: address)
         
         return last_data
     }
