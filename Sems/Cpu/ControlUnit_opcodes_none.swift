@@ -907,7 +907,7 @@ extension Z80 {
             }
         }
         opcodes[0xD3] = { // OUT (&00), A
-            self.clock.tCycles += 7
+            self.clock.tCycles += 3
             self.ioBus.write(self.addressFromPair(self.regs.a, self.dataBus.read(self.regs.pc)), value: self.regs.a)
             self.regs.pc = self.regs.pc &+ 1
         }
@@ -962,7 +962,7 @@ extension Z80 {
             }
         }
         opcodes[0xDB] = { // IN A,(&00)
-            self.clock.tCycles += 7
+            self.clock.tCycles += 3
             self.regs.a =  self.ioBus.read(self.addressFromPair(self.regs.a, self.dataBus.read(self.regs.pc)))
             self.regs.pc = self.regs.pc &+ 1
         }

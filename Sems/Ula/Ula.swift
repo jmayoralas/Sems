@@ -41,8 +41,6 @@ final class Ula: InternalUlaOperationDelegate {
     }
     
     func step() {
-        self.clock.frameTCycles += self.clock.tCycles
-        
         self.screen.step(tCycle: self.clock.frameTCycles)
         
         if audioEnabled {

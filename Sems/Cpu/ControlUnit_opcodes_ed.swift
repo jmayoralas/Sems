@@ -12,7 +12,6 @@ import Foundation
 extension Z80 {
     func initOpcodeTableED(_ opcodes: inout OpcodeTable) {
         opcodes[0x40] = { // IN B,(C)
-            self.clock.tCycles += 4
             let data = self.ioBus.read(self.regs.bc)
             if data.bit(7) == 1 {
                 self.regs.f.setBit(S)
@@ -34,7 +33,6 @@ extension Z80 {
             self.regs.b = data
         }
         opcodes[0x41] = { // OUT (C),B
-            self.clock.tCycles += 4
             self.ioBus.write(self.regs.bc, value: self.regs.b)
         }
         opcodes[0x42] = { // SBC HL,BC
@@ -64,7 +62,6 @@ extension Z80 {
             self.regs.i = self.regs.a
         }
         opcodes[0x48] = { // IN C,(C)
-            self.clock.tCycles += 4
             let data = self.ioBus.read(self.regs.bc)
             if data.bit(7) == 1 {
                 self.regs.f.setBit(S)
@@ -86,7 +83,6 @@ extension Z80 {
             self.regs.c = data
         }
         opcodes[0x49] = { // OUT (C),C
-            self.clock.tCycles += 4
             self.ioBus.write(self.regs.bc, value: self.regs.c)
         }
         opcodes[0x4A] = { // ADC HL,BC
@@ -114,7 +110,6 @@ extension Z80 {
             self.regs.r = self.regs.a
         }
         opcodes[0x50] = { // IN D,(C)
-            self.clock.tCycles += 4
             let data = self.ioBus.read(self.regs.bc)
             if data.bit(7) == 1 {
                 self.regs.f.setBit(S)
@@ -136,7 +131,6 @@ extension Z80 {
             self.regs.d = data
         }
         opcodes[0x51] = { // OUT (C),D
-            self.clock.tCycles += 4
             self.ioBus.write(self.regs.bc, value: self.regs.d)
         }
         opcodes[0x52] = { // SBC HL,DE
@@ -184,7 +178,6 @@ extension Z80 {
             self.regs.f.bit(5, newVal: self.regs.a.bit(5))
         }
         opcodes[0x58] = { // IN E,(C)
-            self.clock.tCycles += 4
             let data = self.ioBus.read(self.regs.bc)
             if data.bit(7) == 1 {
                 self.regs.f.setBit(S)
@@ -206,7 +199,6 @@ extension Z80 {
             self.regs.e = data
         }
         opcodes[0x59] = { // OUT (C),E
-            self.clock.tCycles += 4
             self.ioBus.write(self.regs.bc, value: self.regs.e)
         }
         opcodes[0x5A] = { // ADC HL,DE
@@ -254,7 +246,6 @@ extension Z80 {
             self.regs.f.bit(5, newVal: self.regs.a.bit(5))
         }
         opcodes[0x60] = { // IN H,(C)
-            self.clock.tCycles += 4
             let data = self.ioBus.read(self.regs.bc)
             if data.bit(7) == 1 {
                 self.regs.f.setBit(S)
@@ -276,7 +267,6 @@ extension Z80 {
             self.regs.h = data
         }
         opcodes[0x61] = { // OUT (C),H
-            self.clock.tCycles += 4
             self.ioBus.write(self.regs.bc, value: self.regs.h)
         }
         opcodes[0x62] = { // SBC HL,HL
@@ -320,7 +310,6 @@ extension Z80 {
             self.dataBus.write(self.regs.hl, value: data)
         }
         opcodes[0x68] = { // IN L,(C)
-            self.clock.tCycles += 4
             let data = self.ioBus.read(self.regs.bc)
             if data.bit(7) == 1 {
                 self.regs.f.setBit(S)
@@ -342,7 +331,6 @@ extension Z80 {
             self.regs.l = data
         }
         opcodes[0x69] = { // OUT (C),L
-            self.clock.tCycles += 4
             self.ioBus.write(self.regs.bc, value: self.regs.l)
         }
         opcodes[0x6A] = { // ADC HL,HL
@@ -387,7 +375,6 @@ extension Z80 {
             self.dataBus.write(self.regs.hl, value: data)
         }
         opcodes[0x70] = { // IN _,(C)
-            self.clock.tCycles += 4
             let data = self.ioBus.read(self.regs.bc)
             if data.bit(7) == 1 {
                 self.regs.f.setBit(S)
@@ -407,7 +394,6 @@ extension Z80 {
             self.regs.f.bit(5, newVal: data.bit(5))
         }
         opcodes[0x71] = { // OUT (C),_
-            self.clock.tCycles += 4
             self.ioBus.write(self.regs.bc, value: 0)
         }
         opcodes[0x72] = { // SBC HL,SP
@@ -434,7 +420,6 @@ extension Z80 {
         
         }
         opcodes[0x78] = { // IN A,(C)
-            self.clock.tCycles += 4
             let data = self.ioBus.read(self.regs.bc)
             if data.bit(7) == 1 {
                 self.regs.f.setBit(S)
@@ -456,7 +441,6 @@ extension Z80 {
             self.regs.a = data
         }
         opcodes[0x79] = { // OUT (C),A
-            self.clock.tCycles += 4
             self.ioBus.write(self.regs.bc, value: self.regs.a)
         }
         opcodes[0x7A] = { // ADC HL,SP
@@ -523,7 +507,7 @@ extension Z80 {
             self.regs.f.bit(5, newVal: data.bit(1))
         }
         opcodes[0xA2] = { // INI
-            self.clock.tCycles += 8
+            self.clock.tCycles += 4
             
             let data = self.ioBus.read(self.regs.bc)
             self.dataBus.write(self.regs.hl, value: data)
@@ -549,7 +533,7 @@ extension Z80 {
             self.regs.f.bit(PV, newVal: self.checkParity(parityValue))
         }
         opcodes[0xA3] = { // OUTI
-            self.clock.tCycles += 8
+            self.clock.tCycles += 4
             
             let data = self.dataBus.read(self.regs.hl)
             
@@ -616,7 +600,7 @@ extension Z80 {
             self.regs.f.bit(5, newVal: data.bit(1))
         }
         opcodes[0xAA] = { // IND
-            self.clock.tCycles += 8
+            self.clock.tCycles += 4
             
             let data = self.ioBus.read(self.regs.bc)
             self.dataBus.write(self.regs.hl, value: data)
@@ -642,7 +626,7 @@ extension Z80 {
             self.regs.f.bit(PV, newVal: self.checkParity(parityValue))
         }
         opcodes[0xAB] = { // OUTD
-            self.clock.tCycles += 8
+            self.clock.tCycles += 4
             
             let data = self.dataBus.read(self.regs.hl)
             
@@ -710,7 +694,7 @@ extension Z80 {
             self.regs.f.bit(5, newVal: data.bit(1))
         }
         opcodes[0xB2] = { // INIR
-            self.clock.tCycles += 8
+            self.clock.tCycles += 4
             
             let data = self.ioBus.read(self.regs.bc)
             self.dataBus.write(self.regs.hl, value: data)
@@ -742,7 +726,7 @@ extension Z80 {
             }
         }
         opcodes[0xB3] = { // OTIR
-            self.clock.tCycles += 8
+            self.clock.tCycles += 4
             
             let data = self.dataBus.read(self.regs.hl)
             
@@ -821,7 +805,7 @@ extension Z80 {
             self.regs.f.bit(5, newVal: data.bit(1))
         }
         opcodes[0xBA] = { // INDR
-            self.clock.tCycles += 8
+            self.clock.tCycles += 4
             
             let data = self.ioBus.read(self.regs.bc)
             self.dataBus.write(self.regs.hl, value: data)
@@ -852,7 +836,7 @@ extension Z80 {
             }
         }
         opcodes[0xBB] = { // OTDR
-            self.clock.tCycles += 8
+            self.clock.tCycles += 4
             
             let data = self.dataBus.read(self.regs.hl)
             

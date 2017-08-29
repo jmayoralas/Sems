@@ -62,6 +62,9 @@ final class IoBus: BusBase {
     }
     
     override func write(_ address: UInt16, value: UInt8) {
+        clock.tCycles += 4
+        clock.frameTCycles += 4
+        
         // port addressed by low byte of address
         io_components[Int(address & 0x00FF)].write(address, value: value)
         
@@ -71,6 +74,9 @@ final class IoBus: BusBase {
     }
     
     override func read(_ address: UInt16) -> UInt8 {
+        clock.tCycles += 4
+        clock.frameTCycles += 4
+        
         let _ = super.read(address)
         
         // port addressed by low byte of address
