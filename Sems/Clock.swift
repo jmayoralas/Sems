@@ -18,6 +18,11 @@ final class Clock {
     init() {
         initContentionTable()
     }
+
+    func add(tCycles: Int) {
+        self.tCycles += tCycles
+        self.frameTCycles += tCycles
+    }
     
     func applyContention() {
         applyContention(frameTCycles: frameTCycles)
@@ -61,7 +66,7 @@ final class Clock {
         }
         
         contentionTCycles -= 1
-        tCycles += 1
+        add(tCycles: 1)
         
         return true
     }

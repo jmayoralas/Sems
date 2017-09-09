@@ -267,7 +267,7 @@ extension Z80 {
     }
 
     func call(_ address: UInt16) {
-        self.clock.tCycles += 7
+        clock.add(tCycles: 1)
         var sp = regs.sp &- 1
         dataBus.write(sp, value: regs.pc.high)
         sp = regs.sp &- 2
@@ -277,7 +277,6 @@ extension Z80 {
     }
 
     func ret() {
-        self.clock.tCycles += 6
         regs.pc = addressFromPair(dataBus.read(regs.sp &+ 1), dataBus.read(regs.sp))
         regs.sp = regs.sp &+ 2
     }
@@ -293,7 +292,7 @@ extension Z80 {
             self.halted = false
         }
         
-        self.clock.tCycles += 8
+        clock.add(tCycles: 8)
         
         self.call(0x0066)
         
@@ -316,7 +315,7 @@ extension Z80 {
             self.halted = false
         }
         
-        self.clock.tCycles += 6
+        clock.add(tCycles: 3)
         
         switch regs.int_mode {
         case 0:
@@ -324,10 +323,9 @@ extension Z80 {
             self.opcode_tables[self.id_opcode_table][Int(self.dataBus.read())]()
         case 1:
             // do a RST 38
+            clock.add(tCycles: 3)
             self.opcode_tables[self.id_opcode_table][0xFF]()
         case 2:
-            self.clock.tCycles += 6
-            
             let vector_address = addressFromPair(regs.i, dataBus.last_data & 0xFE) // reset bit 0 of the byte in dataBus to make sure we get an even address
             let routine_address = addressFromPair(dataBus.read(vector_address + 1), dataBus.read(vector_address))
             

@@ -74,7 +74,7 @@ class VirtualMachine
     // MARK: Constructor
     public init(_ screen: VmScreen) {
         self.clock = Clock()
-        self.cpu = Z80(dataBus: Bus16(), ioBus: IoBus(clock: clock), clock: self.clock)
+        self.cpu = Z80(dataBus: Bus16(clock: clock), ioBus: IoBus(clock: clock), clock: self.clock)
         self.ula = Ula(screen: screen, clock: self.clock)
         self.tape = Tape(ula: self.ula)
         

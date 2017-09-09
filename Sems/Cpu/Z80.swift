@@ -130,14 +130,15 @@ class Z80 {
     }
     
     func getNextOpcode() {
-        self.clock.tCycles += 4
+        let data = dataBus.read(regs.pc)
+        self.clock.add(tCycles: 1)
         
         if halted {
             // cpu halted, always execute NOP
             regs.ir = 0x00
         } else {
             // get opcode at PC into IR register
-            regs.ir = dataBus.read(regs.pc)
+            regs.ir = data
             regs.pc = regs.pc &+ 1
         }
         

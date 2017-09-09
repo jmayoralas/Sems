@@ -12,27 +12,25 @@ import Foundation
 extension Z80 {
     func initOpcodeTableXX(_ opcodes: inout OpcodeTable) {
         opcodes[0x09] = { // ADD xx,BC
-            self.clock.tCycles += 7
+            self.clock.add(tCycles: 7)
             self.regs.xx = self.aluCall16(self.regs.xx, self.regs.bc, ulaOp: .add)
         }
         opcodes[0x19] = { // ADD xx,DE
-            self.clock.tCycles += 7
+            self.clock.add(tCycles: 7)
             self.regs.xx = self.aluCall16(self.regs.xx, self.regs.de, ulaOp: .add)
         }
         opcodes[0x21] = { // LD xx,&0000
-            self.clock.tCycles += 6
             self.regs.xx = self.addressFromPair(self.dataBus.read(self.regs.pc &+ 1), self.dataBus.read(self.regs.pc))
             self.regs.pc = self.regs.pc &+ 2
         }
         opcodes[0x22] = { // LD (&0000),xx
-            self.clock.tCycles += 12
             let address = self.addressFromPair(self.dataBus.read(self.regs.pc &+ 1), self.dataBus.read(self.regs.pc))
             self.dataBus.write(address, value: self.regs.xxl)
             self.dataBus.write(address &+ 1, value: self.regs.xxh)
             self.regs.pc = self.regs.pc &+ 2
         }
         opcodes[0x23] = { // INC xx
-            self.clock.tCycles += 2
+            self.clock.add(tCycles: 2)
             self.regs.xx = self.regs.xx &+ 1
         }
         opcodes[0x24] = { // INC xxH
@@ -42,22 +40,20 @@ extension Z80 {
             self.regs.xxh = self.aluCall(self.regs.xxh, 1, ulaOp: .sub, ignoreCarry: true)
         }
         opcodes[0x26] = { // LD xxH,&00
-            self.clock.tCycles += 3
             self.regs.xxh = self.dataBus.read(self.regs.pc)
             self.regs.pc = self.regs.pc &+ 1
         }
         opcodes[0x29] = { // ADD xx,xx
-            self.clock.tCycles += 7
+            self.clock.add(tCycles: 7)
             self.regs.xx = self.aluCall16(self.regs.xx, self.regs.xx, ulaOp: .add)
         }
         opcodes[0x2A] = { // LD xx,(&0000)
-            self.clock.tCycles += 12
             let address = self.addressFromPair(self.dataBus.read(self.regs.pc &+ 1), self.dataBus.read(self.regs.pc))
             self.regs.xx = self.addressFromPair(self.dataBus.read(address &+ 1), self.dataBus.read(address))
             self.regs.pc = self.regs.pc &+ 2
         }
         opcodes[0x2B] = { // DEC xx
-            self.clock.tCycles += 2
+            self.clock.add(tCycles: 2)
             self.regs.xx = self.regs.xx &- 1
         }
         opcodes[0x2C] = { // INC xxL
@@ -67,12 +63,11 @@ extension Z80 {
             self.regs.xxl = self.aluCall(self.regs.xxl, 1, ulaOp: .sub, ignoreCarry: true)
         }
         opcodes[0x2E] = { // LD xxL,&00
-            self.clock.tCycles += 3
             self.regs.xxl = self.dataBus.read(self.regs.pc)
             self.regs.pc = self.regs.pc &+ 1
         }
         opcodes[0x34] = { // INC (xx+0)
-            self.clock.tCycles += 15
+            self.clock.add(tCycles: 6)
             let displ = self.dataBus.read(self.regs.pc)
             self.regs.pc = self.regs.pc &+ 1
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
@@ -80,7 +75,7 @@ extension Z80 {
             self.dataBus.write(address, value: data)
         }
         opcodes[0x35] = { // DEC (xx+0)
-            self.clock.tCycles += 15
+            self.clock.add(tCycles: 6)
             let displ = self.dataBus.read(self.regs.pc)
             self.regs.pc = self.regs.pc &+ 1
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
@@ -88,14 +83,14 @@ extension Z80 {
             self.dataBus.write(address, value: data)
         }
         opcodes[0x36] = { // LD (xx+0),&00
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 2)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.dataBus.write(address, value: self.dataBus.read(self.regs.pc &+ 1))
             self.regs.pc = self.regs.pc &+ 2
         }
         opcodes[0x39] = { // ADD xx,SP
-            self.clock.tCycles += 7
+            self.clock.add(tCycles: 7)
             self.regs.xx = self.aluCall16(self.regs.xx, self.regs.sp, ulaOp: .add)
         }
         opcodes[0x44] = { // LD B,xxH
@@ -105,7 +100,7 @@ extension Z80 {
             self.regs.b = self.regs.xxl
         }
         opcodes[0x46] = { // LD B,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.b = self.dataBus.read(address)
@@ -118,7 +113,7 @@ extension Z80 {
             self.regs.c = self.regs.xxl
         }
         opcodes[0x4E] = { // LD C,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.c = self.dataBus.read(address)
@@ -131,7 +126,7 @@ extension Z80 {
             self.regs.d = self.regs.xxl
         }
         opcodes[0x56] = { // LD D,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.d = self.dataBus.read(address)
@@ -144,7 +139,7 @@ extension Z80 {
             self.regs.e = self.regs.xxl
         }
         opcodes[0x5E] = { // LD E,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.e = self.dataBus.read(address)
@@ -169,7 +164,7 @@ extension Z80 {
             self.regs.xxh = self.regs.xxl
         }
         opcodes[0x66] = { // LD H,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.h = self.dataBus.read(address)
@@ -197,7 +192,7 @@ extension Z80 {
             self.regs.xxl = self.regs.xxl
         }
         opcodes[0x6E] = { // LD L,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.l = self.dataBus.read(address)
@@ -207,49 +202,49 @@ extension Z80 {
             self.regs.xxl = self.regs.a
         }
         opcodes[0x70] = { // LD (xx+0),B
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.dataBus.write(address, value: self.regs.b)
             self.regs.pc = self.regs.pc &+ 1
         }
         opcodes[0x71] = { // LD (xx+0),C
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.dataBus.write(address, value: self.regs.c)
             self.regs.pc = self.regs.pc &+ 1
         }
         opcodes[0x72] = { // LD (xx+0),D
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.dataBus.write(address, value: self.regs.d)
             self.regs.pc = self.regs.pc &+ 1
         }
         opcodes[0x73] = { // LD (xx+0),E
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.dataBus.write(address, value: self.regs.e)
             self.regs.pc = self.regs.pc &+ 1
         }
         opcodes[0x74] = { // LD (xx+0),H
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.dataBus.write(address, value: self.regs.h)
             self.regs.pc = self.regs.pc &+ 1
         }
         opcodes[0x75] = { // LD (xx+0),L
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.dataBus.write(address, value: self.regs.l)
             self.regs.pc = self.regs.pc &+ 1
         }
         opcodes[0x77] = { // LD (xx+0),A
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.dataBus.write(address, value: self.regs.a)
@@ -262,7 +257,7 @@ extension Z80 {
             self.regs.a = self.regs.xxl
         }
         opcodes[0x7E] = { // LD A,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.a = self.dataBus.read(address)
@@ -275,7 +270,7 @@ extension Z80 {
             self.regs.a = self.aluCall(self.regs.a, self.regs.xxl, ulaOp: .add, ignoreCarry: false)
         }
         opcodes[0x86] = { // ADD A,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.a = self.aluCall(self.regs.a, self.dataBus.read(address), ulaOp: .add, ignoreCarry: false)
@@ -288,7 +283,7 @@ extension Z80 {
             self.regs.a = self.aluCall(self.regs.a, self.regs.xxl, ulaOp: .adc, ignoreCarry: false)
         }
         opcodes[0x8E] = { // ADC A,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.a = self.aluCall(self.regs.a, self.dataBus.read(address), ulaOp: .adc, ignoreCarry: false)
@@ -301,7 +296,7 @@ extension Z80 {
             self.regs.a = self.aluCall(self.regs.a, self.regs.xxl, ulaOp: .sub, ignoreCarry: false)
         }
         opcodes[0x96] = { // SUB A,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.a = self.aluCall(self.regs.a, self.dataBus.read(address), ulaOp: .sub, ignoreCarry: false)
@@ -314,7 +309,7 @@ extension Z80 {
             self.regs.a = self.aluCall(self.regs.a, self.regs.xxl, ulaOp: .sbc, ignoreCarry: false)
         }
         opcodes[0x9E] = { // SBC A,(xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.a = self.aluCall(self.regs.a, self.dataBus.read(address), ulaOp: .sbc, ignoreCarry: false)
@@ -327,7 +322,7 @@ extension Z80 {
             self.regs.a = self.aluCall(self.regs.a, self.regs.xxl, ulaOp: .and, ignoreCarry: false)
         }
         opcodes[0xA6] = { // AND (xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.a = self.aluCall(self.regs.a, self.dataBus.read(address), ulaOp: .and, ignoreCarry: false)
@@ -340,7 +335,7 @@ extension Z80 {
             self.regs.a = self.aluCall(self.regs.a, self.regs.xxl, ulaOp: .xor, ignoreCarry: false)
         }
         opcodes[0xAE] = { // XOR (xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.a = self.aluCall(self.regs.a, self.dataBus.read(address), ulaOp: .xor, ignoreCarry: false)
@@ -353,7 +348,7 @@ extension Z80 {
             self.regs.a = self.aluCall(self.regs.a, self.regs.xxl, ulaOp: .or, ignoreCarry: false)
         }
         opcodes[0xB6] = { // OR (xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             self.regs.a = self.aluCall(self.regs.a, self.dataBus.read(address), ulaOp: .or, ignoreCarry: false)
@@ -366,7 +361,7 @@ extension Z80 {
             let _ = self.aluCall(self.regs.a, self.regs.xxl, ulaOp: .cp, ignoreCarry: false)
         }
         opcodes[0xBE] = { // CP (xx+0)
-            self.clock.tCycles += 11
+            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
             let _ = self.aluCall(self.regs.a, self.dataBus.read(address), ulaOp: .cp, ignoreCarry: false)
@@ -378,29 +373,29 @@ extension Z80 {
             self.processInstruction()
         }
         opcodes[0xE1] = { // POP xx
-            self.clock.tCycles += 7
+            self.clock.add(tCycles: 1)
             self.regs.xxl = self.dataBus.read(self.regs.sp)
             self.regs.xxh = self.dataBus.read(self.regs.sp &+ 1)
             self.regs.sp = self.regs.sp &+ 2
         }
         opcodes[0xE3] = { // EX (SP), xx
-            self.clock.tCycles += 15
+            self.clock.add(tCycles: 3)
             let data = self.addressFromPair(self.dataBus.read(self.regs.sp &+ 1), self.dataBus.read(self.regs.sp))
             self.dataBus.write(self.regs.sp, value: self.regs.xxl)
             self.dataBus.write(self.regs.sp &+ 1, value: self.regs.xxh)
             self.regs.xx = data
         }
         opcodes[0xE5] = { // PUSH xx
-            self.clock.tCycles += 7
+            self.clock.add(tCycles: 1)
             self.dataBus.write(self.regs.sp &- 1, value: self.regs.xxh)
-            self.dataBus.write(self.regs.sp &- 2 , value: self.regs.xxl)
+            self.dataBus.write(self.regs.sp &- 2, value: self.regs.xxl)
             self.regs.sp = self.regs.sp &- 2
         }
         opcodes[0xE9] = { // JP (xx)
             self.regs.pc = self.regs.xx
         }
         opcodes[0xF9] = { // LD SP,xx
-            self.clock.tCycles += 2
+            self.clock.add(tCycles: 2)
             self.regs.sp = self.regs.xx
         }
         
