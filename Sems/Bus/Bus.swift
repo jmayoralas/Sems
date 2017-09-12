@@ -113,21 +113,23 @@ final class Bus16 : BusBase {
     }
     
     override func write(_ address: UInt16, value: UInt8) {
-        clock.add(tCycles: 3)
-
         let index_component = Int(address) / 1024
         paged_components[index_component].write(address, value: value)
+        
+        clock.add(tCycles: 3)
         
         super.write(address, value: value)
     }
     
     override func read(_ address: UInt16) -> UInt8 {
-        clock.add(tCycles: 3)
-
         let _ = super.read(address)
         let index_component = (Int(address) & 0xFFFF) / 1024
         
-        return paged_components[index_component].read(address)
+        let data = paged_components[index_component].read(address)
+        
+        clock.add(tCycles: 3)
+        
+        return data
     }
     
     override func dumpFromAddress(_ fromAddress: Int, count: Int) -> [UInt8] {
