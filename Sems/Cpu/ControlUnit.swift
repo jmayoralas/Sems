@@ -315,7 +315,7 @@ extension Z80 {
             self.halted = false
         }
         
-        clock.add(tCycles: 3)
+        clock.add(tCycles: 6)
         
         switch regs.int_mode {
         case 0:
@@ -323,7 +323,6 @@ extension Z80 {
             self.opcode_tables[self.id_opcode_table][Int(self.dataBus.read())]()
         case 1:
             // do a RST 38
-            clock.add(tCycles: 3)
             self.opcode_tables[self.id_opcode_table][0xFF]()
         case 2:
             let vector_address = addressFromPair(regs.i, dataBus.last_data & 0xFE) // reset bit 0 of the byte in dataBus to make sure we get an even address
