@@ -35,10 +35,11 @@ class BusBase : BusComponent {
 
 final class IoBus: BusBase {
     private var io_components: [BusComponentBase]
+    private var clock: Clock
     
-    init() {
-        let dummy_component = BusComponent(base_address: 0x0000, block_size: 0x0000)
-        io_components = Array(repeating: dummy_component, count: 0x100)
+    init(clock: Clock) {
+        self.clock = clock
+        io_components = Array(repeating: BusComponent(base_address: 0x0000, block_size: 0x0000), count: 0x100)
         
         super.init(base_address: 0x0000, block_size: 0x100)
     }
@@ -64,6 +65,8 @@ final class IoBus: BusBase {
         // port addressed by low byte of address
         io_components[Int(address & 0x00FF)].write(address, value: value)
         
+        clock.applyIOContention(address: address)
+
         super.write(address, value: value)
     }
     
@@ -72,6 +75,8 @@ final class IoBus: BusBase {
         
         // port addressed by low byte of address
         last_data = io_components[Int(address & 0x00FF)].read(address)
+    
+        clock.applyIOContention(address: address)
         
         return last_data
     }
@@ -79,8 +84,11 @@ final class IoBus: BusBase {
 
 final class Bus16 : BusBase {
     private var paged_components : [BusComponentBase]
+    private var clock: Clock
     
-    init() {
+    init(clock: Clock) {
+        self.clock = clock
+        
         let dummy_component = BusComponent(base_address: 0x0000, block_size: 0x0000)
         paged_components = Array(repeating: dummy_component, count: 64)
         
@@ -104,6 +112,8 @@ final class Bus16 : BusBase {
         let index_component = Int(address) / 1024
         paged_components[index_component].write(address, value: value)
         
+        clock.add(tCycles: 3)
+        
         super.write(address, value: value)
     }
     
@@ -111,7 +121,11 @@ final class Bus16 : BusBase {
         let _ = super.read(address)
         let index_component = (Int(address) & 0xFFFF) / 1024
         
-        return paged_components[index_component].read(address)
+        let data = paged_components[index_component].read(address)
+        
+        clock.add(tCycles: 3)
+        
+        return data
     }
     
     override func dumpFromAddress(_ fromAddress: Int, count: Int) -> [UInt8] {
