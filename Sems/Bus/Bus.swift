@@ -62,24 +62,20 @@ final class IoBus: BusBase {
     }
     
     override func write(_ address: UInt16, value: UInt8) {
-        clock.add(tCycles: 4)
-        
         // port addressed by low byte of address
         io_components[Int(address & 0x00FF)].write(address, value: value)
         
         clock.applyIOContention(address: address)
-        
+
         super.write(address, value: value)
     }
     
     override func read(_ address: UInt16) -> UInt8 {
-        clock.add(tCycles: 4)
-        
         let _ = super.read(address)
         
         // port addressed by low byte of address
         last_data = io_components[Int(address & 0x00FF)].read(address)
-        
+    
         clock.applyIOContention(address: address)
         
         return last_data

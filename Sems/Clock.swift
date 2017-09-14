@@ -29,34 +29,31 @@ final class Clock {
     }
     
     func applyIOContention(address: UInt16) {
-        var contentionCount = 0
+        var frameTCycles = self.frameTCycles
         
         if 0x40 <= address.high && address.high <= 0x7F {
             if address & 1 == 1 {
                 // C:1 C:1 C:1 C:1
-                contentionCount = 4
+                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 1
+                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 1
+                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 1
+                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 1
             } else {
                 // C:1 C:3
-                contentionCount = 2
+                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 1
+                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 3
             }
         } else {
             if address & 1 == 0 {
                 // N:1 C:3
-                contentionCount = 1
+                frameTCycles += 1
+                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 3
+            } else {
+                // no contention
+                frameTCycles += 4
             }
         }
         
-        guard contentionCount > 0 else {
-            return
-        }
-        
-        var frameTCycles = self.frameTCycles
-        
-        for _ in 1...contentionCount {
-            frameTCycles += getContentionDelay(tCycle: frameTCycles)
-        }
-        
-        frameTCycles += getContentionDelay(tCycle: frameTCycles)
         contentionTCycles += frameTCycles - self.frameTCycles
      }
     
