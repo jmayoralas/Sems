@@ -123,10 +123,10 @@ extension Z80 {
             self.regs.f.bit(Z, newVal: Z_backup)
         }
         opcodes[0x18] = { // JR &00
-            self.clock.add(tCycles: 5)
             let displ = self.dataBus.read(self.regs.pc)
             self.regs.pc = self.regs.pc &+ 1
             self.regs.pc = self.addRelative(displacement: displ, toAddress: self.regs.pc)
+            self.clock.add(tCycles: 5)
         }
         opcodes[0x19] = { // ADD HL,DE
             self.clock.add(tCycles: 7)
@@ -288,15 +288,15 @@ extension Z80 {
             self.regs.sp = self.regs.sp &+ 1
         }
         opcodes[0x34] = { // INC (HL)
-            self.clock.add(tCycles: 1)
             var data = self.dataBus.read(self.regs.hl)
             data = self.aluCall(data, 1, ulaOp: .add, ignoreCarry: true)
+            self.clock.add(tCycles: 1)
             self.dataBus.write(self.regs.hl, value: data)
         }
         opcodes[0x35] = { // DEC (HL)
-            self.clock.add(tCycles: 1)
             var data = self.dataBus.read(self.regs.hl)
             data = self.aluCall(data, 1, ulaOp: .sub, ignoreCarry: true)
+            self.clock.add(tCycles: 1)
             self.dataBus.write(self.regs.hl, value: data)
         }
         opcodes[0x36] = { // LD (HL),&00
@@ -951,11 +951,15 @@ extension Z80 {
             }
         }
         opcodes[0xE3] = { // EX (SP), HL
-            self.clock.add(tCycles: 3)
+            let lsb = self.dataBus.read(self.regs.sp)
+            let msb = self.dataBus.read(self.regs.sp &+ 1)
+            self.clock.add(tCycles: 1)
+
             let hl = self.regs.hl
-            self.regs.hl = self.addressFromPair(self.dataBus.read(self.regs.sp &+ 1), self.dataBus.read(self.regs.sp))
+            self.regs.hl = self.addressFromPair(msb, lsb)
             self.dataBus.write(self.regs.sp, value: hl.low)
             self.dataBus.write(self.regs.sp &+ 1, value: hl.high)
+            self.clock.add(tCycles: 2)
         }
         opcodes[0xE4] = { // CALL PO &0000
             let address = self.addressFromPair(self.dataBus.read(self.regs.pc &+ 1), self.dataBus.read(self.regs.pc))

@@ -23,6 +23,12 @@ final class Clock {
         self.tCycles += tCycles
         self.frameTCycles += tCycles
     }
+
+    func sub(tCycles: Int) {
+        self.tCycles -= tCycles
+        self.frameTCycles -= tCycles
+    }
+
     
     func applyContention() {
         applyContention(frameTCycles: frameTCycles)

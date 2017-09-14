@@ -285,8 +285,8 @@ extension Z80 {
             self.opcode_tables[self.id_opcode_table][0x46]()
         }
         opcodes[0x67] = { // RRD
-            self.clock.add(tCycles: 4)
             var data = self.dataBus.read(self.regs.hl)
+            
             let a = self.regs.a
             self.regs.a = a.high + data.low
             data = a.low * 0x10 + data.high / 0x10
@@ -302,6 +302,8 @@ extension Z80 {
             self.regs.f.resetBit(H)
             self.regs.f.bit(PV, newVal: self.checkParity(self.regs.a))
             self.regs.f.resetBit(N)
+            self.clock.add(tCycles: 4)
+
             self.dataBus.write(self.regs.hl, value: data)
         }
         opcodes[0x68] = { // IN L,(C)
@@ -348,8 +350,8 @@ extension Z80 {
             self.opcode_tables[self.id_opcode_table][0x46]()
         }
         opcodes[0x6F] = { // RLD
-            self.clock.add(tCycles: 4)
             var data = self.dataBus.read(self.regs.hl)
+            
             let a = self.regs.a
             self.regs.a = a.high + data.high / 0x10
             data = data.low * 0x10 + a.low
@@ -365,6 +367,7 @@ extension Z80 {
             self.regs.f.resetBit(H)
             self.regs.f.bit(PV, newVal: self.checkParity(self.regs.a))
             self.regs.f.resetBit(N)
+            self.clock.add(tCycles: 4)
             
             self.dataBus.write(self.regs.hl, value: data)
         }
@@ -458,8 +461,6 @@ extension Z80 {
             self.id_opcode_table = table_NONE
         }
         opcodes[0xA0] = { // LDI
-            self.clock.add(tCycles: 2)
-            
             var data = self.dataBus.read(self.regs.hl)
             self.dataBus.write(self.regs.de, value: data)
             
@@ -479,9 +480,10 @@ extension Z80 {
             data = data &+ self.regs.a
             self.regs.f.bit(3, newVal: data.bit(3))
             self.regs.f.bit(5, newVal: data.bit(1))
+            
+            self.clock.add(tCycles: 2)
         }
         opcodes[0xA1] = { // CPI
-            self.clock.add(tCycles: 5)
             var data = self.aluCall(self.regs.a, self.dataBus.read(self.regs.hl), ulaOp: .cp, ignoreCarry: true)
             
             let f_backup = self.regs.f
@@ -497,6 +499,8 @@ extension Z80 {
             data = data &- UInt8(self.regs.f.bit(H))
             self.regs.f.bit(3, newVal: data.bit(3))
             self.regs.f.bit(5, newVal: data.bit(1))
+            
+            self.clock.add(tCycles: 5)
         }
         opcodes[0xA2] = { // INI
             self.clock.add(tCycles: 1)
@@ -551,8 +555,6 @@ extension Z80 {
             self.regs.f.bit(PV, newVal: self.checkParity(parityValue))
         }
         opcodes[0xA8] = { // LDD
-            self.clock.add(tCycles: 2)
-            
             var data = self.dataBus.read(self.regs.hl)
             self.dataBus.write(self.regs.de, value: data)
             
@@ -572,9 +574,10 @@ extension Z80 {
             data = data &+ self.regs.a
             self.regs.f.bit(3, newVal: data.bit(3))
             self.regs.f.bit(5, newVal: data.bit(1))
+            
+            self.clock.add(tCycles: 2)
         }
         opcodes[0xA9] = { // CPD
-            self.clock.add(tCycles: 5)
             var data = self.aluCall(self.regs.a, self.dataBus.read(self.regs.hl), ulaOp: .cp, ignoreCarry: true)
             
             let f_backup = self.regs.f
@@ -590,6 +593,8 @@ extension Z80 {
             data = data &- UInt8(self.regs.f.bit(H))
             self.regs.f.bit(3, newVal: data.bit(3))
             self.regs.f.bit(5, newVal: data.bit(1))
+            
+            self.clock.add(tCycles: 5)
         }
         opcodes[0xAA] = { // IND
             self.clock.add(tCycles: 1)
@@ -644,9 +649,9 @@ extension Z80 {
             self.regs.f.bit(PV, newVal: self.checkParity(parityValue))
         }
         opcodes[0xB0] = { // LDIR
-            self.clock.add(tCycles: 2)
             var data = self.dataBus.read(self.regs.hl)
             self.dataBus.write(self.regs.de, value: data)
+            
             let f_backup = self.regs.f
             self.regs.de = self.aluCall16(self.regs.de, 1, ulaOp: .add)
             self.regs.hl = self.aluCall16(self.regs.hl, 1, ulaOp: .add)
@@ -655,10 +660,13 @@ extension Z80 {
             self.regs.f.resetBit(H)
             self.regs.f.resetBit(N)
             self.regs.f.resetBit(PV)
+            
+            self.clock.add(tCycles: 2)
+
             if self.regs.bc != 0 {
-                self.clock.add(tCycles: 5)
                 self.regs.pc = self.regs.pc &- 2
                 self.regs.f.setBit(PV)
+                self.clock.add(tCycles: 5)
             }
             
             data = data &+ self.regs.a
@@ -666,13 +674,16 @@ extension Z80 {
             self.regs.f.bit(5, newVal: data.bit(1))
         }
         opcodes[0xB1] = { // CPIR
-            self.clock.add(tCycles: 5)
             var data = self.aluCall(self.regs.a, self.dataBus.read(self.regs.hl), ulaOp: .cp, ignoreCarry: true)
+            
             let f_backup = self.regs.f
             self.regs.hl = self.aluCall16(self.regs.hl, 1, ulaOp: .add)
             self.regs.bc = self.aluCall16(self.regs.bc, 1, ulaOp: .sub)
             self.regs.f = f_backup
             self.regs.f.resetBit(PV)
+            
+            self.clock.add(tCycles: 5)
+
             if self.regs.bc != 0 {
                 self.regs.f.setBit(PV)
                 if self.regs.f.bit(Z) == 0 {
@@ -750,10 +761,9 @@ extension Z80 {
             }
         }
         opcodes[0xB8] = { // LDDR
-            self.clock.add(tCycles: 2)
-            
             var data = self.dataBus.read(self.regs.hl)
             self.dataBus.write(self.regs.de, value: data)
+            
             let f_backup = self.regs.f
             self.regs.de = self.aluCall16(self.regs.de, 1, ulaOp: .sub)
             self.regs.hl = self.aluCall16(self.regs.hl, 1, ulaOp: .sub)
@@ -762,6 +772,9 @@ extension Z80 {
             self.regs.f.resetBit(H)
             self.regs.f.resetBit(N)
             self.regs.f.resetBit(PV)
+            
+            self.clock.add(tCycles: 2)
+
             if self.regs.bc != 0 {
                 self.clock.add(tCycles: 5)
                 self.regs.pc = self.regs.pc &- 2
@@ -773,8 +786,6 @@ extension Z80 {
             self.regs.f.bit(5, newVal: data.bit(1))
         }
         opcodes[0xB9] = { // CPDR
-            self.clock.add(tCycles: 5)
-            
             var data = self.aluCall(self.regs.a, self.dataBus.read(self.regs.hl), ulaOp: .cp, ignoreCarry: true)
             
             let f_backup = self.regs.f
@@ -783,7 +794,9 @@ extension Z80 {
             self.regs.f = f_backup
             
             self.regs.f.resetBit(PV)
-            
+
+            self.clock.add(tCycles: 5)
+
             if self.regs.bc != 0 {
                 self.regs.f.setBit(PV)
                 if self.regs.f.bit(Z) == 0 {
