@@ -121,11 +121,7 @@ class VirtualMachine
         self.tapeLoaderHook()
         
         clock.tCycles = 0
-        
-        if !clock.isContentionInProgress() {
-            self.cpu.step()
-        }
-        
+        self.cpu.step()
         self.ula.step()
         self.tape.step()
         

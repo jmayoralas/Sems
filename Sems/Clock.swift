@@ -13,7 +13,6 @@ final class Clock {
     var tCycles: Int = 0
     
     private var contentionDelayTable = [Int](repeatElement(0, count: 128))
-    private var contentionTCycles: Int = 0
 
     init() {
         initContentionTable()
@@ -31,48 +30,33 @@ final class Clock {
 
     
     func applyContention() {
-        applyContention(frameTCycles: frameTCycles)
+        add(tCycles: getContentionDelay(tCycle: frameTCycles))
     }
     
     func applyIOContention(address: UInt16) {
-        var frameTCycles = self.frameTCycles
-        
         if 0x40 <= address.high && address.high <= 0x7F {
             if address & 1 == 1 {
                 // C:1 C:1 C:1 C:1
-                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 1
-                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 1
-                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 1
-                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 1
+                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 1)
+                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 1)
+                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 1)
+                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 1)
             } else {
                 // C:1 C:3
-                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 1
-                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 3
+                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 1)
+                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 3)
             }
         } else {
             if address & 1 == 0 {
                 // N:1 C:3
-                frameTCycles += 1
-                frameTCycles += getContentionDelay(tCycle: frameTCycles) + 3
+                add(tCycles: 1)
+                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 3)
             } else {
                 // no contention
-                frameTCycles += 4
+                add(tCycles: 4)
             }
         }
-        
-        contentionTCycles += frameTCycles - self.frameTCycles
      }
-    
-    func isContentionInProgress() -> Bool {
-        guard contentionTCycles > 0 else {
-            return false
-        }
-        
-        contentionTCycles -= 1
-        add(tCycles: 1)
-        
-        return true
-    }
     
     private func initContentionTable() {
         var delay = 7
@@ -98,9 +82,5 @@ final class Clock {
         }
         
         return delay
-    }
-    
-    private func applyContention(frameTCycles: Int) {
-        contentionTCycles += getContentionDelay(tCycle: frameTCycles)
     }
 }
