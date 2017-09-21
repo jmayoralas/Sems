@@ -36,6 +36,7 @@
 		1D429D481D22E6A6003DA7FC /* KeyEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D429D471D22E6A6003DA7FC /* KeyEventHandler.swift */; };
 		1D93AC051F7411BC0016FF73 /* BusBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D93AC041F7411BC0016FF73 /* BusBase.swift */; };
 		1D93AC071F7411FC0016FF73 /* IoBus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D93AC061F7411FC0016FF73 /* IoBus.swift */; };
+		1D93AC091F7413020016FF73 /* VoidBusComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D93AC081F7413020016FF73 /* VoidBusComponent.swift */; };
 		1DAD32081D7D979200B6BF57 /* TapeBlockSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DAD32071D7D979200B6BF57 /* TapeBlockSelectorViewController.swift */; };
 		1DF397EA1D21929F00045D06 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF397E91D21929F00045D06 /* AppDelegate.swift */; };
 		1DF397EC1D21929F00045D06 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF397EB1D21929F00045D06 /* ViewController.swift */; };
@@ -86,6 +87,7 @@
 		1D429D471D22E6A6003DA7FC /* KeyEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyEventHandler.swift; sourceTree = "<group>"; };
 		1D93AC041F7411BC0016FF73 /* BusBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusBase.swift; sourceTree = "<group>"; };
 		1D93AC061F7411FC0016FF73 /* IoBus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IoBus.swift; sourceTree = "<group>"; };
+		1D93AC081F7413020016FF73 /* VoidBusComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoidBusComponent.swift; sourceTree = "<group>"; };
 		1DAD32071D7D979200B6BF57 /* TapeBlockSelectorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeBlockSelectorViewController.swift; sourceTree = "<group>"; };
 		1DF397E61D21929F00045D06 /* Sems.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sems.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF397E91D21929F00045D06 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -113,6 +115,7 @@
 				1D93AC061F7411FC0016FF73 /* IoBus.swift */,
 				1D93AC041F7411BC0016FF73 /* BusBase.swift */,
 				1D243C9B1DBBE2E500EB6043 /* BusComponent.swift */,
+				1D93AC081F7413020016FF73 /* VoidBusComponent.swift */,
 				1D243C9C1DBBE2E500EB6043 /* BusComponentBase.swift */,
 				1D243C9D1DBBE2E500EB6043 /* GenericIODevice.swift */,
 				1D243C9E1DBBE2E500EB6043 /* Ram.swift */,
@@ -296,6 +299,7 @@
 				1D243CB31DBBE2E500EB6043 /* Rom.swift in Sources */,
 				1D93AC051F7411BC0016FF73 /* BusBase.swift in Sources */,
 				1D243CBB1DBBE2E500EB6043 /* types.swift in Sources */,
+				1D93AC091F7413020016FF73 /* VoidBusComponent.swift in Sources */,
 				1D243CB21DBBE2E500EB6043 /* Ram.swift in Sources */,
 				1D243CCD1DBBEBE600EB6043 /* Tape.swift in Sources */,
 				1D243CD01DBBEBE600EB6043 /* TapeLoader.swift in Sources */,
