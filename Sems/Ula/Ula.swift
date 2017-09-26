@@ -124,6 +124,6 @@ final class Ula: InternalUlaOperationDelegate {
         self.ioData = value
         
         // get the border color from value
-        screen.setBorderData(borderData: BorderData(color: colorTable[Int(value) & 0x07], tCycle: clock.frameTCycles))
+        screen.setBorderData(borderData: BorderData(color: colorTable[Int(value) & 0x07], tCycle: clock.frameTCycles - 2))
     }
 }
