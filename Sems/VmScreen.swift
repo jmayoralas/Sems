@@ -72,6 +72,7 @@ struct BorderData {
     private var memoryScreen: Ram
     private var addressUpdated: [UInt16] = []
     private var currentBorderColor: PixelData = kWhiteColor
+    private var floatDataTable: [UInt16?] = Array(repeating: nil, count: 224 * 192)
     
     public init(zoomFactor: Int) {
         self.zoomFactor = zoomFactor
@@ -82,6 +83,10 @@ struct BorderData {
         buffer = VmScreen.initBuffer(zoomFactor: zoomFactor)
         
         memoryScreen = Ram(base_address: 16384, block_size: 0x1B00)
+
+        super.init()
+        
+        fillFloatingDataTable()
     }
     
     public func setZoomFactor(zoomFactor: Int) {
@@ -188,27 +193,6 @@ struct BorderData {
         }
     }
 
-    private func updateBorder(fromTCycle: Int, untilTCycle: Int, withPixelData pixelData: PixelData) {
-        let topBufferTCycle = (untilTCycle <= 62640 ? untilTCycle : 62640)
-        
-        guard fromTCycle < topBufferTCycle else {
-            return
-        }
-        
-        for tCycle in fromTCycle...topBufferTCycle - 1 {
-            guard tCycle % 4 == 0 else {
-                continue
-            }
-            
-            if let coord = getBorderXY(tCycle: tCycle) {
-                for i in 0...7 {
-                    let index = getBufferIndex(coord.x + i, coord.y)
-                    setBuffer(atIndex: index, withPixelData: pixelData)
-                }
-            }
-        }
-    }
-    
     private func getBufferIndex(_ x: Int, _ y: Int) -> Int {
         return y * zoomFactor * width + x * zoomFactor
     }
@@ -350,5 +334,44 @@ struct BorderData {
         
         addressUpdated = []
     }
+    
+    private func fillFloatingData(line: Int, fromAddress: UInt16) {
+        var address = fromAddress
+        
+        let baseline = line * 224
+        
+        for i in stride(from: baseline, to: baseline + 127, by: 8) {
+            floatDataTable[i] = address
+            floatDataTable[i + 1] = getAttributeAddress(address)
+            floatDataTable[i + 2] = address + 1
+            floatDataTable[i + 3] = getAttributeAddress(address + 1)
+            
+            address += 2
+        }
+    }
+    
+    private func fillFloatingDataTable() {
+        var address: UInt16 = 0x4000
+        
+        for line in 0...191 {
+            fillFloatingData(line: line, fromAddress: address)
+            address += 32
+        }
+    }
 
+    private func getFloatDataAddress(tCycle: Int) -> UInt16? {
+        guard 14339 <= tCycle && tCycle < 57344 else {
+            return nil
+        }
+        
+        return floatDataTable[tCycle - 14339]
+    }
+
+    func getFloatData(tCycle: Int) -> UInt8 {
+        guard let address = getFloatDataAddress(tCycle: tCycle) else {
+            return 0xFF
+        }
+        
+        return memory.readNoContention(address)
+    }
 }

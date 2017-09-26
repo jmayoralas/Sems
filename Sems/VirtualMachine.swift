@@ -74,7 +74,7 @@ class VirtualMachine
     // MARK: Constructor
     public init(_ screen: VmScreen) {
         self.clock = Clock()
-        self.cpu = Z80(dataBus: Bus16(), ioBus: IoBus(), clock: self.clock)
+        self.cpu = Z80(dataBus: Bus16(clock: clock), ioBus: IoBus(clock: clock, screen: screen), clock: self.clock)
         self.ula = Ula(screen: screen, clock: self.clock)
         self.tape = Tape(ula: self.ula)
         
@@ -119,6 +119,8 @@ class VirtualMachine
     
     public func step() {
         self.tapeLoaderHook()
+        
+        clock.tCycles = 0
         self.cpu.step()
         self.ula.step()
         self.tape.step()

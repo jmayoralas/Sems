@@ -23,7 +23,7 @@ class BusComponent : BusComponentBase {
     }
     
     func read(_ address: UInt16) -> UInt8 {
-        return 0xFF
+        return read()
     }
     
     func write(_ address: UInt16, value: UInt8) {

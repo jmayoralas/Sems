@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1D243CAE1DBBE2E500EB6043 /* Bus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9A1DBBE2E500EB6043 /* Bus.swift */; };
+		1D243CAE1DBBE2E500EB6043 /* Bus16.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9A1DBBE2E500EB6043 /* Bus16.swift */; };
 		1D243CAF1DBBE2E500EB6043 /* BusComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9B1DBBE2E500EB6043 /* BusComponent.swift */; };
 		1D243CB01DBBE2E500EB6043 /* BusComponentBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9C1DBBE2E500EB6043 /* BusComponentBase.swift */; };
 		1D243CB11DBBE2E500EB6043 /* GenericIODevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243C9D1DBBE2E500EB6043 /* GenericIODevice.swift */; };
@@ -34,6 +34,9 @@
 		1D243CCF1DBBEBE600EB6043 /* TapeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CCB1DBBEBE600EB6043 /* TapeData.swift */; };
 		1D243CD01DBBEBE600EB6043 /* TapeLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D243CCC1DBBEBE600EB6043 /* TapeLoader.swift */; };
 		1D429D481D22E6A6003DA7FC /* KeyEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D429D471D22E6A6003DA7FC /* KeyEventHandler.swift */; };
+		1D93AC051F7411BC0016FF73 /* BusBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D93AC041F7411BC0016FF73 /* BusBase.swift */; };
+		1D93AC071F7411FC0016FF73 /* IoBus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D93AC061F7411FC0016FF73 /* IoBus.swift */; };
+		1D93AC091F7413020016FF73 /* VoidBusComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D93AC081F7413020016FF73 /* VoidBusComponent.swift */; };
 		1DAD32081D7D979200B6BF57 /* TapeBlockSelectorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DAD32071D7D979200B6BF57 /* TapeBlockSelectorViewController.swift */; };
 		1DF397EA1D21929F00045D06 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF397E91D21929F00045D06 /* AppDelegate.swift */; };
 		1DF397EC1D21929F00045D06 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DF397EB1D21929F00045D06 /* ViewController.swift */; };
@@ -55,7 +58,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1D243C9A1DBBE2E500EB6043 /* Bus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bus.swift; sourceTree = "<group>"; };
+		1D243C9A1DBBE2E500EB6043 /* Bus16.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bus16.swift; sourceTree = "<group>"; };
 		1D243C9B1DBBE2E500EB6043 /* BusComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusComponent.swift; sourceTree = "<group>"; };
 		1D243C9C1DBBE2E500EB6043 /* BusComponentBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusComponentBase.swift; sourceTree = "<group>"; };
 		1D243C9D1DBBE2E500EB6043 /* GenericIODevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericIODevice.swift; sourceTree = "<group>"; };
@@ -82,6 +85,9 @@
 		1D243CCB1DBBEBE600EB6043 /* TapeData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeData.swift; sourceTree = "<group>"; };
 		1D243CCC1DBBEBE600EB6043 /* TapeLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeLoader.swift; sourceTree = "<group>"; };
 		1D429D471D22E6A6003DA7FC /* KeyEventHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyEventHandler.swift; sourceTree = "<group>"; };
+		1D93AC041F7411BC0016FF73 /* BusBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusBase.swift; sourceTree = "<group>"; };
+		1D93AC061F7411FC0016FF73 /* IoBus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IoBus.swift; sourceTree = "<group>"; };
+		1D93AC081F7413020016FF73 /* VoidBusComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoidBusComponent.swift; sourceTree = "<group>"; };
 		1DAD32071D7D979200B6BF57 /* TapeBlockSelectorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeBlockSelectorViewController.swift; sourceTree = "<group>"; };
 		1DF397E61D21929F00045D06 /* Sems.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sems.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF397E91D21929F00045D06 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -105,8 +111,11 @@
 		1D243C991DBBE2E500EB6043 /* Bus */ = {
 			isa = PBXGroup;
 			children = (
-				1D243C9A1DBBE2E500EB6043 /* Bus.swift */,
+				1D243C9A1DBBE2E500EB6043 /* Bus16.swift */,
+				1D93AC061F7411FC0016FF73 /* IoBus.swift */,
+				1D93AC041F7411BC0016FF73 /* BusBase.swift */,
 				1D243C9B1DBBE2E500EB6043 /* BusComponent.swift */,
+				1D93AC081F7413020016FF73 /* VoidBusComponent.swift */,
 				1D243C9C1DBBE2E500EB6043 /* BusComponentBase.swift */,
 				1D243C9D1DBBE2E500EB6043 /* GenericIODevice.swift */,
 				1D243C9E1DBBE2E500EB6043 /* Ram.swift */,
@@ -270,11 +279,12 @@
 				1D243CAF1DBBE2E500EB6043 /* BusComponent.swift in Sources */,
 				1D243CBF1DBBE2E500EB6043 /* ULAMemory.swift in Sources */,
 				1D243CB81DBBE2E500EB6043 /* ControlUnit_opcodes_xx.swift in Sources */,
+				1D93AC071F7411FC0016FF73 /* IoBus.swift in Sources */,
 				1DF397EC1D21929F00045D06 /* ViewController.swift in Sources */,
 				1DF397EA1D21929F00045D06 /* AppDelegate.swift in Sources */,
 				1D243CC51DBBE3BE00EB6043 /* VmScreen.swift in Sources */,
 				1D243CB11DBBE2E500EB6043 /* GenericIODevice.swift in Sources */,
-				1D243CAE1DBBE2E500EB6043 /* Bus.swift in Sources */,
+				1D243CAE1DBBE2E500EB6043 /* Bus16.swift in Sources */,
 				1D243CB01DBBE2E500EB6043 /* BusComponentBase.swift in Sources */,
 				1D243CBC1DBBE2E500EB6043 /* Z80.swift in Sources */,
 				1D243CC31DBBE3BE00EB6043 /* AudioStreamer.swift in Sources */,
@@ -287,7 +297,9 @@
 				1D243CC41DBBE3BE00EB6043 /* Clock.swift in Sources */,
 				1D243CB51DBBE2E500EB6043 /* ControlUnit_opcodes_cb.swift in Sources */,
 				1D243CB31DBBE2E500EB6043 /* Rom.swift in Sources */,
+				1D93AC051F7411BC0016FF73 /* BusBase.swift in Sources */,
 				1D243CBB1DBBE2E500EB6043 /* types.swift in Sources */,
+				1D93AC091F7413020016FF73 /* VoidBusComponent.swift in Sources */,
 				1D243CB21DBBE2E500EB6043 /* Ram.swift in Sources */,
 				1D243CCD1DBBEBE600EB6043 /* Tape.swift in Sources */,
 				1D243CD01DBBEBE600EB6043 /* TapeLoader.swift in Sources */,
