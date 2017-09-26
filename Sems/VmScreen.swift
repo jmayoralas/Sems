@@ -193,27 +193,6 @@ struct BorderData {
         }
     }
 
-    private func updateBorder(fromTCycle: Int, untilTCycle: Int, withPixelData pixelData: PixelData) {
-        let topBufferTCycle = (untilTCycle <= 62640 ? untilTCycle : 62640)
-        
-        guard fromTCycle < topBufferTCycle else {
-            return
-        }
-        
-        for tCycle in fromTCycle...topBufferTCycle - 1 {
-            guard tCycle % 4 == 0 else {
-                continue
-            }
-            
-            if let coord = getBorderXY(tCycle: tCycle) {
-                for i in 0...7 {
-                    let index = getBufferIndex(coord.x + i, coord.y)
-                    setBuffer(atIndex: index, withPixelData: pixelData)
-                }
-            }
-        }
-    }
-    
     private func getBufferIndex(_ x: Int, _ y: Int) -> Int {
         return y * zoomFactor * width + x * zoomFactor
     }
