@@ -24,7 +24,16 @@ public extension UInt16 {
 
 public extension UInt8 {
     var parity: Int {
-        return Int(self & 1 + self >> 1 & 1 + self >> 2 & 1 + self >> 3 & 1 + self >> 4 & 1 + self >> 5 & 1 + self >> 6 & 1 + self >> 7 & 1) & 1
+        var value = self & 1
+        value += self >> 1 & 1
+        value += self >> 2 & 1
+        value += self >> 3 & 1
+        value += self >> 4 & 1
+        value += self >> 5 & 1
+        value += self >> 6 & 1
+        value += self >> 7 & 1
+        
+        return Int(value) & 1
     }
 
     var comp2: Int {

@@ -35,11 +35,11 @@ class KeyEventHandler {
         // get caps shift (Shift), symbol shift (Control) and enter (Return) keys from NSEvent keyCode
         var special_keys = SpecialKeys()
         
-        if event.modifierFlags.contains(.shift) {
+        if event.modifierFlags.contains(NSEvent.ModifierFlags.shift) {
             (_,_) = special_keys.insert(.capsShift)
         }
         
-        if event.modifierFlags.contains(.control) {
+        if event.modifierFlags.contains(NSEvent.ModifierFlags.control) {
             (_,_) = special_keys.insert(.symbolShift)
         }
     

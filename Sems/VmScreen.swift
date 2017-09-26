@@ -185,7 +185,10 @@ struct BorderData {
         let attribute = VmScreen.getAttribute(memoryScreen.read(address))
         
         let line_address = UInt16(0x4000 + coord.y * 32 + coord.x)
-        let line_address_corrected = (line_address & 0xF800) | ((line_address & 0x700) >> 3) | ((line_address & 0xE0) << 3) | (line_address & 0x1F)
+        var line_address_corrected = (line_address & 0xF800)
+        line_address_corrected |= ((line_address & 0x700) >> 3)
+        line_address_corrected |= ((line_address & 0xE0) << 3)
+        line_address_corrected |= (line_address & 0x1F)
         
         for i in 0...7 {
             let coord_i = (coord.x, coord.y + i)
@@ -293,10 +296,12 @@ struct BorderData {
             return nil
         }
         
-        return (
-            Int((local_address.low & 0b00011111)),
-            Int(((local_address.high & 0b00011000) << 3) | ((local_address.low & 0b11100000) >> 2) | (local_address.high & 0b00000111))
-        )
+        let x = local_address.low & 0b00011111
+        var y = (local_address.high & 0b00011000) << 3
+        y |= (local_address.low & 0b11100000) >> 2
+        y |= local_address.high & 0b00000111
+        
+        return (Int(x),Int(y))
     }
     
     private func getBorderXY(tCycle: Int) -> (x:Int, y:Int)? {

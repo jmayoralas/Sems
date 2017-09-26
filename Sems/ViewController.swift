@@ -15,7 +15,7 @@ private let kInstantLoadDisabled = "(Instant load disabled)"
 class ViewController: NSViewController, VirtualMachineStatus {
     @IBOutlet weak var screenView: NSImageView!
     
-    var screen: VmScreen!
+    @objc var screen: VmScreen!
     var vm: VirtualMachine!
     let appVersionString = String(
         format: "Sems v%@.%@",
@@ -46,13 +46,13 @@ class ViewController: NSViewController, VirtualMachineStatus {
         
         self.loadRom()
         
-        NSEvent.addLocalMonitorForEvents(matching: .keyDown) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyDown(theEvent: theEvent)}
-        NSEvent.addLocalMonitorForEvents(matching: .keyUp) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyUp(theEvent: theEvent)}
-        NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) {(theEvent: NSEvent) -> NSEvent? in return self.onFlagsChanged(theEvent: theEvent)}
+        NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.keyDown) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyDown(theEvent: theEvent)}
+        NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.keyUp) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyUp(theEvent: theEvent)}
+        NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.flagsChanged) {(theEvent: NSEvent) -> NSEvent? in return self.onFlagsChanged(theEvent: theEvent)}
     }
     
     func loadRom() {
-        let data = NSDataAsset(name: "Rom48k")!.data
+        let data = NSDataAsset(name: NSDataAsset.Name(rawValue: "Rom48k"))!.data
         var buffer = [UInt8](repeating: 0, count: data.count)
         (data as NSData).getBytes(&buffer, length: data.count)
         
@@ -61,7 +61,7 @@ class ViewController: NSViewController, VirtualMachineStatus {
     
     private func errorShow(messageText: String) {
         let alert = NSAlert()
-        alert.alertStyle = NSAlertStyle.critical
+        alert.alertStyle = NSAlert.Style.critical
         alert.addButton(withTitle: "OK")
         
         alert.messageText = messageText
@@ -70,7 +70,7 @@ class ViewController: NSViewController, VirtualMachineStatus {
     
     // MARK: Keyboard handling
     private func onKeyDown(theEvent: NSEvent) -> NSEvent? {
-        if !theEvent.modifierFlags.contains(.command) {
+        if !theEvent.modifierFlags.contains(NSEvent.ModifierFlags.command) {
             if self.vm.isRunning() {
                 self.vm.keyDown(char: KeyEventHandler.getChar(event: theEvent))
                 return nil
@@ -128,7 +128,7 @@ class ViewController: NSViewController, VirtualMachineStatus {
         dialog.allowsMultipleSelection = false
         dialog.allowedFileTypes = ["tap", "tzx"]
         
-        if dialog.runModal() == NSModalResponseOK {
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
             if let result = dialog.url {
                 let path = result.path
 
@@ -185,22 +185,22 @@ class ViewController: NSViewController, VirtualMachineStatus {
         do {
             let tapeBlockDirectory = try self.vm.getBlockDirectory()
             
-            let storyBoard = NSStoryboard(name: "Main", bundle: nil)
+            let storyBoard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
             
-            let tapeBlockSelectorWindowController = storyBoard.instantiateController(withIdentifier: "TapeBlockSelectorWindowController") as! NSWindowController
+            let tapeBlockSelectorWindowController = storyBoard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "TapeBlockSelectorWindowController")) as! NSWindowController
             
             if let tapeBlockSelectorWindow = tapeBlockSelectorWindowController.window {
                 let tapeBlockSelectorViewController = tapeBlockSelectorWindowController.contentViewController as! TapeBlockSelectorViewController
                 
                 tapeBlockSelectorViewController.setBlockDirectory(blockDirectory: tapeBlockDirectory)
                 
-                let application = NSApplication.shared()
+                let application = NSApplication.shared
                 let modalResult = application.runModal(for: tapeBlockSelectorWindow)
                 
                 self.view.window!.makeMain()
                 self.view.window!.makeKey()
                 
-                if modalResult == NSModalResponseOK {
+                if modalResult == NSApplication.ModalResponse.OK {
                     do {
                         try self.vm.setCurrentTapeBlock(index: tapeBlockSelectorViewController.getSelectedTapeBlockIndex())
                     } catch let error as TapeLoaderError {
