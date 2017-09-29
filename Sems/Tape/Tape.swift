@@ -131,6 +131,7 @@ final class Tape {
             return
         }
         
+        clock.sub(tCycles: clock.contentionTCycles)
         self.tCycle += self.clock.tCycles
         
         switch self.status {

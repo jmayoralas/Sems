@@ -120,10 +120,11 @@ class VirtualMachine
     public func step() {
         self.tapeLoaderHook()
         
-        clock.tCycles = 0
+        clock.reset()
+        
         self.cpu.step()
-        self.ula.step()
         self.tape.step()
+        self.ula.step()
         
         if self.cpu.clock.frameTCycles < 32 {
             self.cpu.int = true

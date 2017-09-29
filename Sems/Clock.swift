@@ -11,6 +11,7 @@ import Foundation
 final class Clock {
     var frameTCycles: Int = 0
     var tCycles: Int = 0
+    var contentionTCycles: Int = 0
     
     private var contentionDelayTable = [Int](repeatElement(0, count: 128))
 
@@ -28,6 +29,10 @@ final class Clock {
         self.frameTCycles -= tCycles
     }
 
+    func reset() {
+        tCycles = 0
+        contentionTCycles = 0
+    }
     
     func applyContention() {
         add(tCycles: getContentionDelay(tCycle: frameTCycles))
@@ -80,7 +85,8 @@ final class Clock {
             let index = (tCycle - ((tCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
             delay = index < 128 ? contentionDelayTable[index] : 0
         }
-        
+
+        contentionTCycles += delay
         return delay
     }
 }
