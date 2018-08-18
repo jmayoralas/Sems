@@ -46,8 +46,8 @@ public extension UInt8 {
     
     var binStr: String {
         var result = String(self, radix: 2)
-        if result.characters.count < 8 {
-            for _ in 0 ... 7 - result.characters.count {
+        if result.count < 8 {
+            for _ in 0 ... 7 - result.count {
                 result.insert("0", at: result.startIndex)
             }
         }

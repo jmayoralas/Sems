@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol MemoryProtocol : class, BusComponentBase {
+protocol MemoryProtocol : BusComponentBase {
     var buffer: [UInt8] { get set }
 }
 
