@@ -44,17 +44,24 @@ class ViewController: NSViewController, VirtualMachineStatus {
         self.vm = VirtualMachine(screen)
         self.vm.delegate = self
         
-        self.loadRom()
+        self.loadSpeccyRom()
         
         NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.keyDown) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyDown(theEvent: theEvent)}
         NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.keyUp) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyUp(theEvent: theEvent)}
         NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.flagsChanged) {(theEvent: NSEvent) -> NSEvent? in return self.onFlagsChanged(theEvent: theEvent)}
     }
     
-    func loadRom() {
-        let data = NSDataAsset(name: NSDataAsset.Name(rawValue: "Rom48k"))!.data
-        var buffer = [UInt8](repeating: 0, count: data.count)
-        (data as NSData).getBytes(&buffer, length: data.count)
+    private func loadSpeccyRom() {
+        loadRomData(data: NSDataAsset(name: NSDataAsset.Name(rawValue: "Rom48k"))!.data as NSData)
+    }
+    
+    private func loadRomFile(path: String) {
+        loadRomData(data: NSData(contentsOfFile: path)!)
+    }
+    
+    private func loadRomData(data: NSData) {
+        var buffer = [UInt8](repeating: 0, count: data.length)
+        (data as NSData).getBytes(&buffer, length: data.length)
         
         try! self.vm.loadRomAtAddress(0x0000, data: buffer)
     }
@@ -117,6 +124,26 @@ class ViewController: NSViewController, VirtualMachineStatus {
     
     
     // MARK: Menu selectors
+    
+    @IBAction func loadCustomRom(_ sender: AnyObject) {
+        let dialog = NSOpenPanel()
+        
+        dialog.title = "Choose ROM file"
+        dialog.showsResizeIndicator = true
+        dialog.showsHiddenFiles = false
+        dialog.canChooseDirectories = true
+        dialog.canCreateDirectories = true
+        dialog.allowsMultipleSelection = false
+        dialog.allowedFileTypes = ["rom", "bin"]
+        
+        if dialog.runModal() == NSApplication.ModalResponse.OK {
+            if let result = dialog.url {
+                self.loadRomFile(path: result.path)
+                self.resetMachine(sender)
+            }
+        }
+    }
+    
     @IBAction func openTape(_ sender: AnyObject) {
         let dialog = NSOpenPanel()
         

@@ -70,6 +70,12 @@
                                                 <action selector="warpEmulation:" target="Ady-hI-5gd" id="seA-N0-cp0"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Load custom Rom..." id="nFw-FM-j4b" userLabel="Load custom Rom...">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="loadCustomRom:" target="Ady-hI-5gd" id="Gpv-ej-aAI"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
