@@ -76,6 +76,12 @@
                                                 <action selector="loadCustomRom:" target="Ady-hI-5gd" id="Gpv-ej-aAI"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Show debugger..." id="RPc-eQ-bMg" userLabel="Show debugger...">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="showDebugger:" target="Ady-hI-5gd" id="14q-yf-FZr"/>
+                                            </connections>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -190,6 +196,53 @@
             </objects>
             <point key="canvasLocation" x="742" y="95"/>
         </scene>
+        <!--Window Controller-->
+        <scene sceneID="3jQ-I7-tHA">
+            <objects>
+                <windowController storyboardIdentifier="DebuggerWindowController" id="9wT-Gy-qhx" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Ou2-eA-rUY">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="245" y="310" width="480" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1050"/>
+                        <connections>
+                            <outlet property="delegate" destination="9wT-Gy-qhx" id="1WL-Kp-nkH"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="Ajt-Ip-hwT" kind="relationship" relationship="window.shadowedContentViewController" id="Y3h-A5-xxe"/>
+                    </connections>
+                </windowController>
+                <customObject id="5O0-06-Ts0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1373" y="108"/>
+        </scene>
+        <!--Debugger View Controller-->
+        <scene sceneID="ZK4-sz-hdm">
+            <objects>
+                <viewController id="Ajt-Ip-hwT" customClass="DebuggerViewController" customModule="Sems" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="PyI-aT-PQ8">
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iCf-5M-jY2">
+                                <rect key="frame" x="207" y="126" width="68" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="Step" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8al-DR-YEw">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="stepClick:" target="Ajt-Ip-hwT" id="vvb-fS-3k8"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                    </view>
+                </viewController>
+                <customObject id="4QP-am-BAp" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1373" y="575"/>
+        </scene>
         <!--Tape Block Selector View Controller-->
         <scene sceneID="ykK-nR-0Su">
             <objects>
@@ -287,7 +340,7 @@
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Q96-QA-XZH">
-                                    <rect key="frame" x="1" y="8" width="0.0" height="15"/>
+                                    <rect key="frame" x="1" y="7" width="0.0" height="16"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="TMn-4G-d2p">

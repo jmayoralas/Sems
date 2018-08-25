@@ -163,7 +163,14 @@ class ViewController: NSViewController, VirtualMachineStatus {
     }
     
     // MARK: Menu selectors
-    
+    @IBAction func showDebugger(_ sender: AnyObject) {
+        // do some validations here
+        let storyBoard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+        let debuggerWindowController = storyBoard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "DebuggerWindowController")) as! NSWindowController
+        (debuggerWindowController.contentViewController as! DebuggerViewController).setVM(vm: self.vm)
+        debuggerWindowController.showWindow(sender)
+    }
+
     @IBAction func loadCustomRom(_ sender: AnyObject) {
         open_dialog.title = "Choose ROM file"
         open_dialog.allowedFileTypes = ["rom", "bin"]
