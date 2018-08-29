@@ -28,6 +28,31 @@ class Instruction {
         params.append(param)
     }
     
+    private func getParamsString() -> String? {
+        guard params.count > 0 else { return nil }
+        
+        var p_str = ""
+        
+        for param in params {
+            p_str.append(String(format: " %@", param.hexStr()))
+        }
+        
+        return p_str
+    }
+    
+    func clearParams() {
+        self.params.removeAll()
+    }
+    
+    func dump() -> String {
+        var dump_str = String(format: "%@", self.opcode.hexStr())
+        if let params_str = getParamsString() {
+            dump_str.append(params_str)
+        }
+        
+        return dump_str
+    }
+    
     private func paramsToString() -> String {
         var data = ""
         
@@ -41,7 +66,7 @@ class Instruction {
             data = addressFromPair(params[1], params[0]).hexStr()
         }
         
-        return String(format: "&%@", data)
+        return String(format: "0x%@", data)
     }
     
     private func addressFromPair(_ val_h: UInt8, _ val_l: UInt8) -> UInt16 {
