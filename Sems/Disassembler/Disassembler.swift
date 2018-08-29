@@ -14,17 +14,15 @@ class Disassembler {
     let clock: Clock
     var opcode_tables : [OpcodeTable]!
     var id_opcode_table : Int
-    let data : [UInt8]
-    var base_address: UInt16
+    let data : Bus16
     var pc: UInt16
     
     var current_instruction: Instruction
     
-    init(data: [UInt8]) {
-        self.data = data
+    init(dataBus: Bus16) {
+        self.data = dataBus
         self.clock = Clock()
         pc = 0x0000
-        base_address = 0x0000
         
         current_instruction = Instruction(address: pc, opcode: 0x00)
         
@@ -35,6 +33,8 @@ class Disassembler {
             // and NOP in the rest of cases
             if self.id_opcode_table == table_XX {
                 self.opcode_tables[table_NONE][Int(self.current_instruction.opcode)]()
+            } else {
+                self.current_instruction.caption = "not implemented"
             }
         }, count: 0x100), count: 5)
         
@@ -49,7 +49,6 @@ class Disassembler {
     
     func org(_ pc: UInt16) {
         self.pc = pc
-        self.base_address = pc
     }
     
     
@@ -63,16 +62,19 @@ class Disassembler {
     func processInstruction() {
         self.current_instruction.address = pc
         self.current_instruction.opcode = dataRead(pc)
+        self.current_instruction.clearParams()
         pc = pc &+ 1
         
         self.clock.add(tCycles: 1)
         
         self.opcode_tables[id_opcode_table][Int(current_instruction.opcode)]()
+        
+        NSLog("0x%@: %@ %@", current_instruction.address.hexStr(), current_instruction.dump(), current_instruction.toString())
     }
     
     public func dataRead(_ pc: UInt16) -> UInt8 {
         self.clock.add(tCycles: 3)
         
-        return data[Int(pc) - Int(base_address)]
+        return data.peek(pc)
     }
 }

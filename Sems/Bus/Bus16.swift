@@ -94,7 +94,21 @@ class Bus16 : BusBase, AccessibleBus {
         io_components[Int(address & 0x00FF)].write(address, value: value)
     }
     
-
+    // reads a memory address without altering tcycle count
+    func peek(_ address: UInt16) -> UInt8 {
+        let data = read(address)
+        
+        clock.sub(tCycles: 3)
+        
+        return data
+    }
+    
+    // writes a memory address wihtout altering tcycle count
+    func poke(_ address: UInt16, value: UInt8) {
+        write(address, value: value)
+        clock.sub(tCycles: 3)
+    }
+    
     override func dumpFromAddress(_ fromAddress: Int, count: Int) -> [UInt8] {
         var index_component = (fromAddress & 0xFFFF) / 1024
         var address = fromAddress

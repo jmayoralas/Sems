@@ -15,8 +15,7 @@ class DebuggerViewController: NSViewController {
     public func setVM(vm: VirtualMachine) {
         self.vm = vm
         
-        let data = self.vm.dumpMemoryFromAddress(0, toAddress: 0x1000)
-        self.disasm = Disassembler(data: data)
+        self.disasm = Disassembler(dataBus: vm.getDataBus())
         self.disasm.org(0x0000)
     }
     

@@ -143,6 +143,10 @@ class VirtualMachine: CpuNotifyInternalOperation
         return clock.getCycles()
     }
     
+    public func getDataBus() -> Bus16 {
+        return self.cpu.dataBus
+    }
+    
     public func setPc(_ pc: UInt16) {
         cpu.org(pc)
     }
