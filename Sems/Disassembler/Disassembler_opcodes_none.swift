@@ -17,12 +17,12 @@ extension Disassembler {
         opcodes[0x01] = { // LD BC,&0000
             self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
-            self.current_instruction.caption = "ld bc,&%@"
+            self.current_instruction.caption = "ld bc,%@"
             
             self.pc = self.pc &+ 2
         }
         opcodes[0x02] = { // LD (BC),A
-            self.current_instruction.caption = "ld (bc), a"
+            self.current_instruction.caption = "ld (bc),a"
         }
         opcodes[0x03] = { // INC BC
             self.clock.add(tCycles: 2)
@@ -63,7 +63,7 @@ extension Disassembler {
         }
         opcodes[0x0E] = { // LD C,N
             self.current_instruction.addParam(param: self.dataRead(self.pc))
-            self.current_instruction.caption = "ld c,&%@"
+            self.current_instruction.caption = "ld c,%@"
             self.pc = self.pc &+ 1
         }
         opcodes[0x0F] = { // RRCA
@@ -71,726 +71,643 @@ extension Disassembler {
         }
         opcodes[0x10] = { // DJNZ N
             self.current_instruction.addParam(param: self.dataRead(self.pc))
-            self.current_instruction.caption = "djnz &%@"
+            self.current_instruction.caption = "djnz %@"
             self.pc = self.pc &+ 1
         }
-/*
         opcodes[0x11] = { // LD DE,&0000
-            self.regs.e = self.dataRead(self.pc)
-            self.pc = self.pc &+ 1
-            self.regs.d = self.dataRead(self.pc)
-            self.pc = self.pc &+ 1
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.current_instruction.caption = "ld de,%@"
+            
+            self.pc = self.pc &+ 2
         }
         opcodes[0x12] = { // LD (DE),A
-            self.dataBus.write(self.regs.de, value: self.regs.a)
+            self.current_instruction.caption = "ld (de),a"
         }
         opcodes[0x13] = { // INC DE
             self.clock.add(tCycles: 2)
-            self.regs.de = self.regs.de &+ 1
+            self.current_instruction.caption = "inc de"
         }
         opcodes[0x14] = { // INC D
-            self.regs.d = self.aluCall(self.regs.d, 1, ulaOp: .add, ignoreCarry: true)
+            self.current_instruction.caption = "inc d"
         }
         opcodes[0x15] = { // DEC D
-            self.regs.d = self.aluCall(self.regs.d, 1, ulaOp: .sub, ignoreCarry: true)
+            self.current_instruction.caption = "dec d"
         }
         opcodes[0x16] = { // LD D,&00
-            self.regs.d = self.dataRead(self.pc)
+            self.current_instruction.caption = "ld d,%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0x17] = { // RLA
-            let PV_backup = self.regs.f.bit(PV)
-            let S_backup = self.regs.f.bit(S)
-            let Z_backup = self.regs.f.bit(Z)
-            self.regs.a = self.aluCall(self.regs.a, 1, ulaOp: .rl, ignoreCarry: false)
-            self.regs.f.bit(PV, newVal: PV_backup)
-            self.regs.f.bit(S, newVal: S_backup)
-            self.regs.f.bit(Z, newVal: Z_backup)
+            self.current_instruction.caption = "rla"
         }
         opcodes[0x18] = { // JR &00
-            let displ = self.dataRead(self.pc)
+            self.current_instruction.caption = "jr %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
-            self.pc = self.addRelative(displacement: displ, toAddress: self.pc)
             self.clock.add(tCycles: 5)
         }
         opcodes[0x19] = { // ADD HL,DE
             self.clock.add(tCycles: 7)
-            self.regs.hl = self.aluCall16(self.regs.hl, self.regs.de, ulaOp: .add)
+            self.current_instruction.caption = "add hl,de"
         }
         opcodes[0x1A] = { // LD A,(DE)
-            self.regs.a = self.dataRead(self.regs.de)
+            self.current_instruction.caption = "ld a,(de)"
         }
         opcodes[0x1B] = { // DEC DE
             self.clock.add(tCycles: 2)
-            self.regs.de = self.regs.de &- 1
+            self.current_instruction.caption = "dec de"
         }
         opcodes[0x1C] = { // INC E
-            self.regs.e = self.aluCall(self.regs.e, 1, ulaOp: .add, ignoreCarry: true)
+            self.current_instruction.caption = "inc e"
         }
         opcodes[0x1D] = { // DEC E
-            self.regs.e = self.aluCall(self.regs.e, 1, ulaOp: .sub, ignoreCarry: true)
+            self.current_instruction.caption = "dec e"
         }
         opcodes[0x1E] = { // LD E,&00
-            self.regs.e = self.dataRead(self.pc)
+            self.current_instruction.caption = "ld e,%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0x1F] = { // RRA
-            let PV_backup = self.regs.f.bit(PV)
-            let Z_backup = self.regs.f.bit(Z)
-            let S_backup = self.regs.f.bit(S)
-            self.regs.a = self.aluCall(self.regs.a, 1, ulaOp: .rr, ignoreCarry: false)
-            self.regs.f.bit(PV, newVal: PV_backup)
-            self.regs.f.bit(Z, newVal: Z_backup)
-            self.regs.f.bit(S, newVal: S_backup)
+            self.current_instruction.caption = "rra"
         }
         opcodes[0x20] = { // JR NZ &00
-            let displ = self.dataRead(self.pc)
+            self.current_instruction.caption = "jr nz %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
-            if self.regs.f.bit(Z) == 0 {
-                self.clock.add(tCycles: 5)
-                self.pc = self.addRelative(displacement: displ, toAddress: self.pc)
-            }
         }
         opcodes[0x21] = { // LD HL,&0000
-            self.regs.l = self.dataRead(self.pc)
-            self.pc = self.pc &+ 1
-            self.regs.h = self.dataRead(self.pc)
-            self.pc = self.pc &+ 1
+            self.current_instruction.caption = "ld hl,%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0x22] = { // LD (&0000),HL
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
+            self.current_instruction.caption = "ld (%@),hl"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
             self.pc = self.pc &+ 2
-            self.dataBus.write(address, value: self.regs.l)
-            self.dataBus.write(address &+ 1, value: self.regs.h)
         }
         opcodes[0x23] = { // INC HL
             self.clock.add(tCycles: 2)
-            self.regs.hl = self.regs.hl &+ 1
+            self.current_instruction.caption = "inc hl"
         }
         opcodes[0x24] = { // INC H
-            self.regs.h = self.aluCall(self.regs.h, 1, ulaOp: .add, ignoreCarry: true)
+            self.current_instruction.caption = "inc h"
         }
         opcodes[0x25] = { // DEC H
-            self.regs.h = self.aluCall(self.regs.h, 1, ulaOp: .sub, ignoreCarry: true)
+            self.current_instruction.caption = "dec h"
         }
         opcodes[0x26] = { // LD H,&00
-            self.regs.h = self.dataRead(self.pc)
+            self.current_instruction.caption = "ld h,%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0x27] = { // DAA
-            /*
-            The exact process is the following:
-            - if the least significant four bits of A contain a non-BCD digit (i. e. it is greater than 9) or the H flag is set, then $06 is added to the register
-            - then the four most significant bits are checked. If this more significant digit also happens to be greater than 9 or the C flag is set, then $60 is added.
-            - if the second addition was needed, the C flag is set after execution, otherwise it is reset.
-            - the N flag is preserved
-            - P/V is parity
-            - the others flags are altered by definition.
-            */
-            let a = self.regs.a
-            var add: UInt8 = 0
-            var carry = self.regs.f.bit(C)
-            
-            if a.low > 9 || self.regs.f.bit(H) == 1 {
-                add = 0x06
-            }
-            
-            if a > 0x99 || self.regs.f.bit(C) == 1 {
-                add |= 0x60
-                carry = 1
-            }
-            
-            if self.regs.f.bit(N) == 1 {
-                self.regs.a = self.aluCall(self.regs.a, add, ulaOp: .sub, ignoreCarry: true)
-            } else {
-                self.regs.a = self.aluCall(self.regs.a, add, ulaOp: .add, ignoreCarry: true)
-            }
-            
-            self.regs.f.bit(C, newVal: carry)
-            if self.regs.a.parity == 0 {
-                self.regs.f.setBit(PV) // even parity
-            } else {
-                self.regs.f.resetBit(PV) // odd parity
-            }
+            self.current_instruction.caption = "daa"
         }
         opcodes[0x28] = { // JR Z &00
-            let displ = self.dataRead(self.pc)
+            self.current_instruction.caption = "jr z %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
-            if self.regs.f.bit(Z) == 1 {
-                self.clock.add(tCycles: 5)
-                self.pc = self.addRelative(displacement: displ, toAddress: self.pc)
-            }
         }
         opcodes[0x29] = { // ADD HL,HL
             self.clock.add(tCycles: 7)
-            self.regs.hl = self.aluCall16(self.regs.hl, self.regs.hl, ulaOp: .add)
+            self.current_instruction.caption = "add hl,hl"
         }
         opcodes[0x2A] = { // LD HL,(&0000)
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
+            self.current_instruction.caption = "ld hl,(%@)"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
             self.pc = self.pc &+ 2
-            self.regs.l = self.dataRead(address)
-            self.regs.h = self.dataRead(address &+ 1)
         }
         opcodes[0x2B] = { // DEC HL
             self.clock.add(tCycles: 2)
-            self.regs.hl = self.regs.hl &- 1
+            self.current_instruction.caption = "dec hl"
         }
         opcodes[0x2C] = { // INC L
-            self.regs.l = self.aluCall(self.regs.l, 1, ulaOp: .add, ignoreCarry: true)
+            self.current_instruction.caption = "inc l"
         }
         opcodes[0x2D] = { // DEC L
-            self.regs.l = self.aluCall(self.regs.l, 1, ulaOp: .sub, ignoreCarry: true)
+            self.current_instruction.caption = "dec l"
         }
         opcodes[0x2E] = { // LD L,&00
-            self.regs.l = self.dataRead(self.pc)
+            self.current_instruction.caption = "ld l,%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0x2F] = { // CPL
-            self.regs.a = ~self.regs.a
-            self.regs.f.setBit(H)
-            self.regs.f.setBit(N)
-            self.regs.f.bit(3, newVal: self.regs.a.bit(3))
-            self.regs.f.bit(5, newVal: self.regs.a.bit(5))
+            self.current_instruction.caption = "cpl"
         }
         opcodes[0x30] = { // JR NC &00
-            let displ = self.dataRead(self.pc)
+            self.current_instruction.caption = "jr nc %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
-            if self.regs.f.bit(C) == 0 {
-                self.clock.add(tCycles: 5)
-                self.pc = self.addRelative(displacement: displ, toAddress: self.pc)
-            }
         }
         opcodes[0x31] = { // LD SP,&0000
-            self.regs.sp = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
+            self.current_instruction.caption = "ld sp,%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
             self.pc = self.pc &+ 2
         }
         opcodes[0x32] = { // LD (&0000),A
-            self.dataBus.write(self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc)), value: self.regs.a)
+            self.current_instruction.caption = "ld (%@),a"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
             self.pc = self.pc &+ 2
         }
         opcodes[0x33] = { // INC SP
             self.clock.add(tCycles: 2)
-            self.regs.sp = self.regs.sp &+ 1
+            self.current_instruction.caption = "inc sp"
         }
         opcodes[0x34] = { // INC (HL)
-            var data = self.dataRead(self.regs.hl)
-            data = self.aluCall(data, 1, ulaOp: .add, ignoreCarry: true)
+            self.current_instruction.caption = "inc (hl)"
             self.clock.add(tCycles: 1)
-            self.dataBus.write(self.regs.hl, value: data)
         }
         opcodes[0x35] = { // DEC (HL)
-            var data = self.dataRead(self.regs.hl)
-            data = self.aluCall(data, 1, ulaOp: .sub, ignoreCarry: true)
+            self.current_instruction.caption = "dec (hl)"
             self.clock.add(tCycles: 1)
-            self.dataBus.write(self.regs.hl, value: data)
         }
         opcodes[0x36] = { // LD (HL),&00
-            self.dataBus.write(self.regs.hl, value: self.dataRead(self.pc))
+            self.current_instruction.caption = "ld (hl),%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0x37] = { // SCF
-            let result = self.regs.q == 1 ? self.regs.a : self.regs.a | self.regs.f
-            
-            self.regs.f.setBit(C)
-            self.regs.f.resetBit(H)
-            self.regs.f.resetBit(N)
-            
-            self.regs.f.bit(3, newVal: result.bit(3))
-            self.regs.f.bit(5, newVal: result.bit(5))
-            
-            self.regs.q = 1
+            self.current_instruction.caption = "scf"
         }
         opcodes[0x38] = { // JR C &00
-            let displ = self.dataRead(self.pc)
+            self.current_instruction.caption = "jr c %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
-            if self.regs.f.bit(C) == 1 {
-                self.clock.add(tCycles: 5)
-                self.pc = self.addRelative(displacement: displ, toAddress: self.pc)
-            }
         }
         opcodes[0x39] = { // ADD HL,SP
             self.clock.add(tCycles: 7)
-            self.regs.hl = self.aluCall16(self.regs.hl, self.regs.sp, ulaOp: .add)
+            self.current_instruction.caption = "add hl,sp"
         }
         opcodes[0x3A] = { // LD A,(&0000)
-            self.regs.a = self.dataRead(self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc)))
+            self.current_instruction.caption = "ld a,(%@)"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
             self.pc = self.pc &+ 2
         }
         opcodes[0x3B] = { // DEC SP
             self.clock.add(tCycles: 2)
-            self.regs.sp = self.regs.sp &- 1
+            self.current_instruction.caption = "dec sp"
         }
         opcodes[0x3C] = { // INC A
-            self.regs.a = self.aluCall(self.regs.a, 1, ulaOp: .add, ignoreCarry: true)
+            self.current_instruction.caption = "inc a"
         }
         opcodes[0x3D] = { // DEC A
-            self.regs.a = self.aluCall(self.regs.a, 1, ulaOp: .sub, ignoreCarry: true)
+            self.current_instruction.caption = "dec a"
         }
         opcodes[0x3E] = { // LD A,&00
-            self.regs.a = self.dataRead(self.pc)
+            self.current_instruction.caption = "ld a,%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0x3F] = { // CCF
-            let result = self.regs.q == 1 ? self.regs.a : self.regs.a | self.regs.f
-            
-            self.regs.f.bit(H, newVal: self.regs.f.bit(C))
-            if self.regs.f.bit(C) == 0 {
-                self.regs.f.setBit(C)
-            } else {
-                self.regs.f.resetBit(C)
-            }
-            self.regs.f.resetBit(N)
-            
-            self.regs.f.bit(3, newVal: result.bit(3))
-            self.regs.f.bit(5, newVal: result.bit(5))
-            
-            self.regs.q = 1
+            self.current_instruction.caption = "ccf"
         }
         opcodes[0x40] = { // LD B,B
-            self.regs.b = self.regs.b
+            self.current_instruction.caption = "ld b,b"
         }
         opcodes[0x41] = { // LD B,C
-            self.regs.b = self.regs.c
+            self.current_instruction.caption = "ld b,c"
         }
         opcodes[0x42] = { // LD B,D
-            self.regs.b = self.regs.d
+            self.current_instruction.caption = "ld b,d"
         }
         opcodes[0x43] = { // LD B,E
-            self.regs.b = self.regs.e
+            self.current_instruction.caption = "ld b,e"
         }
         opcodes[0x44] = { // LD B,H
-            self.regs.b = self.regs.h
+            self.current_instruction.caption = "ld b,h"
         }
         opcodes[0x45] = { // LD B,L
-            self.regs.b = self.regs.l
+            self.current_instruction.caption = "ld b,l"
         }
         opcodes[0x46] = { // LD B,(HL)
-            self.regs.b = self.dataRead(self.regs.hl)
+            self.current_instruction.caption = "ld b,(hl)"
         }
         opcodes[0x47] = { // LD B,A
-            self.regs.b = self.regs.a
+            self.current_instruction.caption = "ld b,a"
         }
         opcodes[0x48] = { // LD C,B
-            self.regs.c = self.regs.b
+            self.current_instruction.caption = "ld c,b"
         }
         opcodes[0x49] = { // LD C,C
-            self.regs.c = self.regs.c
+            self.current_instruction.caption = "ld c,c"
         }
         opcodes[0x4A] = { // LD C,D
-            self.regs.c = self.regs.d
+            self.current_instruction.caption = "ld c,d"
         }
         opcodes[0x4B] = { // LD C,E
-            self.regs.c = self.regs.e
+            self.current_instruction.caption = "ld c,e"
         }
         opcodes[0x4C] = { // LD C,H
-            self.regs.c = self.regs.h
+            self.current_instruction.caption = "ld c,h"
         }
         opcodes[0x4D] = { // LD C,L
-            self.regs.c = self.regs.l
+            self.current_instruction.caption = "ld c,l"
         }
         opcodes[0x4E] = { // LD C,(HL)
-            self.regs.c = self.dataRead(self.regs.hl)
+            self.current_instruction.caption = "ld c,(hl)"
         }
         opcodes[0x4F] = { // LD C,A
-            self.regs.c = self.regs.a
+            self.current_instruction.caption = "ld c,a"
         }
         opcodes[0x50] = { // LD D,B
-            self.regs.d = self.regs.b
+            self.current_instruction.caption = "ld d,b"
         }
         opcodes[0x51] = { // LD D,C
-            self.regs.d = self.regs.c
+            self.current_instruction.caption = "ld d,c"
         }
         opcodes[0x52] = { // LD D,D
-            self.regs.d = self.regs.d
+            self.current_instruction.caption = "ld d,d"
         }
         opcodes[0x53] = { // LD D,E
-            self.regs.d = self.regs.e
+            self.current_instruction.caption = "ld d,e"
         }
         opcodes[0x54] = { // LD D,H
-            self.regs.d = self.regs.h
+            self.current_instruction.caption = "ld d,h"
         }
         opcodes[0x55] = { // LD D,L
-            self.regs.d = self.regs.l
+            self.current_instruction.caption = "ld d,l"
         }
         opcodes[0x56] = { // LD D,(HL)
-            self.regs.d = self.dataRead(self.regs.hl)
+            self.current_instruction.caption = "ld d,(hl)"
         }
         opcodes[0x57] = { // LD D,A
-            self.regs.d = self.regs.a
+            self.current_instruction.caption = "ld d,a"
         }
         opcodes[0x58] = { // LD E,B
-            self.regs.e = self.regs.b
+            self.current_instruction.caption = "ld e,b"
         }
         opcodes[0x59] = { // LD E,C
-            self.regs.e = self.regs.c
+            self.current_instruction.caption = "ld e,c"
         }
         opcodes[0x5A] = { // LD E,D
-            self.regs.e = self.regs.d
+            self.current_instruction.caption = "ld e,d"
         }
         opcodes[0x5B] = { // LD E,E
-            self.regs.e = self.regs.e
+            self.current_instruction.caption = "ld e,e"
         }
         opcodes[0x5C] = { // LD E,H
-            self.regs.e = self.regs.h
+            self.current_instruction.caption = "ld e,h"
         }
         opcodes[0x5D] = { // LD E,L
-            self.regs.e = self.regs.l
+            self.current_instruction.caption = "ld e,l"
         }
         opcodes[0x5E] = { // LD E,(HL)
-            self.regs.e = self.dataRead(self.regs.hl)
+            self.current_instruction.caption = "ld e,(hl)"
         }
         opcodes[0x5F] = { // LD E,A
-            self.regs.e = self.regs.a
+            self.current_instruction.caption = "ld e,a"
         }
         opcodes[0x60] = { // LD H,B
-            self.regs.h = self.regs.b
+            self.current_instruction.caption = "ld h,b"
         }
         opcodes[0x61] = { // LD H,C
-            self.regs.h = self.regs.c
+            self.current_instruction.caption = "ld h,c"
         }
         opcodes[0x62] = { // LD H,D
-            self.regs.h = self.regs.d
+            self.current_instruction.caption = "ld h,d"
         }
         opcodes[0x63] = { // LD H,E
-            self.regs.h = self.regs.e
+            self.current_instruction.caption = "ld h,e"
         }
         opcodes[0x64] = { // LD H,H
-            self.regs.h = self.regs.h
+            self.current_instruction.caption = "ld h,h"
         }
         opcodes[0x65] = { // LD H,L
-            self.regs.h = self.regs.l
+            self.current_instruction.caption = "ld h,l"
         }
         opcodes[0x66] = { // LD H,(HL)
-            self.regs.h = self.dataRead(self.regs.hl)
+            self.current_instruction.caption = "ld h,(hl)"
         }
         opcodes[0x67] = { // LD H,A
-            self.regs.h = self.regs.a
+            self.current_instruction.caption = "ld h,a"
         }
         opcodes[0x68] = { // LD L,B
-            self.regs.l = self.regs.b
+            self.current_instruction.caption = "ld l,b"
         }
         opcodes[0x69] = { // LD L,C
-            self.regs.l = self.regs.c
+            self.current_instruction.caption = "ld l,c"
         }
         opcodes[0x6A] = { // LD L,D
-            self.regs.l = self.regs.d
+            self.current_instruction.caption = "ld l,d"
         }
         opcodes[0x6B] = { // LD L,E
-            self.regs.l = self.regs.e
+            self.current_instruction.caption = "ld l,e"
         }
         opcodes[0x6C] = { // LD L,H
-            self.regs.l = self.regs.h
+            self.current_instruction.caption = "ld l,h"
         }
         opcodes[0x6D] = { // LD L,L
-            self.regs.l = self.regs.l
+            self.current_instruction.caption = "ld l,l"
         }
         opcodes[0x6E] = { // LD L,(HL)
-            self.regs.l = self.dataRead(self.regs.hl)
+            self.current_instruction.caption = "ld l,(hl)"
         }
         opcodes[0x6F] = { // LD L,A
-            self.regs.l = self.regs.a
+            self.current_instruction.caption = "ld l,a"
         }
         opcodes[0x70] = { // LD (HL),B
-            self.dataBus.write(self.regs.hl, value: self.regs.b)
+            self.current_instruction.caption = "ld (hl),b"
         }
         opcodes[0x71] = { // LD (HL),C
-            self.dataBus.write(self.regs.hl, value: self.regs.c)
+            self.current_instruction.caption = "ld (hl),c"
         }
         opcodes[0x72] = { // LD (HL),D
-            self.dataBus.write(self.regs.hl, value: self.regs.d)
+            self.current_instruction.caption = "ld (hl),d"
         }
         opcodes[0x73] = { // LD (HL),E
-            self.dataBus.write(self.regs.hl, value: self.regs.e)
+            self.current_instruction.caption = "ld (hl),e"
         }
         opcodes[0x74] = { // LD (HL),H
-            self.dataBus.write(self.regs.hl, value: self.regs.h)
+            self.current_instruction.caption = "ld (hl),h"
         }
         opcodes[0x75] = { // LD (HL),L
-            self.dataBus.write(self.regs.hl, value: self.regs.l)
+            self.current_instruction.caption = "ld (hl),l"
         }
         opcodes[0x76] = { // HALT
-            self.halted = true
-            self.pc = self.pc &- 1
+            self.current_instruction.caption = "halt"
         }
         opcodes[0x77] = { // LD (HL),A
-            self.dataBus.write(self.regs.hl, value: self.regs.a)
+            self.current_instruction.caption = "ld (hl),a"
         }
         opcodes[0x78] = { // LD A,B
-            self.regs.a = self.regs.b
+            self.current_instruction.caption = "ld a,b"
         }
         opcodes[0x79] = { // LD A,C
-            self.regs.a = self.regs.c
+            self.current_instruction.caption = "ld a,c"
         }
         opcodes[0x7A] = { // LD A,D
-            self.regs.a = self.regs.d
+            self.current_instruction.caption = "ld a,d"
         }
         opcodes[0x7B] = { // LD A,E
-            self.regs.a = self.regs.e
+            self.current_instruction.caption = "ld a,e"
         }
         opcodes[0x7C] = { // LD A,H
-            self.regs.a = self.regs.h
+            self.current_instruction.caption = "ld a,h"
         }
         opcodes[0x7D] = { // LD A,L
-            self.regs.a = self.regs.l
+            self.current_instruction.caption = "ld a,l"
         }
         opcodes[0x7E] = { // LD A,(HL)
-            self.regs.a = self.dataRead(self.regs.hl)
+            self.current_instruction.caption = "ld a,(hl)"
         }
         opcodes[0x7F] = { // LD A,A
-            self.regs.a = self.regs.a
+            self.current_instruction.caption = "ld a,a"
         }
         opcodes[0x80] = { // ADD A,B
-            self.regs.a = self.aluCall(self.regs.a, self.regs.b, ulaOp: .add, ignoreCarry: false)
+            self.current_instruction.caption = "add a,b"
         }
         opcodes[0x81] = { // ADD A,C
-            self.regs.a = self.aluCall(self.regs.a, self.regs.c, ulaOp: .add, ignoreCarry: false)
+            self.current_instruction.caption = "add a,c"
         }
         opcodes[0x82] = { // ADD A,D
-            self.regs.a = self.aluCall(self.regs.a, self.regs.d, ulaOp: .add, ignoreCarry: false)
+            self.current_instruction.caption = "add a,d"
         }
         opcodes[0x83] = { // ADD A,E
-            self.regs.a = self.aluCall(self.regs.a, self.regs.e, ulaOp: .add, ignoreCarry: false)
+            self.current_instruction.caption = "add a,e"
         }
         opcodes[0x84] = { // ADD A,H
-            self.regs.a = self.aluCall(self.regs.a, self.regs.h, ulaOp: .add, ignoreCarry: false)
+            self.current_instruction.caption = "add a,h"
         }
         opcodes[0x85] = { // ADD A,L
-            self.regs.a = self.aluCall(self.regs.a, self.regs.l, ulaOp: .add, ignoreCarry: false)
+            self.current_instruction.caption = "add a,l"
         }
         opcodes[0x86] = { // ADD A,(HL)
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.regs.hl), ulaOp: .add, ignoreCarry: false)
+            self.current_instruction.caption = "add a,(hl)"
         }
         opcodes[0x87] = { // ADD A,A
-            self.regs.a = self.aluCall(self.regs.a, self.regs.a, ulaOp: .add, ignoreCarry: false)
+            self.current_instruction.caption = "add a,a"
         }
         opcodes[0x88] = { // ADC A,B
-            self.regs.a = self.aluCall(self.regs.a, self.regs.b, ulaOp: .adc, ignoreCarry: false)
+            self.current_instruction.caption = "adc a,b"
         }
         opcodes[0x89] = { // ADC A,C
-            self.regs.a = self.aluCall(self.regs.a, self.regs.c, ulaOp: .adc, ignoreCarry: false)
+            self.current_instruction.caption = "adc a,c"
         }
         opcodes[0x8A] = { // ADC A,D
-            self.regs.a = self.aluCall(self.regs.a, self.regs.d, ulaOp: .adc, ignoreCarry: false)
+            self.current_instruction.caption = "adc a,d"
         }
         opcodes[0x8B] = { // ADC A,E
-            self.regs.a = self.aluCall(self.regs.a, self.regs.e, ulaOp: .adc, ignoreCarry: false)
+            self.current_instruction.caption = "adc a,e"
         }
         opcodes[0x8C] = { // ADC A,H
-            self.regs.a = self.aluCall(self.regs.a, self.regs.h, ulaOp: .adc, ignoreCarry: false)
+            self.current_instruction.caption = "adc a,h"
         }
         opcodes[0x8D] = { // ADC A,L
-            self.regs.a = self.aluCall(self.regs.a, self.regs.l, ulaOp: .adc, ignoreCarry: false)
+            self.current_instruction.caption = "adc a,l"
         }
         opcodes[0x8E] = { // ADC A,(HL)
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.regs.hl), ulaOp: .adc, ignoreCarry: false)
+            self.current_instruction.caption = "adc a,(hl)"
         }
         opcodes[0x8F] = { // ADC A,A
-            self.regs.a = self.aluCall(self.regs.a, self.regs.a, ulaOp: .adc, ignoreCarry: false)
+            self.current_instruction.caption = "adc a,a"
         }
         opcodes[0x90] = { // SUB A,B
-            self.regs.a = self.aluCall(self.regs.a, self.regs.b, ulaOp: .sub, ignoreCarry: false)
+            self.current_instruction.caption = "sub a,b"
         }
         opcodes[0x91] = { // SUB A,C
-            self.regs.a = self.aluCall(self.regs.a, self.regs.c, ulaOp: .sub, ignoreCarry: false)
+            self.current_instruction.caption = "sub a,c"
         }
         opcodes[0x92] = { // SUB A,D
-            self.regs.a = self.aluCall(self.regs.a, self.regs.d, ulaOp: .sub, ignoreCarry: false)
+            self.current_instruction.caption = "sub a,d"
         }
         opcodes[0x93] = { // SUB A,E
-            self.regs.a = self.aluCall(self.regs.a, self.regs.e, ulaOp: .sub, ignoreCarry: false)
+            self.current_instruction.caption = "sub a,e"
         }
         opcodes[0x94] = { // SUB A,H
-            self.regs.a = self.aluCall(self.regs.a, self.regs.h, ulaOp: .sub, ignoreCarry: false)
+            self.current_instruction.caption = "sub a,h"
         }
         opcodes[0x95] = { // SUB A,L
-            self.regs.a = self.aluCall(self.regs.a, self.regs.l, ulaOp: .sub, ignoreCarry: false)
+            self.current_instruction.caption = "sub a,l"
         }
         opcodes[0x96] = { // SUB A,(HL)
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.regs.hl), ulaOp: .sub, ignoreCarry: false)
+            self.current_instruction.caption = "sub a,(hl)"
         }
-        opcodes[0x97] = { // SBC A,A
-            self.regs.a = self.aluCall(self.regs.a, self.regs.a, ulaOp: .sub, ignoreCarry: false)
+        opcodes[0x97] = { // SUB A,A
+            self.current_instruction.caption = "sub a,a"
         }
         opcodes[0x98] = { // SBC A,B
-            self.regs.a = self.aluCall(self.regs.a, self.regs.b, ulaOp: .sbc, ignoreCarry: false)
+            self.current_instruction.caption = "sbc a,b"
         }
         opcodes[0x99] = { // SBC A,C
-            self.regs.a = self.aluCall(self.regs.a, self.regs.c, ulaOp: .sbc, ignoreCarry: false)
+            self.current_instruction.caption = "sbc a,c"
         }
         opcodes[0x9A] = { // SBC A,D
-            self.regs.a = self.aluCall(self.regs.a, self.regs.d, ulaOp: .sbc, ignoreCarry: false)
+            self.current_instruction.caption = "sbc a,d"
         }
         opcodes[0x9B] = { // SBC A,E
-            self.regs.a = self.aluCall(self.regs.a, self.regs.e, ulaOp: .sbc, ignoreCarry: false)
+            self.current_instruction.caption = "sbc a,e"
         }
         opcodes[0x9C] = { // SBC A,H
-            self.regs.a = self.aluCall(self.regs.a, self.regs.h, ulaOp: .sbc, ignoreCarry: false)
+            self.current_instruction.caption = "sbc a,h"
         }
         opcodes[0x9D] = { // SBC A,L
-            self.regs.a = self.aluCall(self.regs.a, self.regs.l, ulaOp: .sbc, ignoreCarry: false)
+            self.current_instruction.caption = "sbc a,l"
         }
         opcodes[0x9E] = { // SBC A,(HL)
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.regs.hl), ulaOp: .sbc, ignoreCarry: false)
+            self.current_instruction.caption = "sbc a,(hl)"
         }
         opcodes[0x9F] = { // SBC A,A
-            self.regs.a = self.aluCall(self.regs.a, self.regs.a, ulaOp: .sbc, ignoreCarry: false)
+            self.current_instruction.caption = "sbc a,a"
         }
         opcodes[0xA0] = { // AND B
-            self.regs.a = self.aluCall(self.regs.a, self.regs.b, ulaOp: .and, ignoreCarry: false)
+            self.current_instruction.caption = "and b"
         }
         opcodes[0xA1] = { // AND C
-            self.regs.a = self.aluCall(self.regs.a, self.regs.c, ulaOp: .and, ignoreCarry: false)
+            self.current_instruction.caption = "and c"
         }
         opcodes[0xA2] = { // AND D
-            self.regs.a = self.aluCall(self.regs.a, self.regs.d, ulaOp: .and, ignoreCarry: false)
+            self.current_instruction.caption = "and d"
         }
         opcodes[0xA3] = { // AND E
-            self.regs.a = self.aluCall(self.regs.a, self.regs.e, ulaOp: .and, ignoreCarry: false)
+            self.current_instruction.caption = "and e"
         }
         opcodes[0xA4] = { // AND H
-            self.regs.a = self.aluCall(self.regs.a, self.regs.h, ulaOp: .and, ignoreCarry: false)
+            self.current_instruction.caption = "and h"
         }
         opcodes[0xA5] = { // AND L
-            self.regs.a = self.aluCall(self.regs.a, self.regs.l, ulaOp: .and, ignoreCarry: false)
+            self.current_instruction.caption = "and l"
         }
         opcodes[0xA6] = { // AND (HL)
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.regs.hl), ulaOp: .and, ignoreCarry: false)
+            self.current_instruction.caption = "and (hl)"
         }
         opcodes[0xA7] = { // AND A
-            self.regs.a = self.aluCall(self.regs.a, self.regs.a, ulaOp: .and, ignoreCarry: false)
+            self.current_instruction.caption = "and a"
         }
         opcodes[0xA8] = { // XOR B
-            self.regs.a = self.aluCall(self.regs.a, self.regs.b, ulaOp: .xor, ignoreCarry: false)
+            self.current_instruction.caption = "xor b"
         }
         opcodes[0xA9] = { // XOR C
-            self.regs.a = self.aluCall(self.regs.a, self.regs.c, ulaOp: .xor, ignoreCarry: false)
+            self.current_instruction.caption = "xor c"
         }
         opcodes[0xAA] = { // XOR D
-            self.regs.a = self.aluCall(self.regs.a, self.regs.d, ulaOp: .xor, ignoreCarry: false)
+            self.current_instruction.caption = "xor d"
         }
         opcodes[0xAB] = { // XOR E
-            self.regs.a = self.aluCall(self.regs.a, self.regs.e, ulaOp: .xor, ignoreCarry: false)
+            self.current_instruction.caption = "xor e"
         }
         opcodes[0xAC] = { // XOR H
-            self.regs.a = self.aluCall(self.regs.a, self.regs.h, ulaOp: .xor, ignoreCarry: false)
+            self.current_instruction.caption = "xor h"
         }
         opcodes[0xAD] = { // XOR L
-            self.regs.a = self.aluCall(self.regs.a, self.regs.l, ulaOp: .xor, ignoreCarry: false)
+            self.current_instruction.caption = "xor l"
         }
         opcodes[0xAE] = { // XOR (HL)
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.regs.hl), ulaOp: .xor, ignoreCarry: false)
+            self.current_instruction.caption = "xor (hl)"
         }
         opcodes[0xAF] = { // XOR A
-            self.regs.a = self.aluCall(self.regs.a, self.regs.a, ulaOp: .xor, ignoreCarry: false)
+            self.current_instruction.caption = "xor a"
         }
         opcodes[0xB0] = { // OR B
-            self.regs.a = self.aluCall(self.regs.a, self.regs.b, ulaOp: .or, ignoreCarry: false)
+            self.current_instruction.caption = "or b"
         }
         opcodes[0xB1] = { // OR C
-            self.regs.a = self.aluCall(self.regs.a, self.regs.c, ulaOp: .or, ignoreCarry: false)
+            self.current_instruction.caption = "or c"
         }
         opcodes[0xB2] = { // OR D
-            self.regs.a = self.aluCall(self.regs.a, self.regs.d, ulaOp: .or, ignoreCarry: false)
+            self.current_instruction.caption = "or d"
         }
         opcodes[0xB3] = { // OR E
-            self.regs.a = self.aluCall(self.regs.a, self.regs.e, ulaOp: .or, ignoreCarry: false)
+            self.current_instruction.caption = "or e"
         }
         opcodes[0xB4] = { // OR H
-            self.regs.a = self.aluCall(self.regs.a, self.regs.h, ulaOp: .or, ignoreCarry: false)
+            self.current_instruction.caption = "or h"
         }
         opcodes[0xB5] = { // OR L
-            self.regs.a = self.aluCall(self.regs.a, self.regs.l, ulaOp: .or, ignoreCarry: false)
+            self.current_instruction.caption = "or l"
         }
         opcodes[0xB6] = { // OR (HL)
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.regs.hl), ulaOp: .or, ignoreCarry: false)
+            self.current_instruction.caption = "or (hl)"
         }
         opcodes[0xB7] = { // OR A
-            self.regs.a = self.aluCall(self.regs.a, self.regs.a, ulaOp: .or, ignoreCarry: false)
+            self.current_instruction.caption = "or a"
         }
         opcodes[0xB8] = { // CP B
-            let _ = self.aluCall(self.regs.a, self.regs.b, ulaOp: .cp, ignoreCarry: false)
+            self.current_instruction.caption = "cp b"
         }
         opcodes[0xB9] = { // CP C
-            let _ = self.aluCall(self.regs.a, self.regs.c, ulaOp: .cp, ignoreCarry: false)
+            self.current_instruction.caption = "cp c"
         }
         opcodes[0xBA] = { // CP D
-            let _ = self.aluCall(self.regs.a, self.regs.d, ulaOp: .cp, ignoreCarry: false)
+            self.current_instruction.caption = "cp d"
         }
         opcodes[0xBB] = { // CP E
-            let _ = self.aluCall(self.regs.a, self.regs.e, ulaOp: .cp, ignoreCarry: false)
+            self.current_instruction.caption = "cp e"
         }
         opcodes[0xBC] = { // CP H
-            let _ = self.aluCall(self.regs.a, self.regs.h, ulaOp: .cp, ignoreCarry: false)
+            self.current_instruction.caption = "cp h"
         }
         opcodes[0xBD] = { // CP L
-            let _ = self.aluCall(self.regs.a, self.regs.l, ulaOp: .cp, ignoreCarry: false)
+            self.current_instruction.caption = "cp l"
         }
         opcodes[0xBE] = { // CP (HL)
-            let _ = self.aluCall(self.regs.a, self.dataRead(self.regs.hl), ulaOp: .cp, ignoreCarry: false)
+            self.current_instruction.caption = "cp (hl)"
         }
         opcodes[0xBF] = { // CP A
-            let _ = self.aluCall(self.regs.a, self.regs.a, ulaOp: .cp, ignoreCarry: false)
+            self.current_instruction.caption = "cp a"
         }
         opcodes[0xC0] = { // RET NZ
             self.clock.add(tCycles: 1)
-            if self.regs.f.bit(Z) == 0 {
-                self.ret()
-            }
+            self.current_instruction.caption = "ret nz"
         }
         opcodes[0xC1] = { // POP BC
-            self.regs.c = self.dataRead(self.regs.sp)
-            self.regs.b = self.dataRead(self.regs.sp &+ 1)
-            self.regs.sp = self.regs.sp &+ 2
+            self.current_instruction.caption = "pop bc"
         }
         opcodes[0xC2] = { // JP NZ &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(Z) == 0 {
-                self.pc = address
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "jp nz %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xC3] = { // JP &0000
-            self.pc = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
+            self.current_instruction.caption = "jp %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
+
         }
         opcodes[0xC4] = { // CALL NZ &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(Z) == 0 {
-                self.pc = self.pc &+ 2
-                self.call(address)
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "call nz %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
+
         }
         opcodes[0xC5] = { // PUSH BC
             self.clock.add(tCycles: 1)
-            self.dataBus.write(self.regs.sp &- 1, value: self.regs.b)
-            self.dataBus.write(self.regs.sp &- 2, value: self.regs.c)
-            self.regs.sp = self.regs.sp &- 2
+            self.current_instruction.caption = "push bc"
         }
         opcodes[0xC6] = { // ADD A,&00
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.pc), ulaOp: .add, ignoreCarry: false)
+            self.current_instruction.caption = "add a,&@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0xC7] = { // RST &00
-            self.call(0x0000)
+            self.current_instruction.caption = "rst %@"
+            self.current_instruction.addParam(param: 0)
         }
         opcodes[0xC8] = { // RET Z
+            self.current_instruction.caption = "ret z"
             self.clock.add(tCycles: 1)
-            if self.regs.f.bit(Z) == 1 {
-                self.ret()
-            }
         }
         opcodes[0xC9] = { // RET
-            self.ret()
+            self.current_instruction.caption = "ret"
         }
         opcodes[0xCA] = { // JP Z &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(Z) == 1 {
-                self.pc = address
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "jp z %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
+
         }
         opcodes[0xCB] = { // PREFIX *** CB ***
             self.id_opcode_table = table_CB
@@ -798,19 +715,20 @@ extension Disassembler {
             self.id_opcode_table = table_NONE
         }
         opcodes[0xCC] = { // CALL Z &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(Z) == 1 {
-                self.pc = self.pc &+ 2
-                self.call(address)
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "call z %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
+
         }
         opcodes[0xCD] = { // CALL &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
+            self.current_instruction.caption = "call %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
             self.pc = self.pc &+ 2
-            self.call(address)
+
         }
+/*
         opcodes[0xCE] = { // ADC A,&00
             self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.pc), ulaOp: .adc, ignoreCarry: false)
             self.pc = self.pc &+ 1
