@@ -728,197 +728,149 @@ extension Disassembler {
             self.pc = self.pc &+ 2
 
         }
-/*
         opcodes[0xCE] = { // ADC A,&00
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.pc), ulaOp: .adc, ignoreCarry: false)
+            self.current_instruction.caption = "adc a,%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0xCF] = { // RST &08
-            self.call(0x0008)
+            self.current_instruction.addParam(param: 0x08)
+            self.current_instruction.caption = "rst %@"
         }
         opcodes[0xD0] = { // RET NC
+            self.current_instruction.caption = "ret nc"
             self.clock.add(tCycles: 1)
-            if self.regs.f.bit(C) == 0 {
-                self.ret()
-            }
         }
         opcodes[0xD1] = { // POP DE
-            self.regs.e = self.dataRead(self.regs.sp)
-            self.regs.d = self.dataRead(self.regs.sp &+ 1)
-            self.regs.sp = self.regs.sp &+ 2
+            self.current_instruction.caption = "pop de"
         }
         opcodes[0xD2] = { // JP NC &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(C) == 0 {
-                self.pc = address
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "jp nc %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xD3] = { // OUT (&00), A
-            self.ioBus.write(self.addressFromPair(self.regs.a, self.dataRead(self.pc)), value: self.regs.a)
+            self.current_instruction.caption = "out (%@),a"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0xD4] = { // CALL NC &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(C) == 0 {
-                self.pc = self.pc &+ 2
-                self.call(address)
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "call nc %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xD5] = { // PUSH DE
+            self.current_instruction.caption = "push de"
             self.clock.add(tCycles: 1)
-            self.dataBus.write(self.regs.sp &- 1 , value: self.regs.d)
-            self.dataBus.write(self.regs.sp &- 2 , value: self.regs.e)
-            self.regs.sp = self.regs.sp &- 2
         }
         opcodes[0xD6] = { // SUB A,&00
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.pc), ulaOp: .sub, ignoreCarry: false)
+            self.current_instruction.caption = "sub a,%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0xD7] = { // RST &10
-            self.call(0x0010)
+            self.current_instruction.addParam(param: 0x10)
+            self.current_instruction.caption = "rst %@"
         }
         opcodes[0xD8] = { // RET C
+            self.current_instruction.caption = "ret c"
             self.clock.add(tCycles: 1)
-            if self.regs.f.bit(C) == 1 {
-                self.ret()
-            }
         }
         opcodes[0xD9] = { // EXX
-            let bc = self.regs.bc
-            let de = self.regs.de
-            let hl = self.regs.hl
-            self.regs.bc = self.regs.bc_
-            self.regs.de = self.regs.de_
-            self.regs.hl = self.regs.hl_
-            self.regs.bc_ = bc
-            self.regs.de_ = de
-            self.regs.hl_ = hl
+            self.current_instruction.caption = "exx"
             
         }
         opcodes[0xDA] = { // JP C &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(C) == 1 {
-                self.pc = address
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "jp c %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xDB] = { // IN A,(&00)
-            self.regs.a =  self.ioBus.read(self.addressFromPair(self.regs.a, self.dataRead(self.pc)))
+            self.current_instruction.caption = "in a,(%@)"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0xDC] = { // CALL C &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(C) == 1 {
-                self.pc = self.pc &+ 2
-                self.call(address)
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "call c %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xDD] = { // PREFIX *** DD ***
             self.id_opcode_table = table_XX
-            self.regs.xx = self.regs.ix
+            self.xx_reg = "ix"
             self.processInstruction()
-            self.regs.ix = self.regs.xx
             self.id_opcode_table = table_NONE
         }
         opcodes[0xDE] = { // SBC A,&00
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.pc), ulaOp: .sbc, ignoreCarry: false)
+            self.current_instruction.caption = "sbc a,%@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0xDF] = { // RST &18
-            self.call(0x0018)
+            self.current_instruction.addParam(param: 0x18)
+            self.current_instruction.caption = "rst %@"
         }
         opcodes[0xE0] = { // RET PO
+            self.current_instruction.caption = "ret po"
             self.clock.add(tCycles: 1)
-            if self.regs.f.bit(PV) == 0 {
-                self.ret()
-            }
         }
         opcodes[0xE1] = { // POP HL
-            self.regs.l = self.dataRead(self.regs.sp)
-            self.regs.h = self.dataRead(self.regs.sp &+ 1)
-            self.regs.sp = self.regs.sp &+ 2
+            self.current_instruction.caption = "pop hl"
         }
         opcodes[0xE2] = { // JP PO &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(PV) == 0 {
-                self.pc = address
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "jp po %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xE3] = { // EX (SP), HL
-            let lsb = self.dataRead(self.regs.sp)
-            let msb = self.dataRead(self.regs.sp &+ 1)
-            self.clock.add(tCycles: 1)
-
-            let hl = self.regs.hl
-            self.regs.hl = self.addressFromPair(msb, lsb)
-            self.dataBus.write(self.regs.sp, value: hl.low)
-            self.dataBus.write(self.regs.sp &+ 1, value: hl.high)
-            self.clock.add(tCycles: 2)
+            self.current_instruction.caption = "ex (sp),hl"
+            self.clock.add(tCycles: 3)
         }
         opcodes[0xE4] = { // CALL PO &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(PV) == 0 {
-                self.pc = self.pc &+ 2
-                self.call(address)
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "call po %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xE5] = { // PUSH HL
+            self.current_instruction.caption = "push hl"
             self.clock.add(tCycles: 1)
-            self.dataBus.write(self.regs.sp &- 1, value: self.regs.h)
-            self.dataBus.write(self.regs.sp &- 2 , value: self.regs.l)
-            self.regs.sp = self.regs.sp &- 2
         }
         opcodes[0xE6] = { // AND &00
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.pc), ulaOp: .and, ignoreCarry: false)
+            self.current_instruction.caption = "and %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0xE7] = { // RST &20
-            self.call(0x0020)
+            self.current_instruction.addParam(param: 0x20)
+            self.current_instruction.caption = "rst %@"
         }
         opcodes[0xE8] = { // RET PE
+            self.current_instruction.caption = "ret pe"
             self.clock.add(tCycles: 1)
-            if self.regs.f.bit(PV) == 1 {
-                self.ret()
-            }
         }
         opcodes[0xE9] = { // JP (HL)
-            self.pc = self.addressFromPair(self.regs.h, self.regs.l)
+            self.current_instruction.caption = "jp (hl)"
         }
         opcodes[0xEA] = { // JP PE &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(PV) == 1 {
-                self.pc = address
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "jp pe %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xEB] = { // EX DE, HL
-            let d = self.regs.d
-            let e = self.regs.e
-            self.regs.d = self.regs.h
-            self.regs.e = self.regs.l
-            self.regs.h = d
-            self.regs.l = e
+            self.current_instruction.caption = "ex de,hl"
         }
         opcodes[0xEC] = { // CALL PE &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(PV) == 1 {
-                self.pc = self.pc &+ 2
-                self.call(address)
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "call pe %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xED] = { // PREFIX *** ED ***
             self.id_opcode_table = table_ED
@@ -926,106 +878,86 @@ extension Disassembler {
             self.id_opcode_table = table_NONE
         }
         opcodes[0xEE] = { // XOR &00
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.pc), ulaOp: .xor, ignoreCarry: false)
+            self.current_instruction.caption = "xor %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0xEF] = { // RST &28
-            self.call(0x0028)
+            self.current_instruction.addParam(param: 0x28)
+            self.current_instruction.caption = "rst %@"
         }
         opcodes[0xF0] = { // RET P
+            self.current_instruction.caption = "ret p"
             self.clock.add(tCycles: 1)
-            if self.regs.f.bit(S) == 0 {
-                self.ret()
-            }
         }
         opcodes[0xF1] = { // POP AF
-            self.regs.f = self.dataRead(self.regs.sp)
-            self.regs.a = self.dataRead(self.regs.sp &+ 1)
-            self.regs.sp = self.regs.sp &+ 2
+            self.current_instruction.caption = "pop af"
         }
         opcodes[0xF2] = { // JP P &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(S) == 0 {
-                self.pc = address
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "jp p %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
- */
         opcodes[0xF3] = { // DI
             self.current_instruction.caption = "di"
         }
-        
-/*
         opcodes[0xF4] = { // CALL P &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(S) == 0 {
-                self.pc = self.pc &+ 2
-                self.call(address)
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "call p %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xF5] = { // PUSH AF
+            self.current_instruction.caption = "push af"
             self.clock.add(tCycles: 1)
-            self.dataBus.write(self.regs.sp &- 1, value: self.regs.a)
-            self.dataBus.write(self.regs.sp &- 2, value: self.regs.f)
-            self.regs.sp = self.regs.sp &- 2
         }
         opcodes[0xF6] = { // OR &00
-            self.regs.a = self.aluCall(self.regs.a, self.dataRead(self.pc), ulaOp: .or, ignoreCarry: false)
+            self.current_instruction.caption = "or %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0xF7] = { // RST &30
-            self.call(0x0030)
+            self.current_instruction.addParam(param: 0x30)
+            self.current_instruction.caption = "rst %@"
         }
         opcodes[0xF8] = { // RET M
+            self.current_instruction.caption = "ret m"
             self.clock.add(tCycles: 1)
-            if self.regs.f.bit(S) == 1 {
-                self.ret()
-            }
         }
         opcodes[0xF9] = { // LD SP, HL
+            self.current_instruction.caption = "ld sp,hl"
             self.clock.add(tCycles: 2)
-            self.regs.sp = self.regs.hl
         }
         opcodes[0xFA] = { // JP M &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(S) == 1 {
-                self.pc = address
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "jp m %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xFB] = { // EI
-            self.eiExecuted = true
-            self.regs.IFF1 = true
-            self.regs.IFF2 = true
+            self.current_instruction.caption = "ei"
         }
         opcodes[0xFC] = { // CALL M &0000
-            let address = self.addressFromPair(self.dataRead(self.pc &+ 1), self.dataRead(self.pc))
-            if self.regs.f.bit(S) == 1 {
-                self.pc = self.pc &+ 2
-                self.call(address)
-            } else {
-                self.pc = self.pc &+ 2
-            }
+            self.current_instruction.caption = "call m %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.current_instruction.addParam(param: self.dataRead(self.pc &+ 1))
+            self.pc = self.pc &+ 2
         }
         opcodes[0xFD] = { // PREFIX *** FD ***
             self.id_opcode_table = table_XX
-            self.regs.xx = self.regs.iy
             self.processInstruction()
-            self.regs.iy = self.regs.xx
             self.id_opcode_table = table_NONE
         }
         opcodes[0xFE] = { // CP &00
-            let _ = self.aluCall(self.regs.a, self.dataRead(self.pc), ulaOp: .cp, ignoreCarry: false)
+            self.current_instruction.caption = "cp %@"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
         }
         opcodes[0xFF] = { // RST &38
-            self.call(0x0038)
+            self.current_instruction.addParam(param: 0x38)
+            self.current_instruction.caption = "rst %@"
         }
- */
     }
 }
 
