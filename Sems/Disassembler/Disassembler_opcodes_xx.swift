@@ -67,15 +67,14 @@ extension Disassembler {
             self.regs.xxl = self.dataBus.read(self.regs.pc)
             self.regs.pc = self.regs.pc &+ 1
         }
+*/
         opcodes[0x34] = { // INC (xx+0)
-            let displ = self.dataBus.read(self.regs.pc)
-            self.regs.pc = self.regs.pc &+ 1
-            let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
-            self.clock.add(tCycles: 5)
-            let data = self.aluCall(self.dataBus.read(address), 1, ulaOp: .add, ignoreCarry: true)
-            self.clock.add(tCycles: 1)
-            self.dataBus.write(address, value: data)
+            self.current_instruction.caption = String(format: "inc (%@+", self.xx_reg) + "%@)"
+            self.current_instruction.addParam(param: self.dataRead(self.pc))
+            self.pc = self.pc &+ 1
+            self.clock.add(tCycles: 6)
         }
+/*
         opcodes[0x35] = { // DEC (xx+0)
             let displ = self.dataBus.read(self.regs.pc)
             self.regs.pc = self.regs.pc &+ 1

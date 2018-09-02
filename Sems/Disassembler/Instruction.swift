@@ -11,6 +11,7 @@ import Foundation
 class Instruction {
     var address: UInt16
     var opcode: UInt8
+    var bytes: [UInt8] = []
     var caption: String!
     
     private var params: [UInt8] = []
@@ -18,6 +19,7 @@ class Instruction {
     init(address: UInt16, opcode: UInt8) {
         self.address = address
         self.opcode = opcode
+        self.bytes.append(opcode)
     }
     
     func toString() -> String {
@@ -29,12 +31,21 @@ class Instruction {
     }
     
     private func getParamsString() -> String? {
-        guard params.count > 0 else { return nil }
+        return arrayToString(params)
+    }
+    
+    private func getBytesString() -> String {
+        return arrayToString(bytes)!
+    }
+    
+    private func arrayToString(_ a: [UInt8]) -> String? {
+        guard a.count > 0 else { return nil }
         
         var p_str = ""
         
-        for param in params {
-            p_str.append(String(format: " %@", param.hexStr()))
+        for value in a {
+            if p_str.count > 0 { p_str.append(" ") }
+            p_str.append(String(format: "%@", value.hexStr()))
         }
         
         return p_str
@@ -45,7 +56,7 @@ class Instruction {
     }
     
     func dump() -> String {
-        var dump_str = String(format: "%@", self.opcode.hexStr())
+        var dump_str = getBytesString()
         if let params_str = getParamsString() {
             dump_str.append(params_str)
         }

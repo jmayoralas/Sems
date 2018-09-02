@@ -16,6 +16,7 @@ class Disassembler {
     var id_opcode_table : Int
     let data : Bus16
     var pc: UInt16
+    var xx_reg = "ix"
     
     var current_instruction: Instruction
     
@@ -57,6 +58,8 @@ class Disassembler {
         repeat {
             self.processInstruction()
         } while id_opcode_table != table_NONE
+        
+        NSLog("0x%@: %@ %@", current_instruction.address.hexStr(), current_instruction.dump(), current_instruction.toString())
     }
     
     func processInstruction() {
@@ -68,8 +71,6 @@ class Disassembler {
         self.clock.add(tCycles: 1)
         
         self.opcode_tables[id_opcode_table][Int(current_instruction.opcode)]()
-        
-        NSLog("0x%@: %@ %@", current_instruction.address.hexStr(), current_instruction.dump(), current_instruction.toString())
     }
     
     public func dataRead(_ pc: UInt16) -> UInt8 {
