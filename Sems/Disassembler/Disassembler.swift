@@ -11,21 +11,17 @@ import Foundation
 class Disassembler {
     typealias OpcodeTable = [() -> Void]
     
-    let clock: Clock
+    let clock = Clock()
     var opcode_tables : [OpcodeTable]!
     var id_opcode_table : Int
     let data : Bus16
-    var pc: UInt16
+    var pc: UInt16 = 0x0000
     var xx_reg = "ix"
     
-    var current_instruction: Instruction
+    var current_instruction = Instruction()
     
     init(dataBus: Bus16) {
         self.data = dataBus
-        self.clock = Clock()
-        pc = 0x0000
-        
-        current_instruction = Instruction(address: pc, opcode: 0x00)
         
         id_opcode_table = table_NONE
         

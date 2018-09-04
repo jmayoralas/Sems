@@ -9,18 +9,12 @@
 import Foundation
 
 class Instruction {
-    var address: UInt16
-    var opcode: UInt8
+    var address: UInt16!
+    var opcode: UInt8!
     var bytes: [UInt8] = []
     var caption: String!
     
     private var params: [UInt8] = []
-    
-    init(address: UInt16, opcode: UInt8) {
-        self.address = address
-        self.opcode = opcode
-        self.bytes.append(opcode)
-    }
     
     func toString() -> String {
         return String(format: self.caption, paramsToString())
