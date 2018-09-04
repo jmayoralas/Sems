@@ -51,6 +51,11 @@ class Disassembler {
     
     // gets next opcode from PC and executes it
     func step() {
+        self.current_instruction.clearBytes()
+        self.current_instruction.clearParams()
+        
+        self.current_instruction.address = pc
+
         repeat {
             self.processInstruction()
         } while id_opcode_table != table_NONE
@@ -59,9 +64,7 @@ class Disassembler {
     }
     
     func processInstruction() {
-        self.current_instruction.address = pc
-        self.current_instruction.opcode = dataRead(pc)
-        self.current_instruction.clearParams()
+        self.current_instruction.addOpcodeByte(byte: dataRead(pc))
         pc = pc &+ 1
         
         self.clock.add(tCycles: 1)

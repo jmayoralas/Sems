@@ -24,6 +24,11 @@ class Instruction {
         params.append(param)
     }
     
+    func addOpcodeByte(byte: UInt8) {
+        bytes.append(byte)
+        opcode = byte
+    }
+    
     private func getParamsString() -> String? {
         return arrayToString(params)
     }
@@ -49,9 +54,15 @@ class Instruction {
         self.params.removeAll()
     }
     
+    func clearBytes() {
+        self.bytes.removeAll()
+    }
+    
     func dump() -> String {
         var dump_str = getBytesString()
+        
         if let params_str = getParamsString() {
+            dump_str.append(" ")
             dump_str.append(params_str)
         }
         
