@@ -13,6 +13,8 @@ private let kInstantLoadEnabled = "(Instant load enabled)"
 private let kInstantLoadDisabled = "(Instant load disabled)"
 
 class ViewController: NSViewController, VirtualMachineStatus {
+    private let open_dialog = NSOpenPanel()
+    
     @IBOutlet weak var screenView: NSImageView!
     
     @objc var screen: VmScreen!
@@ -38,6 +40,7 @@ class ViewController: NSViewController, VirtualMachineStatus {
 
     // MARK: Initialization
     func setup() {
+        self.setupOpenDialog()
         self.screenView.imageScaling = .scaleProportionallyUpOrDown
         self.screen = VmScreen(zoomFactor: 2)
         
@@ -49,6 +52,14 @@ class ViewController: NSViewController, VirtualMachineStatus {
         NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.keyDown) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyDown(theEvent: theEvent)}
         NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.keyUp) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyUp(theEvent: theEvent)}
         NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.flagsChanged) {(theEvent: NSEvent) -> NSEvent? in return self.onFlagsChanged(theEvent: theEvent)}
+    }
+    
+    private func setupOpenDialog() {
+        open_dialog.showsResizeIndicator = true
+        open_dialog.showsHiddenFiles = false
+        open_dialog.canChooseDirectories = true
+        open_dialog.canCreateDirectories = true
+        open_dialog.allowsMultipleSelection = false
     }
     
     private func loadSpeccyRom() {
@@ -126,18 +137,11 @@ class ViewController: NSViewController, VirtualMachineStatus {
     // MARK: Menu selectors
     
     @IBAction func loadCustomRom(_ sender: AnyObject) {
-        let dialog = NSOpenPanel()
+        open_dialog.title = "Choose ROM file"
+        open_dialog.allowedFileTypes = ["rom", "bin"]
         
-        dialog.title = "Choose ROM file"
-        dialog.showsResizeIndicator = true
-        dialog.showsHiddenFiles = false
-        dialog.canChooseDirectories = true
-        dialog.canCreateDirectories = true
-        dialog.allowsMultipleSelection = false
-        dialog.allowedFileTypes = ["rom", "bin"]
-        
-        if dialog.runModal() == NSApplication.ModalResponse.OK {
-            if let result = dialog.url {
+        if open_dialog.runModal() == NSApplication.ModalResponse.OK {
+            if let result = open_dialog.url {
                 self.loadRomFile(path: result.path)
                 self.resetMachine(sender)
             }
@@ -145,18 +149,11 @@ class ViewController: NSViewController, VirtualMachineStatus {
     }
     
     @IBAction func openTape(_ sender: AnyObject) {
-        let dialog = NSOpenPanel()
+        open_dialog.title = "Choose a file"
+        open_dialog.allowedFileTypes = ["tap", "tzx"]
         
-        dialog.title = "Choose a file"
-        dialog.showsResizeIndicator = true
-        dialog.showsHiddenFiles = false
-        dialog.canChooseDirectories = true
-        dialog.canCreateDirectories = true
-        dialog.allowsMultipleSelection = false
-        dialog.allowedFileTypes = ["tap", "tzx"]
-        
-        if dialog.runModal() == NSApplication.ModalResponse.OK {
-            if let result = dialog.url {
+        if open_dialog.runModal() == NSApplication.ModalResponse.OK {
+            if let result = open_dialog.url {
                 let path = result.path
 
                 do {
