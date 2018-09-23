@@ -116,23 +116,42 @@ class ViewController: NSViewController, VirtualMachineStatus {
     
     // MARK: Screen handling
     func Z80VMScreenRefresh() {
-        let bitmapContext = CGContext(
-            data: &self.screen.buffer,
-            width: self.screen.width,
-            height: self.screen.height,
-            bitsPerComponent: 8,
-            bytesPerRow: 4 * self.screen.width,
-            space: kColorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue
+        let image = imageFromARGB32Bitmap(
+            pixels: self.screen.buffer,
+            width: self.screen!.width,
+            height: self.screen!.height
         )
         
-        let cgImage = bitmapContext!.makeImage()
-        
         DispatchQueue.main.async { [unowned self] in
-            self.screenView.image = NSImage(cgImage: cgImage!, size: NSZeroSize)
+            self.screenView.image = image
         }
     }
     
+    func imageFromARGB32Bitmap(pixels:[PixelData], width:Int, height:Int) -> NSImage {
+        let bitsPerComponent = 8
+        let bitsPerPixel = 32
+        
+        assert(pixels.count == Int(width * height))
+        
+        var data = pixels // Copy to mutable []
+        let providerRef = CGDataProvider.init(data: NSData(bytes: &data, length: data.count * MemoryLayout<PixelData>.size))
+        
+        let cgim = CGImage.init(
+            width: width,
+            height: height,
+            bitsPerComponent: bitsPerComponent,
+            bitsPerPixel: bitsPerPixel,
+            bytesPerRow: width * MemoryLayout<PixelData>.size,
+            space: kColorSpace,
+            bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue),
+            provider: providerRef!,
+            decode: nil,
+            shouldInterpolate: true,
+            intent: CGColorRenderingIntent.defaultIntent
+        )
+        
+        return NSImage(cgImage: cgim!, size: NSZeroSize)
+    }
     
     // MARK: Menu selectors
     
