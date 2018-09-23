@@ -63,7 +63,7 @@ class ViewController: NSViewController, VirtualMachineStatus {
     }
     
     private func loadSpeccyRom() {
-        loadRomData(data: NSDataAsset(name: NSDataAsset.Name(rawValue: "Rom48k"))!.data as NSData)
+        loadRomData(data: NSDataAsset(name: "Rom48k")!.data as NSData)
     }
     
     private func loadRomFile(path: String) {
@@ -228,9 +228,9 @@ class ViewController: NSViewController, VirtualMachineStatus {
         do {
             let tapeBlockDirectory = try self.vm.getBlockDirectory()
             
-            let storyBoard = NSStoryboard(name: NSStoryboard.Name(rawValue: "Main"), bundle: nil)
+            let storyBoard = NSStoryboard(name: "Main", bundle: nil)
             
-            let tapeBlockSelectorWindowController = storyBoard.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "TapeBlockSelectorWindowController")) as! NSWindowController
+            let tapeBlockSelectorWindowController = storyBoard.instantiateController(withIdentifier: "TapeBlockSelectorWindowController") as! NSWindowController
             
             if let tapeBlockSelectorWindow = tapeBlockSelectorWindowController.window {
                 let tapeBlockSelectorViewController = tapeBlockSelectorWindowController.contentViewController as! TapeBlockSelectorViewController
