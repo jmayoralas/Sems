@@ -50,7 +50,7 @@ class Disassembler {
     
     
     // gets next opcode from PC and executes it
-    func step() {
+    func next() -> Instruction {
         self.current_instruction.clearBytes()
         self.current_instruction.clearParams()
         
@@ -60,7 +60,7 @@ class Disassembler {
             self.processInstruction()
         } while id_opcode_table != table_NONE
         
-        NSLog("0x%@: %@ %@", current_instruction.address.hexStr(), current_instruction.dump(), current_instruction.toString())
+        return current_instruction
     }
     
     func processInstruction() {
@@ -72,7 +72,7 @@ class Disassembler {
         self.opcode_tables[id_opcode_table][Int(current_instruction.opcode)]()
     }
     
-    public func dataRead(_ pc: UInt16) -> UInt8 {
+    func dataRead(_ pc: UInt16) -> UInt8 {
         self.clock.add(tCycles: 3)
         
         return data.peek(pc)

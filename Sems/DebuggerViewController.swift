@@ -25,6 +25,8 @@ class DebuggerViewController: NSViewController {
     }
 
     @IBAction func stepClick(_ sender: NSButton) {
-        self.disasm.step()
+        let instruction = self.disasm.next()
+        
+        NSLog("0x%@: %@ %@", instruction.address.hexStr(), instruction.dump(), instruction.toString())
     }
 }
