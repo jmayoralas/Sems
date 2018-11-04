@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import JMZeta80
 
 struct SpecialKeys: OptionSet {
     public let rawValue: Int
@@ -42,9 +43,10 @@ class VirtualMachine
     // MARK: Properties
     public var delegate: VirtualMachineStatus?
     
-    private let cpu: Z80
+    private let cpu: Cpu
     private let ula: Ula
     private let clock: Clock
+    private let bus: Bus16
     
     private let rom = Rom(base_address: 0x0000, block_size: 0x4000)
     
@@ -73,22 +75,23 @@ class VirtualMachine
     
     // MARK: Constructor
     public init(_ screen: VmScreen) {
-        self.clock = Clock()
-        self.cpu = Z80(dataBus: Bus16(clock: clock), ioBus: IoBus(clock: clock, screen: screen), clock: self.clock)
-        self.ula = Ula(screen: screen, clock: self.clock)
-        self.tape = Tape(ula: self.ula)
+        clock = Clock()
+        bus = Bus16(clock: self.clock, screen: screen)
+        cpu = Cpu(bus: bus, clock: self.clock)
+        ula = Ula(screen: screen, clock: self.clock)
+        tape = Tape(ula: self.ula)
         
         // connect the 16k ROM
-        cpu.dataBus.addBusComponent(rom)
+        bus.addBusComponent(rom)
         
         // connect the ULA and his 16k of memory (this is a Spectrum 16k)
-        cpu.dataBus.addBusComponent(ula.memory)
-        cpu.ioBus.addBusComponent(ula.io)
+        bus.addBusComponent(ula.memory)
+        bus.addIOBusComponent(ula.io)
         
         // add the upper 32k to emulate a 48k Spectrum
         let ram = Ram(base_address: 0x8000, block_size: 0x8000)
-        cpu.dataBus.addBusComponent(ram)
-        
+        bus.addBusComponent(ram)
+
         cpu.reset()
     }
     
@@ -99,42 +102,33 @@ class VirtualMachine
     }
     
     public func run() {
-        cpu.stopped = false
-        
         let queue = DispatchQueue.global()
         
         queue.async {
             repeat {
                 self.step()
-            } while !self.cpu.stopped
-            
-            self.delegate?.Z80VMScreenRefresh?()
-            self.delegate?.Z80VMEmulationHalted?()
+            } while true
         }
     }
     
-    public func stop() {
-        cpu.stopped = true;
-    }
-    
     public func step() {
-        self.tapeLoaderHook()
+        tapeLoaderHook()
         
         clock.reset()
         
-        self.cpu.step()
-        self.tape.step()
-        self.ula.step()
+        cpu.executeNextOpcode()
+        tape.step()
+        ula.step()
         
-        if self.cpu.clock.frameTCycles < 32 {
-            self.cpu.int = true
+        if clock.frameTCycles < 32 {
+            cpu.int_req = true
             
-            if self.ula.screen.changed {
-                self.ula.screen.updateScreenBuffer()
-                self.delegate?.Z80VMScreenRefresh?()
+            if ula.screen.changed {
+                ula.screen.updateScreenBuffer()
+                delegate?.Z80VMScreenRefresh?()
             }
         } else {
-            self.cpu.int = false
+            cpu.int_req = false
         }
     }
     
@@ -143,12 +137,12 @@ class VirtualMachine
     }
     
     public func addIoDevice(_ port: UInt8) {
-        cpu.ioBus.addBusComponent(GenericIODevice(base_address: UInt16(port), block_size: 1))
+        bus.addIOBusComponent(GenericIODevice(base_address: UInt16(port), block_size: 1))
     }
     
     public func loadRamAtAddress(_ address: Int, data: [UInt8]) {
         for i in 0..<data.count {
-            cpu.dataBus.write(UInt16(address + i), value: data[i])
+            bus.write(UInt16(address + i), value: data[i])
         }
     }
     
@@ -156,12 +150,8 @@ class VirtualMachine
         try rom.loadData(data, atAddress: address)
     }
     
-    public func getCpuRegs() -> Registers {
-        return cpu.getRegs()
-    }
-    
     public func getTCycle() -> Int {
-        return self.cpu.clock.tCycles
+        return clock.getCycles()
     }
     
     public func setPc(_ pc: UInt16) {
@@ -171,9 +161,9 @@ class VirtualMachine
     public func clearMemory() {
         for address in 0x4000...0xFFFF {
             if (0x5800 <= address) && (address < 0x5B00) {
-                cpu.dataBus.write(UInt16(address), value: 0x38)
+                bus.write(UInt16(address), value: 0x38)
             } else {
-                cpu.dataBus.write(UInt16(address), value: 0x00)
+                bus.write(UInt16(address), value: 0x00)
             }
             
         }
@@ -183,11 +173,11 @@ class VirtualMachine
     
     
     public func isRunning() -> Bool {
-        return !cpu.stopped
+        return true
     }
     
     public func dumpMemoryFromAddress(_ fromAddress: Int, toAddress: Int) -> [UInt8] {
-        return cpu.dataBus.dumpFromAddress(fromAddress, count: toAddress - fromAddress + 1)
+        return bus.dumpFromAddress(fromAddress, count: toAddress - fromAddress + 1)
     }
     
     public func toggleWarp() {
@@ -255,19 +245,22 @@ class VirtualMachine
     }
     
     // MARK: Tape loader
-    private func tapeLoaderHandler() throws {
-        if let buffer = try self.tape.blockRequested() {
-            self.cpu.regs.de += 1
-            
-            for (index, data) in buffer.enumerated() {
-                if 0 < index {
-                    cpu.dataBus.write(cpu.regs.ix, value: data)
-                    cpu.regs.ix = cpu.regs.ix &+ 1
-                    cpu.regs.de -= 1
-                }
-            }
+    private func tapeLoaderHook() {
+        guard instantLoad && tape.tapeAvailable else {
+            return
         }
+        
+        let buffer: [UInt8]?
+        
+        do {
+            buffer = try tape.blockRequested()
+        } catch {
+            buffer = nil
+        }
+        
+        cpu.tapeLoaderHook(buffer: buffer)
     }
+
     
     // MARK: Keyboard management
     public func keyDown(char: Character) {
@@ -380,21 +373,5 @@ class VirtualMachine
         }
         
         return value
-    }
-    
-    private func tapeLoaderHook() {
-        if self.instantLoad && cpu.regs.pc == 0x056B && self.tape.tapeAvailable {
-            do {
-                try self.tapeLoaderHandler()
-                
-                self.cpu.regs.bc = 0xB001
-                self.cpu.regs.af_ = 0x0145
-                self.cpu.regs.f.setBit(C)
-            } catch {
-                self.cpu.regs.f.resetBit(C)
-            }
-            
-            self.cpu.regs.pc = 0x05E2
-        }
     }
 }
