@@ -20,6 +20,14 @@ final class Clock: SystemClock {
         initContentionTable()
     }
 
+    func add(tCycles: Int) {
+        add(cycles: tCycles)
+    }
+    
+    func sub(tCycles: Int) {
+        sub(cycles: tCycles)
+    }
+    
     func add(cycles: Int) {
         self.cycles += cycles
         self.frameTCycles += cycles

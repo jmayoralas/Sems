@@ -44,6 +44,7 @@ class VirtualMachine
     public var delegate: VirtualMachineStatus?
     
     private let cpu: Cpu
+    private let old_cpu: Z80
     private let ula: Ula
     private let clock: Clock
     private let bus: Bus16
@@ -76,10 +77,10 @@ class VirtualMachine
     // MARK: Constructor
     public init(_ screen: VmScreen) {
         clock = Clock()
-        bus = Bus16(clock: self.clock, screen: screen)
-        cpu = Cpu(bus: bus, clock: self.clock)
-        ula = Ula(screen: screen, clock: self.clock)
-        tape = Tape(ula: self.ula)
+        bus = Bus16(clock: clock, screen: screen)
+        cpu = Cpu(bus: bus, clock: clock)
+        ula = Ula(screen: screen, clock: clock)
+        tape = Tape(ula: ula)
         
         // connect the 16k ROM
         bus.addBusComponent(rom)
@@ -93,12 +94,27 @@ class VirtualMachine
         bus.addBusComponent(ram)
 
         cpu.reset()
+        
+        let old_clock = Clock()
+        let old_screen = VmScreen(zoomFactor: 1)
+        let old_ula = Ula(screen: old_screen, clock: old_clock)
+        let old_bus = InternalBus(clock: old_clock, screen: old_screen)
+        old_bus.addBusComponent(rom)
+        old_cpu = Z80(dataBus: old_bus, ioBus: IoBus(clock: old_clock, screen: old_screen), clock: old_clock)
+        old_cpu.dataBus.addBusComponent(old_ula.memory)
+        old_cpu.ioBus.addBusComponent(old_ula.io)
+        let old_ram = Ram(base_address: 0x8000, block_size: 0x8000)
+        old_bus.addBusComponent(old_ram)
+        
+        old_cpu.reset()
     }
     
     // MARK: Methods
     public func reset() {
         tape.close()
         cpu.reset()
+        
+        old_cpu.reset()
     }
     
     public func run() {
@@ -115,13 +131,25 @@ class VirtualMachine
         tapeLoaderHook()
         
         clock.reset()
+        old_cpu.clock.reset()
         
         cpu.executeNextOpcode()
+        old_cpu.step()
+/*
+        if cpu.getFlags() != old_cpu.regs.f ||
+            cpu.getPC() != old_cpu.regs.pc ||
+            cpu.getIY() != old_cpu.regs.iy
+        {
+            NSLog("new ir: 0x%02X - pc: 0x%04X - f: 0x%02X", cpu.getLastInstruction(), cpu.getPC(), cpu.getFlags())
+            NSLog("old ir: 0x%02X - pc: 0x%04X - f: 0x%02X", old_cpu.regs.ir, old_cpu.regs.pc, old_cpu.regs.f)
+        }
+*/
         tape.step()
         ula.step()
         
         if clock.frameTCycles < 32 {
             cpu.int_req = true
+            old_cpu.int = true
             
             if ula.screen.changed {
                 ula.screen.updateScreenBuffer()
@@ -129,6 +157,7 @@ class VirtualMachine
             }
         } else {
             cpu.int_req = false
+            old_cpu.int = false
         }
     }
     

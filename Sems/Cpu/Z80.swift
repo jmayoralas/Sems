@@ -8,6 +8,28 @@
 
 import Foundation
 
+class InternalBus: Bus16 {
+    let clock: Clock
+    
+    override init(clock: Clock, screen: VmScreen) {
+        self.clock = clock
+        
+        super.init(clock: clock, screen: screen)
+    }
+    
+    override func read(_ address: UInt16) -> UInt8 {
+        clock.add(tCycles: 3)
+        
+        return super.read(address)
+    }
+    
+    override func write(_ address: UInt16, value: UInt8) {
+        clock.add(tCycles: 3)
+        
+        super.write(address, value: value)
+    }
+}
+
 class Z80 {
     typealias OpcodeTable = [() -> Void]
     
@@ -23,7 +45,7 @@ class Z80 {
     
     var frameTics: Int = 0;
     
-    let dataBus : Bus16
+    let dataBus : InternalBus
     let ioBus : IoBus
     
     var nmi: Bool = false
@@ -33,7 +55,7 @@ class Z80 {
     
     var eiExecuted: Bool = false
     
-    init(dataBus: Bus16, ioBus: IoBus, clock: Clock) {
+    init(dataBus: InternalBus, ioBus: IoBus, clock: Clock) {
         self.regs = Registers()
         self.dataBus = dataBus
         self.ioBus = ioBus
@@ -83,7 +105,7 @@ class Z80 {
         regs.de_ = 0xFFFF
         regs.hl_ = 0xFFFF
         
-        self.clock.tCycles = 0
+        clock.reset()
         
         halted = false
     }

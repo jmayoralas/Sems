@@ -12,14 +12,6 @@ public extension UInt16 {
     func hexStr() -> String {
         return (String(NSString(format:"%04X", self)))
     }
-    
-    var high: UInt8 {
-        return UInt8(self / 0x100)
-    }
-    
-    var low: UInt8 {
-        return UInt8(self % 0x100)
-    }
 }
 
 public extension UInt8 {
@@ -40,10 +32,6 @@ public extension UInt8 {
         return self > 0x7F ? Int(Int(self) - 0xFF - 1) : Int(self)
     }
     
-    func hexStr() -> String {
-        return (String(NSString(format:"%02X", self)))
-    }
-    
     var binStr: String {
         var result = String(self, radix: 2)
         if result.count < 8 {
@@ -52,22 +40,6 @@ public extension UInt8 {
             }
         }
         return result
-    }
-    
-    mutating func bit(_ index: Int, newVal: Int) {
-        if newVal == 1 { self.setBit(index) } else { self.resetBit(index) }
-    }
-    
-    func bit(_ index: Int) -> Int {
-        return (Int(self) >> index) & 0x01
-    }
-    
-    mutating func setBit(_ index: Int) {
-        self = self | UInt8(1 << index)
-    }
-    
-    mutating func resetBit(_ index: Int) {
-        self = self & ~UInt8(1 << index)
     }
     
     var high: UInt8 {

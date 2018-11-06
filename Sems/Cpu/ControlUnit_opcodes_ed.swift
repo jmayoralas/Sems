@@ -417,6 +417,7 @@ extension Z80 {
         }
         opcodes[0x78] = { // IN A,(C)
             let data = self.ioBus.read(self.regs.bc)
+            NSLog("old data: 0x%02X", data)
             if data.bit(7) == 1 {
                 self.regs.f.setBit(S)
             } else {

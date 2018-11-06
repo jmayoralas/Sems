@@ -9,7 +9,7 @@
 import Foundation
 import JMZeta80
 
-final class Bus16 : BusBase, AccessibleBus {
+class Bus16 : BusBase, AccessibleBus {
     private var paged_components : [BusComponentBase]
     private var io_components : [BusComponentBase]
     private var clock: Clock
@@ -109,3 +109,5 @@ final class Bus16 : BusBase, AccessibleBus {
         return result
     }
 }
+
+
