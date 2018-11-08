@@ -46,6 +46,7 @@ class VirtualMachine
     private let cpu: Cpu
     private let old_cpu: Z80
     private let ula: Ula
+    private let old_ula: Ula
     private let clock: Clock
     private let bus: Bus16
     
@@ -97,7 +98,7 @@ class VirtualMachine
         
         let old_clock = Clock()
         let old_screen = VmScreen(zoomFactor: 1)
-        let old_ula = Ula(screen: old_screen, clock: old_clock)
+        old_ula = Ula(screen: old_screen, clock: old_clock)
         let old_bus = InternalBus(clock: old_clock, screen: old_screen)
         old_bus.addBusComponent(rom)
         old_cpu = Z80(dataBus: old_bus, ioBus: IoBus(clock: old_clock, screen: old_screen), clock: old_clock)
@@ -135,17 +136,12 @@ class VirtualMachine
         
         cpu.executeNextOpcode()
         old_cpu.step()
-/*
-        if cpu.getFlags() != old_cpu.regs.f ||
-            cpu.getPC() != old_cpu.regs.pc ||
-            cpu.getIY() != old_cpu.regs.iy
-        {
-            NSLog("new ir: 0x%02X - pc: 0x%04X - f: 0x%02X", cpu.getLastInstruction(), cpu.getPC(), cpu.getFlags())
-            NSLog("old ir: 0x%02X - pc: 0x%04X - f: 0x%02X", old_cpu.regs.ir, old_cpu.regs.pc, old_cpu.regs.f)
-        }
-*/
+
+        checkCpuStatus()
+
         tape.step()
         ula.step()
+        old_ula.step()
         
         if clock.frameTCycles < 32 {
             cpu.int_req = true
@@ -372,8 +368,10 @@ class VirtualMachine
             switch operation {
             case .down:
                 ula.keyDown(address: address, value: data.value)
+                old_ula.keyDown(address: address, value: data.value)
             case .up:
                 ula.keyUp(address: address, value: data.value)
+                old_ula.keyUp(address: address, value: data.value)
             }
         }
     }
@@ -402,5 +400,29 @@ class VirtualMachine
         }
         
         return value
+    }
+    
+    private func checkCpuStatus() {
+        let new_regs = cpu.getInternalRegisters()
+        
+        if  new_regs.pc != old_cpu.regs.pc ||
+            new_regs.af != old_cpu.regs.af ||
+            new_regs.bc != old_cpu.regs.bc ||
+            new_regs.de != old_cpu.regs.de ||
+            new_regs.hl != old_cpu.regs.hl ||
+            new_regs.ix != old_cpu.regs.ix ||
+            new_regs.iy != old_cpu.regs.iy ||
+            ula.memory.read(0x5C3C) != old_ula.memory.read(0x5C3C)
+        {
+            NSLog("new")
+            NSLog("    ir: 0x%02X - pc: 0x%04X - f: 0x%02X", new_regs.ir, new_regs.pc, cpu.getFlags())
+            NSLog("    af: 0x%04X - bc: 0x%04X - de: 0x%02X", new_regs.af, new_regs.bc, new_regs.de)
+            NSLog("    hl: 0x%04X - ix: 0x%04X - iy: 0x%02X", new_regs.hl, new_regs.ix, new_regs.iy)
+            NSLog("old")
+            NSLog("    ir: 0x%02X - pc: 0x%04X - f: 0x%02X", old_cpu.regs.ir, old_cpu.regs.pc, old_cpu.regs.f)
+            NSLog("    af: 0x%04X - bc: 0x%04X - de: 0x%02X", old_cpu.regs.af, old_cpu.regs.bc, old_cpu.regs.de)
+            NSLog("    hl: 0x%04X - ix: 0x%04X - iy: 0x%02X", old_cpu.regs.hl, old_cpu.regs.ix, old_cpu.regs.iy)
+            NSLog("End")
+        }
     }
 }
