@@ -412,13 +412,14 @@ class VirtualMachine
             new_regs.hl != old_cpu.regs.hl ||
             new_regs.ix != old_cpu.regs.ix ||
             new_regs.iy != old_cpu.regs.iy ||
-            ula.memory.read(0x5C3C) != old_ula.memory.read(0x5C3C)
+            ula.memory.read(0x5C3C) != old_ula.memory.read(0x5C3C) ||
+            clock.getCycles() != old_cpu.clock.getCycles()
         {
-            NSLog("new")
+            NSLog("new - clock: %d - frame cycles: %d - contention: %d", clock.getCycles(), clock.frameTCycles, clock.contentionTCycles)
             NSLog("    ir: 0x%02X - pc: 0x%04X - f: 0x%02X", new_regs.ir, new_regs.pc, cpu.getFlags())
             NSLog("    af: 0x%04X - bc: 0x%04X - de: 0x%02X", new_regs.af, new_regs.bc, new_regs.de)
             NSLog("    hl: 0x%04X - ix: 0x%04X - iy: 0x%02X", new_regs.hl, new_regs.ix, new_regs.iy)
-            NSLog("old")
+            NSLog("old - clock: %d - frame cycles: %d - contention: %d", old_cpu.clock.getCycles(), old_cpu.clock.frameTCycles, old_cpu.clock.contentionTCycles)
             NSLog("    ir: 0x%02X - pc: 0x%04X - f: 0x%02X", old_cpu.regs.ir, old_cpu.regs.pc, old_cpu.regs.f)
             NSLog("    af: 0x%04X - bc: 0x%04X - de: 0x%02X", old_cpu.regs.af, old_cpu.regs.bc, old_cpu.regs.de)
             NSLog("    hl: 0x%04X - ix: 0x%04X - iy: 0x%02X", old_cpu.regs.hl, old_cpu.regs.ix, old_cpu.regs.iy)
