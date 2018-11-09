@@ -43,10 +43,8 @@ class VirtualMachine
     // MARK: Properties
     public var delegate: VirtualMachineStatus?
     
-    private let cpu: Cpu
-    private let old_cpu: Z80
+    private var cpu: CentralProcessingUnit
     private let ula: Ula
-    private let old_ula: Ula
     private let clock: Clock
     private let bus: Bus16
     
@@ -76,11 +74,12 @@ class VirtualMachine
     private var instantLoad: Bool = false
     
     // MARK: Constructor
-    public init(_ screen: VmScreen) {
-        clock = Clock()
-        bus = Bus16(clock: clock, screen: screen)
-        cpu = Cpu(bus: bus, clock: clock)
-        ula = Ula(screen: screen, clock: clock)
+    public init(bus: Bus16, cpu: Cpu, ula: Ula, clock: Clock, screen: VmScreen) {
+        self.clock = clock
+        self.bus = bus
+        self.cpu = cpu
+        self.ula = ula
+        
         tape = Tape(ula: ula)
         
         // connect the 16k ROM
@@ -95,27 +94,12 @@ class VirtualMachine
         bus.addBusComponent(ram)
 
         cpu.reset()
-        
-        let old_clock = Clock()
-        let old_screen = VmScreen(zoomFactor: 1)
-        old_ula = Ula(screen: old_screen, clock: old_clock)
-        let old_bus = InternalBus(clock: old_clock, screen: old_screen)
-        old_bus.addBusComponent(rom)
-        old_cpu = Z80(dataBus: old_bus, ioBus: IoBus(clock: old_clock, screen: old_screen), clock: old_clock)
-        old_cpu.dataBus.addBusComponent(old_ula.memory)
-        old_cpu.ioBus.addBusComponent(old_ula.io)
-        let old_ram = Ram(base_address: 0x8000, block_size: 0x8000)
-        old_bus.addBusComponent(old_ram)
-        
-        old_cpu.reset()
     }
     
     // MARK: Methods
     public func reset() {
         tape.close()
         cpu.reset()
-        
-        old_cpu.reset()
     }
     
     public func run() {
@@ -132,20 +116,14 @@ class VirtualMachine
         tapeLoaderHook()
         
         clock.reset()
-        old_cpu.clock.reset()
         
         cpu.executeNextOpcode()
-        old_cpu.step()
-
-        checkCpuStatus()
 
         tape.step()
         ula.step()
-        old_ula.step()
         
         if clock.frameTCycles < 32 {
             cpu.int_req = true
-            old_cpu.int = true
             
             if ula.screen.changed {
                 ula.screen.updateScreenBuffer()
@@ -153,7 +131,6 @@ class VirtualMachine
             }
         } else {
             cpu.int_req = false
-            old_cpu.int = false
         }
     }
     
@@ -368,10 +345,8 @@ class VirtualMachine
             switch operation {
             case .down:
                 ula.keyDown(address: address, value: data.value)
-                old_ula.keyDown(address: address, value: data.value)
             case .up:
                 ula.keyUp(address: address, value: data.value)
-                old_ula.keyUp(address: address, value: data.value)
             }
         }
     }
@@ -400,30 +375,5 @@ class VirtualMachine
         }
         
         return value
-    }
-    
-    private func checkCpuStatus() {
-        let new_regs = cpu.getInternalRegisters()
-        
-        if  new_regs.pc != old_cpu.regs.pc ||
-            new_regs.af != old_cpu.regs.af ||
-            new_regs.bc != old_cpu.regs.bc ||
-            new_regs.de != old_cpu.regs.de ||
-            new_regs.hl != old_cpu.regs.hl ||
-            new_regs.ix != old_cpu.regs.ix ||
-            new_regs.iy != old_cpu.regs.iy ||
-            ula.memory.read(0x5C3C) != old_ula.memory.read(0x5C3C) ||
-            clock.getCycles() != old_cpu.clock.getCycles()
-        {
-            NSLog("new - clock: %d - frame cycles: %d - contention: %d", clock.getCycles(), clock.frameTCycles, clock.contentionTCycles)
-            NSLog("    ir: 0x%02X - pc: 0x%04X - f: 0x%02X", new_regs.ir, new_regs.pc, cpu.getFlags())
-            NSLog("    af: 0x%04X - bc: 0x%04X - de: 0x%02X", new_regs.af, new_regs.bc, new_regs.de)
-            NSLog("    hl: 0x%04X - ix: 0x%04X - iy: 0x%02X", new_regs.hl, new_regs.ix, new_regs.iy)
-            NSLog("old - clock: %d - frame cycles: %d - contention: %d", old_cpu.clock.getCycles(), old_cpu.clock.frameTCycles, old_cpu.clock.contentionTCycles)
-            NSLog("    ir: 0x%02X - pc: 0x%04X - f: 0x%02X", old_cpu.regs.ir, old_cpu.regs.pc, old_cpu.regs.f)
-            NSLog("    af: 0x%04X - bc: 0x%04X - de: 0x%02X", old_cpu.regs.af, old_cpu.regs.bc, old_cpu.regs.de)
-            NSLog("    hl: 0x%04X - ix: 0x%04X - iy: 0x%02X", old_cpu.regs.hl, old_cpu.regs.ix, old_cpu.regs.iy)
-            NSLog("End")
-        }
     }
 }
