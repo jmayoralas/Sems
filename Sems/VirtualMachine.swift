@@ -38,7 +38,7 @@ private struct UlaUpdateData {
     @objc optional func Z80VMEmulationHalted()
 }
 
-class VirtualMachine
+class VirtualMachine: CpuNotifyInternalOperation
 {
     // MARK: Properties
     public var delegate: VirtualMachineStatus?
@@ -94,6 +94,8 @@ class VirtualMachine
         bus.addBusComponent(ram)
 
         cpu.reset()
+        
+        cpu.operationDelegate = self
     }
     
     // MARK: Methods
@@ -113,8 +115,6 @@ class VirtualMachine
     }
     
     public func step() {
-        tapeLoaderHook()
-        
         clock.reset()
         
         cpu.executeNextOpcode()
@@ -240,7 +240,7 @@ class VirtualMachine
     }
     
     // MARK: Tape loader
-    private func tapeLoaderHook() {
+    func tapeLoadStarted() {
         guard instantLoad && tape.tapeAvailable else {
             return
         }
