@@ -118,19 +118,12 @@ class VirtualMachine
         clock.reset()
         
         cpu.executeNextOpcode()
-
         tape.step()
-        ula.step()
+        let screen_updated = ula.step()
+        cpu.int_req = ula.int_req
         
-        if clock.frameTCycles < 32 {
-            cpu.int_req = true
-            
-            if ula.screen.changed {
-                ula.screen.updateScreenBuffer()
-                delegate?.Z80VMScreenRefresh?()
-            }
-        } else {
-            cpu.int_req = false
+        if screen_updated {
+            delegate?.Z80VMScreenRefresh?()
         }
     }
     
