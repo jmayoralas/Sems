@@ -28,6 +28,10 @@ class InternalBus: Bus16 {
         
         super.write(address, value: value)
     }
+    
+    func writeNoDelay(_ address: UInt16, value: UInt8) {
+        super.write(address, value: value)
+    }
 }
 
 class Z80 {
@@ -175,4 +179,33 @@ class Z80 {
             regs.r.bit(7, newVal: bit7)
         }
     }
+}
+
+extension Z80 {
+    public func tapeLoaderHook(buffer: [UInt8]?) {
+        if let buf = buffer {
+            injectTapeBuffer(buffer: buf)
+            
+            regs.bc = 0xB001
+            regs.af_ = 0x0145
+            regs.f.setBit(C)
+        } else {
+            regs.f.resetBit(C)
+        }
+        
+        regs.pc = 0x05E2
+    }
+    
+    private func injectTapeBuffer(buffer: [UInt8]) {
+        regs.de += 1
+        
+        for (index, data) in buffer.enumerated() {
+            if 0 < index {
+                dataBus.writeNoDelay(regs.ix, value: data)
+                regs.ix &+= 1
+                regs.de -= 1
+            }
+        }
+    }
+
 }
