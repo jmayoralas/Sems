@@ -76,7 +76,10 @@ extension Z80 {
             self.clock.sub(tCycles: 1)
             let displ = self.dataBus.read(self.regs.pc &- 2)
             let address = self.addRelative(displacement: displ, toAddress: self.regs.xx)
-            self.dataBus.write(address, value: self.aluCall(self.dataBus.read(address), 1, ulaOp: .rlc, ignoreCarry: false))
+            self.clock.add(tCycles: 2)
+            let data = self.dataBus.read(address)
+            self.clock.add(tCycles: 1)
+            self.dataBus.write(address, value: self.aluCall(data, 1, ulaOp: .rlc, ignoreCarry: false))
         }
         opcodes[0x07] = { // rlc (xx+0) -> a
             self.clock.sub(tCycles: 1)
