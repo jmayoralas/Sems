@@ -32,15 +32,6 @@
 		1D1A1F5B2128265D00749F80 /* ULAIo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F582128265D00749F80 /* ULAIo.swift */; };
 		1D1A1F5C2128265D00749F80 /* Ula.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F592128265D00749F80 /* Ula.swift */; };
 		1D1A1F5D2128265D00749F80 /* ULAMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F5A2128265D00749F80 /* ULAMemory.swift */; };
-		1D6BB880218F6536004A35C0 /* Z80.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6BB877218F6535004A35C0 /* Z80.swift */; };
-		1D6BB881218F6536004A35C0 /* ControlUnit_opcodes_none.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6BB878218F6535004A35C0 /* ControlUnit_opcodes_none.swift */; };
-		1D6BB882218F6536004A35C0 /* ControlUnit_opcodes_xxcb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6BB879218F6535004A35C0 /* ControlUnit_opcodes_xxcb.swift */; };
-		1D6BB883218F6536004A35C0 /* ControlUnit_opcodes_xx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6BB87A218F6535004A35C0 /* ControlUnit_opcodes_xx.swift */; };
-		1D6BB884218F6536004A35C0 /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6BB87B218F6535004A35C0 /* extensions.swift */; };
-		1D6BB885218F6536004A35C0 /* ControlUnit_opcodes_cb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6BB87C218F6535004A35C0 /* ControlUnit_opcodes_cb.swift */; };
-		1D6BB886218F6536004A35C0 /* ControlUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6BB87D218F6535004A35C0 /* ControlUnit.swift */; };
-		1D6BB887218F6536004A35C0 /* ControlUnit_opcodes_ed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6BB87E218F6535004A35C0 /* ControlUnit_opcodes_ed.swift */; };
-		1D6BB888218F6536004A35C0 /* types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6BB87F218F6535004A35C0 /* types.swift */; };
 		1D8A8258218CAA4400C648AE /* JMZeta80.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D8A8257218CAA4400C648AE /* JMZeta80.framework */; };
 		1D8A8259218CAA4400C648AE /* JMZeta80.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1D8A8257218CAA4400C648AE /* JMZeta80.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1D8A825D218CAD0D00C648AE /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A825C218CAD0D00C648AE /* Extensions.swift */; };
@@ -90,15 +81,6 @@
 		1D1A1F582128265D00749F80 /* ULAIo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ULAIo.swift; sourceTree = "<group>"; };
 		1D1A1F592128265D00749F80 /* Ula.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ula.swift; sourceTree = "<group>"; };
 		1D1A1F5A2128265D00749F80 /* ULAMemory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ULAMemory.swift; sourceTree = "<group>"; };
-		1D6BB877218F6535004A35C0 /* Z80.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Z80.swift; sourceTree = "<group>"; };
-		1D6BB878218F6535004A35C0 /* ControlUnit_opcodes_none.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_none.swift; sourceTree = "<group>"; };
-		1D6BB879218F6535004A35C0 /* ControlUnit_opcodes_xxcb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_xxcb.swift; sourceTree = "<group>"; };
-		1D6BB87A218F6535004A35C0 /* ControlUnit_opcodes_xx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_xx.swift; sourceTree = "<group>"; };
-		1D6BB87B218F6535004A35C0 /* extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
-		1D6BB87C218F6535004A35C0 /* ControlUnit_opcodes_cb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_cb.swift; sourceTree = "<group>"; };
-		1D6BB87D218F6535004A35C0 /* ControlUnit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit.swift; sourceTree = "<group>"; };
-		1D6BB87E218F6535004A35C0 /* ControlUnit_opcodes_ed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_ed.swift; sourceTree = "<group>"; };
-		1D6BB87F218F6535004A35C0 /* types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = types.swift; sourceTree = "<group>"; };
 		1D8A8257218CAA4400C648AE /* JMZeta80.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = JMZeta80.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D8A825C218CAD0D00C648AE /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		1D9723BA2158206000C0781E /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -136,7 +118,6 @@
 		1D1A1F07212823C900749F80 /* Sems */ = {
 			isa = PBXGroup;
 			children = (
-				1D6BB876218F6535004A35C0 /* Cpu */,
 				1D1A1F572128265D00749F80 /* Ula */,
 				1D1A1F442128264600749F80 /* Bus */,
 				1D1A1F262128258D00749F80 /* Tape */,
@@ -192,22 +173,6 @@
 				1D1A1F5A2128265D00749F80 /* ULAMemory.swift */,
 			);
 			path = Ula;
-			sourceTree = "<group>";
-		};
-		1D6BB876218F6535004A35C0 /* Cpu */ = {
-			isa = PBXGroup;
-			children = (
-				1D6BB877218F6535004A35C0 /* Z80.swift */,
-				1D6BB878218F6535004A35C0 /* ControlUnit_opcodes_none.swift */,
-				1D6BB879218F6535004A35C0 /* ControlUnit_opcodes_xxcb.swift */,
-				1D6BB87A218F6535004A35C0 /* ControlUnit_opcodes_xx.swift */,
-				1D6BB87B218F6535004A35C0 /* extensions.swift */,
-				1D6BB87C218F6535004A35C0 /* ControlUnit_opcodes_cb.swift */,
-				1D6BB87D218F6535004A35C0 /* ControlUnit.swift */,
-				1D6BB87E218F6535004A35C0 /* ControlUnit_opcodes_ed.swift */,
-				1D6BB87F218F6535004A35C0 /* types.swift */,
-			);
-			path = Cpu;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -287,17 +252,11 @@
 				1D1A1F2B2128258D00749F80 /* TapeLoader.swift in Sources */,
 				1D1A1F4F2128264600749F80 /* Bus16.swift in Sources */,
 				1D1A1F1E2128251E00749F80 /* VmScreen.swift in Sources */,
-				1D6BB884218F6536004A35C0 /* extensions.swift in Sources */,
 				1D1A1F5C2128265D00749F80 /* Ula.swift in Sources */,
-				1D6BB883218F6536004A35C0 /* ControlUnit_opcodes_xx.swift in Sources */,
-				1D6BB880218F6536004A35C0 /* Z80.swift in Sources */,
-				1D6BB888218F6536004A35C0 /* types.swift in Sources */,
 				1D1A1F2D2128258D00749F80 /* TapeData.swift in Sources */,
 				1D1A1F202128251E00749F80 /* AudioStreamer.swift in Sources */,
 				1D1A1F222128251E00749F80 /* Clock.swift in Sources */,
 				1D1A1F2C2128258D00749F80 /* TapeBlock.swift in Sources */,
-				1D6BB887218F6536004A35C0 /* ControlUnit_opcodes_ed.swift in Sources */,
-				1D6BB886218F6536004A35C0 /* ControlUnit.swift in Sources */,
 				1D1A1F2E2128258D00749F80 /* Tape.swift in Sources */,
 				1D1A1F522128264600749F80 /* IoBus.swift in Sources */,
 				1D1A1F5B2128265D00749F80 /* ULAIo.swift in Sources */,
@@ -311,10 +270,7 @@
 				1D8A825D218CAD0D00C648AE /* Extensions.swift in Sources */,
 				1D1A1F512128264600749F80 /* GenericIODevice.swift in Sources */,
 				1D1A1F4E2128264600749F80 /* BusBase.swift in Sources */,
-				1D6BB881218F6536004A35C0 /* ControlUnit_opcodes_none.swift in Sources */,
 				1D1A1F1F2128251E00749F80 /* VirtualMachine.swift in Sources */,
-				1D6BB885218F6536004A35C0 /* ControlUnit_opcodes_cb.swift in Sources */,
-				1D6BB882218F6536004A35C0 /* ControlUnit_opcodes_xxcb.swift in Sources */,
 				1D1A1F562128264600749F80 /* BusComponentBase.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
