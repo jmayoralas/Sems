@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import JMZeta80
 
 private let kColorSpace = CGColorSpaceCreateDeviceRGB()
 private let kInstantLoadEnabled = "(Instant load enabled)"
@@ -44,8 +45,7 @@ class ViewController: NSViewController, VirtualMachineStatus {
         self.screenView.imageScaling = .scaleProportionallyUpOrDown
         self.screen = VmScreen(zoomFactor: 2)
         
-        self.vm = VirtualMachine(screen)
-        self.vm.delegate = self
+        configureVM()
         
         self.loadSpeccyRom()
         
@@ -77,6 +77,15 @@ class ViewController: NSViewController, VirtualMachineStatus {
         try! self.vm.loadRomAtAddress(0x0000, data: buffer)
     }
     
+    private func configureVM() {
+        let clock = Clock()
+        let bus = Bus16(clock: clock, screen: screen)
+        let cpu = Cpu(bus: bus, clock: clock)
+        let ula = Ula(screen: screen, clock: clock)
+        
+        vm = VirtualMachine(bus: bus, cpu: cpu, ula: ula, clock: clock, screen: screen)
+        vm.delegate = self
+    }
     private func errorShow(messageText: String) {
         let alert = NSAlert()
         alert.alertStyle = NSAlert.Style.critical

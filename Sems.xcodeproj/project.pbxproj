@@ -20,15 +20,6 @@
 		1D1A1F2C2128258D00749F80 /* TapeBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F282128258D00749F80 /* TapeBlock.swift */; };
 		1D1A1F2D2128258D00749F80 /* TapeData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F292128258D00749F80 /* TapeData.swift */; };
 		1D1A1F2E2128258D00749F80 /* Tape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F2A2128258D00749F80 /* Tape.swift */; };
-		1D1A1F3B2128261A00749F80 /* Z80.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F322128261A00749F80 /* Z80.swift */; };
-		1D1A1F3C2128261A00749F80 /* ControlUnit_opcodes_none.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F332128261A00749F80 /* ControlUnit_opcodes_none.swift */; };
-		1D1A1F3D2128261A00749F80 /* ControlUnit_opcodes_xxcb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F342128261A00749F80 /* ControlUnit_opcodes_xxcb.swift */; };
-		1D1A1F3E2128261A00749F80 /* ControlUnit_opcodes_xx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F352128261A00749F80 /* ControlUnit_opcodes_xx.swift */; };
-		1D1A1F3F2128261A00749F80 /* extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F362128261A00749F80 /* extensions.swift */; };
-		1D1A1F402128261A00749F80 /* ControlUnit_opcodes_cb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F372128261A00749F80 /* ControlUnit_opcodes_cb.swift */; };
-		1D1A1F412128261A00749F80 /* ControlUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F382128261A00749F80 /* ControlUnit.swift */; };
-		1D1A1F422128261A00749F80 /* ControlUnit_opcodes_ed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F392128261A00749F80 /* ControlUnit_opcodes_ed.swift */; };
-		1D1A1F432128261A00749F80 /* types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F3A2128261A00749F80 /* types.swift */; };
 		1D1A1F4E2128264600749F80 /* BusBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F452128264600749F80 /* BusBase.swift */; };
 		1D1A1F4F2128264600749F80 /* Bus16.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F462128264600749F80 /* Bus16.swift */; };
 		1D1A1F502128264600749F80 /* BusComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F472128264600749F80 /* BusComponent.swift */; };
@@ -41,8 +32,25 @@
 		1D1A1F5B2128265D00749F80 /* ULAIo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F582128265D00749F80 /* ULAIo.swift */; };
 		1D1A1F5C2128265D00749F80 /* Ula.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F592128265D00749F80 /* Ula.swift */; };
 		1D1A1F5D2128265D00749F80 /* ULAMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F5A2128265D00749F80 /* ULAMemory.swift */; };
+		1D8A8258218CAA4400C648AE /* JMZeta80.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D8A8257218CAA4400C648AE /* JMZeta80.framework */; };
+		1D8A8259218CAA4400C648AE /* JMZeta80.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1D8A8257218CAA4400C648AE /* JMZeta80.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1D8A825D218CAD0D00C648AE /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A825C218CAD0D00C648AE /* Extensions.swift */; };
 		1D9723BB2158206000C0781E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1D9723BA2158206000C0781E /* Main.storyboard */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		1D8A8254218CA9FE00C648AE /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				1D8A8259218CAA4400C648AE /* JMZeta80.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		1D1A1F05212823C900749F80 /* Sems.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sems.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -61,15 +69,6 @@
 		1D1A1F282128258D00749F80 /* TapeBlock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeBlock.swift; sourceTree = "<group>"; };
 		1D1A1F292128258D00749F80 /* TapeData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapeData.swift; sourceTree = "<group>"; };
 		1D1A1F2A2128258D00749F80 /* Tape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tape.swift; sourceTree = "<group>"; };
-		1D1A1F322128261A00749F80 /* Z80.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Z80.swift; sourceTree = "<group>"; };
-		1D1A1F332128261A00749F80 /* ControlUnit_opcodes_none.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_none.swift; sourceTree = "<group>"; };
-		1D1A1F342128261A00749F80 /* ControlUnit_opcodes_xxcb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_xxcb.swift; sourceTree = "<group>"; };
-		1D1A1F352128261A00749F80 /* ControlUnit_opcodes_xx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_xx.swift; sourceTree = "<group>"; };
-		1D1A1F362128261A00749F80 /* extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = extensions.swift; sourceTree = "<group>"; };
-		1D1A1F372128261A00749F80 /* ControlUnit_opcodes_cb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_cb.swift; sourceTree = "<group>"; };
-		1D1A1F382128261A00749F80 /* ControlUnit.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit.swift; sourceTree = "<group>"; };
-		1D1A1F392128261A00749F80 /* ControlUnit_opcodes_ed.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControlUnit_opcodes_ed.swift; sourceTree = "<group>"; };
-		1D1A1F3A2128261A00749F80 /* types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = types.swift; sourceTree = "<group>"; };
 		1D1A1F452128264600749F80 /* BusBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusBase.swift; sourceTree = "<group>"; };
 		1D1A1F462128264600749F80 /* Bus16.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bus16.swift; sourceTree = "<group>"; };
 		1D1A1F472128264600749F80 /* BusComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusComponent.swift; sourceTree = "<group>"; };
@@ -82,6 +81,8 @@
 		1D1A1F582128265D00749F80 /* ULAIo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ULAIo.swift; sourceTree = "<group>"; };
 		1D1A1F592128265D00749F80 /* Ula.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ula.swift; sourceTree = "<group>"; };
 		1D1A1F5A2128265D00749F80 /* ULAMemory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ULAMemory.swift; sourceTree = "<group>"; };
+		1D8A8257218CAA4400C648AE /* JMZeta80.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = JMZeta80.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D8A825C218CAD0D00C648AE /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		1D9723BA2158206000C0781E /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -90,6 +91,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D8A8258218CAA4400C648AE /* JMZeta80.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,6 +101,7 @@
 		1D1A1EFC212823C900749F80 = {
 			isa = PBXGroup;
 			children = (
+				1D8A8257218CAA4400C648AE /* JMZeta80.framework */,
 				1D1A1F07212823C900749F80 /* Sems */,
 				1D1A1F06212823C900749F80 /* Products */,
 			);
@@ -117,8 +120,8 @@
 			children = (
 				1D1A1F572128265D00749F80 /* Ula */,
 				1D1A1F442128264600749F80 /* Bus */,
-				1D1A1F312128261A00749F80 /* Cpu */,
 				1D1A1F262128258D00749F80 /* Tape */,
+				1D8A825C218CAD0D00C648AE /* Extensions.swift */,
 				1D1A1F1A2128251E00749F80 /* AudioStreamer.swift */,
 				1D1A1F1C2128251E00749F80 /* Clock.swift */,
 				1D1A1F1B2128251E00749F80 /* KeyEventHandler.swift */,
@@ -144,22 +147,6 @@
 				1D1A1F2A2128258D00749F80 /* Tape.swift */,
 			);
 			path = Tape;
-			sourceTree = "<group>";
-		};
-		1D1A1F312128261A00749F80 /* Cpu */ = {
-			isa = PBXGroup;
-			children = (
-				1D1A1F322128261A00749F80 /* Z80.swift */,
-				1D1A1F332128261A00749F80 /* ControlUnit_opcodes_none.swift */,
-				1D1A1F342128261A00749F80 /* ControlUnit_opcodes_xxcb.swift */,
-				1D1A1F352128261A00749F80 /* ControlUnit_opcodes_xx.swift */,
-				1D1A1F362128261A00749F80 /* extensions.swift */,
-				1D1A1F372128261A00749F80 /* ControlUnit_opcodes_cb.swift */,
-				1D1A1F382128261A00749F80 /* ControlUnit.swift */,
-				1D1A1F392128261A00749F80 /* ControlUnit_opcodes_ed.swift */,
-				1D1A1F3A2128261A00749F80 /* types.swift */,
-			);
-			path = Cpu;
 			sourceTree = "<group>";
 		};
 		1D1A1F442128264600749F80 /* Bus */ = {
@@ -198,6 +185,7 @@
 				1D1A1F01212823C900749F80 /* Sources */,
 				1D1A1F02212823C900749F80 /* Frameworks */,
 				1D1A1F03212823C900749F80 /* Resources */,
+				1D8A8254218CA9FE00C648AE /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -260,36 +248,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D1A1F0B212823C900749F80 /* ViewController.swift in Sources */,
-				1D1A1F3F2128261A00749F80 /* extensions.swift in Sources */,
 				1D1A1F502128264600749F80 /* BusComponent.swift in Sources */,
 				1D1A1F2B2128258D00749F80 /* TapeLoader.swift in Sources */,
 				1D1A1F4F2128264600749F80 /* Bus16.swift in Sources */,
 				1D1A1F1E2128251E00749F80 /* VmScreen.swift in Sources */,
 				1D1A1F5C2128265D00749F80 /* Ula.swift in Sources */,
-				1D1A1F422128261A00749F80 /* ControlUnit_opcodes_ed.swift in Sources */,
-				1D1A1F3E2128261A00749F80 /* ControlUnit_opcodes_xx.swift in Sources */,
-				1D1A1F432128261A00749F80 /* types.swift in Sources */,
 				1D1A1F2D2128258D00749F80 /* TapeData.swift in Sources */,
 				1D1A1F202128251E00749F80 /* AudioStreamer.swift in Sources */,
 				1D1A1F222128251E00749F80 /* Clock.swift in Sources */,
-				1D1A1F3B2128261A00749F80 /* Z80.swift in Sources */,
 				1D1A1F2C2128258D00749F80 /* TapeBlock.swift in Sources */,
 				1D1A1F2E2128258D00749F80 /* Tape.swift in Sources */,
-				1D1A1F3C2128261A00749F80 /* ControlUnit_opcodes_none.swift in Sources */,
 				1D1A1F522128264600749F80 /* IoBus.swift in Sources */,
-				1D1A1F3D2128261A00749F80 /* ControlUnit_opcodes_xxcb.swift in Sources */,
 				1D1A1F5B2128265D00749F80 /* ULAIo.swift in Sources */,
 				1D1A1F212128251E00749F80 /* KeyEventHandler.swift in Sources */,
 				1D1A1F532128264600749F80 /* Rom.swift in Sources */,
 				1D1A1F542128264600749F80 /* Ram.swift in Sources */,
-				1D1A1F402128261A00749F80 /* ControlUnit_opcodes_cb.swift in Sources */,
 				1D1A1F232128251E00749F80 /* TapeBlockSelectorViewController.swift in Sources */,
 				1D1A1F552128264600749F80 /* VoidBusComponent.swift in Sources */,
 				1D1A1F09212823C900749F80 /* AppDelegate.swift in Sources */,
 				1D1A1F5D2128265D00749F80 /* ULAMemory.swift in Sources */,
+				1D8A825D218CAD0D00C648AE /* Extensions.swift in Sources */,
 				1D1A1F512128264600749F80 /* GenericIODevice.swift in Sources */,
 				1D1A1F4E2128264600749F80 /* BusBase.swift in Sources */,
-				1D1A1F412128261A00749F80 /* ControlUnit.swift in Sources */,
 				1D1A1F1F2128251E00749F80 /* VirtualMachine.swift in Sources */,
 				1D1A1F562128264600749F80 /* BusComponentBase.swift in Sources */,
 			);

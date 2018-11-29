@@ -7,17 +7,27 @@
 //
 
 import Foundation
+import JMZeta80
 
-final class Bus16 : BusBase {
+class Bus16 : BusBase, AccessibleBus {
     private var paged_components : [BusComponentBase]
+    private var io_components : [BusComponentBase]
     private var clock: Clock
     
-    init(clock: Clock) {
+    init(clock: Clock, screen: VmScreen) {
         self.clock = clock
         
         let dummy_component = BusComponent(base_address: 0x0000, block_size: 0x0000)
-        paged_components = Array(repeating: dummy_component, count: 64)
+        let io_dummy_component = VoidBusComponent(
+            base_address: 0x0000,
+            block_size: 0x0000,
+            clock: clock,
+            screen: screen
+        )
         
+        paged_components = Array(repeating: dummy_component, count: 64)
+        io_components = Array(repeating: io_dummy_component, count: 0x100)
+            
         super.init(base_address: 0x0000, block_size: 0x10000)
     }
     
@@ -34,11 +44,25 @@ final class Bus16 : BusBase {
         }
     }
     
+    func addIOBusComponent(_ bus_component: BusComponentBase) {
+        // only asign non ula bus components to odd ports
+        if bus_component.getBaseAddress() & 0x01 == 1 {
+            io_components[Int(bus_component.getBaseAddress())] = bus_component
+        } else {
+            if bus_component is ULAIo {
+                // even ports belongs to ULA
+                for i in 0..<0x100 {
+                    if (i & 0x01) == 0 {
+                        io_components[i] = bus_component
+                    }
+                }
+            }
+        }
+    }
+    
     override func write(_ address: UInt16, value: UInt8) {
         let index_component = Int(address) / 1024
         paged_components[index_component].write(address, value: value)
-        
-        clock.add(tCycles: 3)
         
         super.write(address, value: value)
     }
@@ -49,11 +73,28 @@ final class Bus16 : BusBase {
         
         let data = paged_components[index_component].read(address)
         
-        clock.add(tCycles: 3)
-        
         return data
     }
+
+    func ioRead(_ address: UInt16) -> UInt8 {
+        clock.applyIOContention(address: address)
+        
+        let _ = super.read(address)
+        
+        // port addressed by low byte of address
+        last_data = io_components[Int(address & 0x00FF)].read(address)
+        
+        return last_data
+    }
     
+    func ioWrite(_ address: UInt16, value: UInt8) {
+        clock.applyIOContention(address: address)
+        
+        // port addressed by low byte of address
+        io_components[Int(address & 0x00FF)].write(address, value: value)
+    }
+    
+
     override func dumpFromAddress(_ fromAddress: Int, count: Int) -> [UInt8] {
         var index_component = (fromAddress & 0xFFFF) / 1024
         var address = fromAddress
@@ -68,3 +109,5 @@ final class Bus16 : BusBase {
         return result
     }
 }
+
+

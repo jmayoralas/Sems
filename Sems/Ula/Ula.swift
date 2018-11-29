@@ -21,6 +21,8 @@ final class Ula: InternalUlaOperationDelegate {
     var screen: VmScreen
     let clock: Clock
     
+    var int_req = false
+    
     private var frames: Int = 0
     private var key_buffer = [UInt8](repeatElement(0xFF, count: 8))
     private var audioStreamer: AudioStreamer!
@@ -40,7 +42,7 @@ final class Ula: InternalUlaOperationDelegate {
         self.screen.memory = memory
     }
     
-    func step() {
+    func step() -> Bool {
         self.screen.step(tCycle: self.clock.frameTCycles)
         
         if audioEnabled {
@@ -55,6 +57,20 @@ final class Ula: InternalUlaOperationDelegate {
             frameCompleted()
             clock.frameTCycles -= kTicsPerFrame
         }
+
+        int_req = false
+        var screen_updated = false
+        
+        if clock.frameTCycles < 32 {
+            int_req = true
+            
+            if screen.changed {
+                screen.updateScreenBuffer()
+                screen_updated = true
+            }
+        }
+        
+        return screen_updated
     }
     
     func toggleAudio() {
