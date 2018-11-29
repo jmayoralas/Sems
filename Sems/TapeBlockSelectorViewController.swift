@@ -24,11 +24,11 @@ final class TapeBlockSelectorViewController: NSViewController, NSTableViewDataSo
     }
     
     @IBAction func chooseClick(_ sender: NSButton) {
-        NSApplication.shared().stopModal(withCode: NSModalResponseOK)
+        NSApplication.shared.stopModal(withCode: NSApplication.ModalResponse.OK)
     }
     
     @IBAction func cancelClick(_ sender: NSButton) {
-        NSApplication.shared().stopModal(withCode: NSModalResponseCancel)
+        NSApplication.shared.stopModal(withCode: NSApplication.ModalResponse.cancel)
     }
     
     func getSelectedTapeBlockIndex() -> Int {
@@ -45,10 +45,10 @@ final class TapeBlockSelectorViewController: NSViewController, NSTableViewDataSo
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
-        let cellView = tableView.make(withIdentifier: tableColumn!.identifier, owner: self) as! NSTableCellView
+        let cellView = tableView.makeView(withIdentifier: tableColumn!.identifier, owner: self) as! NSTableCellView
         cellView.textField!.font = NSFont.init(name: "Courier", size: 12)
         
-        if tableColumn!.identifier == "identifier" {
+        if tableColumn!.identifier.rawValue == "identifier" {
             cellView.textField!.stringValue = blockDirectory![row].identifier
         } else {
             cellView.textField!.stringValue = blockDirectory![row].type

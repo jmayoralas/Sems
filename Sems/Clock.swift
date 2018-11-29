@@ -7,10 +7,12 @@
 //
 
 import Foundation
+import JMZeta80
 
-final class Clock {
+final class Clock: SystemClock {
     var frameTCycles: Int = 0
-    var tCycles: Int = 0
+    var cycles: Int = 0
+    var contentionTCycles: Int = 0
     
     private var contentionDelayTable = [Int](repeatElement(0, count: 128))
 
@@ -19,41 +21,57 @@ final class Clock {
     }
 
     func add(tCycles: Int) {
-        self.tCycles += tCycles
-        self.frameTCycles += tCycles
+        add(cycles: tCycles)
     }
-
+    
     func sub(tCycles: Int) {
-        self.tCycles -= tCycles
-        self.frameTCycles -= tCycles
+        sub(cycles: tCycles)
+    }
+    
+    func add(cycles: Int) {
+        self.cycles += cycles
+        self.frameTCycles += cycles
     }
 
+    func sub(cycles: Int) {
+        self.cycles -= cycles
+        self.frameTCycles -= cycles
+    }
+
+    func getCycles() -> Int {
+        return self.cycles
+    }
+
+    func reset() {
+        cycles = 0
+        contentionTCycles = 0
+    }
     
     func applyContention() {
-        add(tCycles: getContentionDelay(tCycle: frameTCycles))
+        add(cycles: getContentionDelay(tCycle: frameTCycles))
     }
     
     func applyIOContention(address: UInt16) {
         if 0x40 <= address.high && address.high <= 0x7F {
             if address & 1 == 1 {
                 // C:1 C:1 C:1 C:1
-                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 1)
-                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 1)
-                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 1)
-                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 1)
+                add(cycles: getContentionDelay(tCycle: frameTCycles) + 1)
+                add(cycles: getContentionDelay(tCycle: frameTCycles) + 1)
+                add(cycles: getContentionDelay(tCycle: frameTCycles) + 1)
+                add(cycles: getContentionDelay(tCycle: frameTCycles) + 1)
             } else {
                 // C:1 C:3
-                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 1)
-                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 3)
+                add(cycles: getContentionDelay(tCycle: frameTCycles) + 1)
+                add(cycles: getContentionDelay(tCycle: frameTCycles) + 3)
             }
         } else {
             if address & 1 == 0 {
                 // N:1 C:3
-                add(tCycles: 1)
-                add(tCycles: getContentionDelay(tCycle: frameTCycles) + 3)
+                add(cycles: 1)
+                add(cycles: getContentionDelay(tCycle: frameTCycles) + 3)
             } else {
                 // no contention
-                add(tCycles: 4)
+                add(cycles: 4)
             }
         }
      }
@@ -80,7 +98,8 @@ final class Clock {
             let index = (tCycle - ((tCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
             delay = index < 128 ? contentionDelayTable[index] : 0
         }
-        
+
+        contentionTCycles += delay
         return delay
     }
 }

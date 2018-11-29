@@ -7,15 +7,18 @@
 //
 
 import Cocoa
+import JMZeta80
 
 private let kColorSpace = CGColorSpaceCreateDeviceRGB()
 private let kInstantLoadEnabled = "(Instant load enabled)"
 private let kInstantLoadDisabled = "(Instant load disabled)"
 
 class ViewController: NSViewController, VirtualMachineStatus {
+    private let open_dialog = NSOpenPanel()
+    
     @IBOutlet weak var screenView: NSImageView!
     
-    var screen: VmScreen!
+    @objc var screen: VmScreen!
     var vm: VirtualMachine!
     let appVersionString = String(
         format: "Sems v%@.%@",
@@ -38,30 +41,54 @@ class ViewController: NSViewController, VirtualMachineStatus {
 
     // MARK: Initialization
     func setup() {
+        self.setupOpenDialog()
         self.screenView.imageScaling = .scaleProportionallyUpOrDown
         self.screen = VmScreen(zoomFactor: 2)
         
-        self.vm = VirtualMachine(screen)
-        self.vm.delegate = self
+        configureVM()
         
-        self.loadRom()
+        self.loadSpeccyRom()
         
-        NSEvent.addLocalMonitorForEvents(matching: .keyDown) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyDown(theEvent: theEvent)}
-        NSEvent.addLocalMonitorForEvents(matching: .keyUp) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyUp(theEvent: theEvent)}
-        NSEvent.addLocalMonitorForEvents(matching: .flagsChanged) {(theEvent: NSEvent) -> NSEvent? in return self.onFlagsChanged(theEvent: theEvent)}
+        NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.keyDown) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyDown(theEvent: theEvent)}
+        NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.keyUp) {(theEvent: NSEvent) -> NSEvent? in return self.onKeyUp(theEvent: theEvent)}
+        NSEvent.addLocalMonitorForEvents(matching: NSEvent.EventTypeMask.flagsChanged) {(theEvent: NSEvent) -> NSEvent? in return self.onFlagsChanged(theEvent: theEvent)}
     }
     
-    func loadRom() {
-        let data = NSDataAsset(name: "Rom48k")!.data
-        var buffer = [UInt8](repeating: 0, count: data.count)
-        (data as NSData).getBytes(&buffer, length: data.count)
+    private func setupOpenDialog() {
+        open_dialog.showsResizeIndicator = true
+        open_dialog.showsHiddenFiles = false
+        open_dialog.canChooseDirectories = true
+        open_dialog.canCreateDirectories = true
+        open_dialog.allowsMultipleSelection = false
+    }
+    
+    private func loadSpeccyRom() {
+        loadRomData(data: NSDataAsset(name: "Rom48k")!.data as NSData)
+    }
+    
+    private func loadRomFile(path: String) {
+        loadRomData(data: NSData(contentsOfFile: path)!)
+    }
+    
+    private func loadRomData(data: NSData) {
+        var buffer = [UInt8](repeating: 0, count: data.length)
+        (data as NSData).getBytes(&buffer, length: data.length)
         
         try! self.vm.loadRomAtAddress(0x0000, data: buffer)
     }
     
+    private func configureVM() {
+        let clock = Clock()
+        let bus = Bus16(clock: clock, screen: screen)
+        let cpu = Cpu(bus: bus, clock: clock)
+        let ula = Ula(screen: screen, clock: clock)
+        
+        vm = VirtualMachine(bus: bus, cpu: cpu, ula: ula, clock: clock, screen: screen)
+        vm.delegate = self
+    }
     private func errorShow(messageText: String) {
         let alert = NSAlert()
-        alert.alertStyle = NSAlertStyle.critical
+        alert.alertStyle = NSAlert.Style.critical
         alert.addButton(withTitle: "OK")
         
         alert.messageText = messageText
@@ -70,7 +97,7 @@ class ViewController: NSViewController, VirtualMachineStatus {
     
     // MARK: Keyboard handling
     private func onKeyDown(theEvent: NSEvent) -> NSEvent? {
-        if !theEvent.modifierFlags.contains(.command) {
+        if !theEvent.modifierFlags.contains(NSEvent.ModifierFlags.command) {
             if self.vm.isRunning() {
                 self.vm.keyDown(char: KeyEventHandler.getChar(event: theEvent))
                 return nil
@@ -98,38 +125,63 @@ class ViewController: NSViewController, VirtualMachineStatus {
     
     // MARK: Screen handling
     func Z80VMScreenRefresh() {
-        let bitmapContext = CGContext(
-            data: &self.screen.buffer,
-            width: self.screen.width,
-            height: self.screen.height,
-            bitsPerComponent: 8,
-            bytesPerRow: 4 * self.screen.width,
-            space: kColorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedFirst.rawValue
+        let image = imageFromARGB32Bitmap(
+            pixels: self.screen.buffer,
+            width: self.screen!.width,
+            height: self.screen!.height
         )
         
-        let cgImage = bitmapContext!.makeImage()
-        
         DispatchQueue.main.async { [unowned self] in
-            self.screenView.image = NSImage(cgImage: cgImage!, size: NSZeroSize)
+            self.screenView.image = image
         }
     }
     
+    func imageFromARGB32Bitmap(pixels:[PixelData], width:Int, height:Int) -> NSImage {
+        let bitsPerComponent = 8
+        let bitsPerPixel = 32
+        
+        assert(pixels.count == Int(width * height))
+        
+        var data = pixels // Copy to mutable []
+        let providerRef = CGDataProvider.init(data: NSData(bytes: &data, length: data.count * MemoryLayout<PixelData>.size))
+        
+        let cgim = CGImage.init(
+            width: width,
+            height: height,
+            bitsPerComponent: bitsPerComponent,
+            bitsPerPixel: bitsPerPixel,
+            bytesPerRow: width * MemoryLayout<PixelData>.size,
+            space: kColorSpace,
+            bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedFirst.rawValue),
+            provider: providerRef!,
+            decode: nil,
+            shouldInterpolate: true,
+            intent: CGColorRenderingIntent.defaultIntent
+        )
+        
+        return NSImage(cgImage: cgim!, size: NSZeroSize)
+    }
     
     // MARK: Menu selectors
+    
+    @IBAction func loadCustomRom(_ sender: AnyObject) {
+        open_dialog.title = "Choose ROM file"
+        open_dialog.allowedFileTypes = ["rom", "bin"]
+        
+        if open_dialog.runModal() == NSApplication.ModalResponse.OK {
+            if let result = open_dialog.url {
+                self.loadRomFile(path: result.path)
+                self.resetMachine(sender)
+            }
+        }
+    }
+    
     @IBAction func openTape(_ sender: AnyObject) {
-        let dialog = NSOpenPanel()
+        open_dialog.title = "Choose a file"
+        open_dialog.allowedFileTypes = ["tap", "tzx"]
         
-        dialog.title = "Choose a file"
-        dialog.showsResizeIndicator = true
-        dialog.showsHiddenFiles = false
-        dialog.canChooseDirectories = true
-        dialog.canCreateDirectories = true
-        dialog.allowsMultipleSelection = false
-        dialog.allowedFileTypes = ["tap", "tzx"]
-        
-        if dialog.runModal() == NSModalResponseOK {
-            if let result = dialog.url {
+        if open_dialog.runModal() == NSApplication.ModalResponse.OK {
+            if let result = open_dialog.url {
                 let path = result.path
 
                 do {
@@ -194,13 +246,13 @@ class ViewController: NSViewController, VirtualMachineStatus {
                 
                 tapeBlockSelectorViewController.setBlockDirectory(blockDirectory: tapeBlockDirectory)
                 
-                let application = NSApplication.shared()
+                let application = NSApplication.shared
                 let modalResult = application.runModal(for: tapeBlockSelectorWindow)
                 
                 self.view.window!.makeMain()
                 self.view.window!.makeKey()
                 
-                if modalResult == NSModalResponseOK {
+                if modalResult == NSApplication.ModalResponse.OK {
                     do {
                         try self.vm.setCurrentTapeBlock(index: tapeBlockSelectorViewController.getSelectedTapeBlockIndex())
                     } catch let error as TapeLoaderError {
