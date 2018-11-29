@@ -115,8 +115,6 @@ class VirtualMachine: CpuNotifyInternalOperation
     }
     
     public func step() {
-        clock.reset()
-        
         cpu.executeNextOpcode()
         tape.step()
         let screen_updated = ula.step()
