@@ -49,10 +49,11 @@ struct Attribute {
 }
 
 let kBaseWidth = 320
+let kBorderLastTCycle = 62639 // last tcycle for coord. x=312, y=239
 
 struct BorderData {
     let color: PixelData
-    let tCycle: Int
+    var tCycle: Int
 }
 
 @objc final public class VmScreen: NSObject {
@@ -71,7 +72,8 @@ struct BorderData {
     private var lastTCycle: Int = 0
     private var memoryScreen: Ram
     private var addressUpdated: [UInt16] = []
-    private var currentBorderColor: PixelData = kWhiteColor
+    private var currentBorderData: BorderData
+    private var previousBorderColor: PixelData = kWhiteColor
     private var floatDataTable: [UInt16?] = Array(repeating: nil, count: 224 * 192)
     
     public init(zoomFactor: Int) {
@@ -83,6 +85,7 @@ struct BorderData {
         buffer = VmScreen.initBuffer(zoomFactor: zoomFactor)
         
         memoryScreen = Ram(base_address: 16384, block_size: 0x1B00)
+        currentBorderData = BorderData(color: kWhiteColor, tCycle: 0)
 
         super.init()
         
@@ -118,7 +121,8 @@ struct BorderData {
     }
     
     func setBorderData(borderData: BorderData) {
-        currentBorderColor = borderData.color
+        previousBorderColor = currentBorderData.color
+        currentBorderData = borderData
         changed = true
     }
     
@@ -258,11 +262,7 @@ struct BorderData {
 
     private func processTCycle(tCycle: Int) {
         if let coord = getBorderXY(tCycle: tCycle) {
-            if buffer[getBufferIndex(coord.x, coord.y)] != currentBorderColor {
-                for i in 0...7 {
-                    setBuffer(atIndex: getBufferIndex(coord.x + i, coord.y), withPixelData: currentBorderColor)
-                }
-            }
+            updateBorderData(coord: coord, tCycle: tCycle)
         }
         
         guard let address = self.getMemoryAddress(tCycle: tCycle) else {
@@ -276,6 +276,22 @@ struct BorderData {
         
         saveByteIntoBuffer(address: address, byte: newValue)
         saveByteIntoBuffer(address: attributeAddress, byte: newAttribute)
+    }
+    
+    private func updateBorderData(coord: (x: Int, y: Int), tCycle: Int) {
+        let colorToSet = tCycle < currentBorderData.tCycle ? previousBorderColor : currentBorderData.color
+        
+        if buffer[getBufferIndex(coord.x, coord.y)] != colorToSet {
+            for i in 0...7 {
+                setBuffer(atIndex: getBufferIndex(coord.x + i, coord.y), withPixelData: colorToSet)
+            }
+        }
+        
+        // when we are at the end of frame,
+        // assume current border data from the beginning of next frame
+        if tCycle >= kBorderLastTCycle {
+            currentBorderData.tCycle = 0
+        }
     }
     
     private func saveByteIntoBuffer(address: UInt16, byte: UInt8) {
