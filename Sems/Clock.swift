@@ -24,13 +24,20 @@ final class Clock: SystemClock {
         add(cycles: tCycles)
     }
     
-    func sub(tCycles: Int) {
-        sub(cycles: tCycles)
-    }
-    
     func add(cycles: Int) {
         self.cycles += cycles
         self.frameTCycles += cycles
+    }
+    
+    func add(address: UInt16, cycles: Int) {
+        if address & 0xC000 == 0x4000 {
+            for _ in 1...cycles {
+                self.add(cycles: getContentionDelay(tCycle: frameTCycles) + 1)
+            }
+        } else {
+            self.add(cycles: cycles)
+        }
+        
     }
 
     func sub(cycles: Int) {
