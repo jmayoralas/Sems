@@ -92,7 +92,7 @@ struct BorderData {
         fillFloatingDataTable()
     }
     
-    public func setZoomFactor(zoomFactor: Int) {
+    final func setZoomFactor(zoomFactor: Int) {
         if self.zoomFactor != zoomFactor {
             self.zoomFactor = zoomFactor
             
@@ -103,7 +103,7 @@ struct BorderData {
         }
     }
     
-    func step(tCycle: Int) {
+    final func step(tCycle: Int) {
         for i in self.lastTCycle...tCycle {
             processTCycle(tCycle: i)
         }
@@ -112,7 +112,7 @@ struct BorderData {
         self.lastTCycle = (self.lastTCycle > FRAME_TSTATES ? self.lastTCycle - FRAME_TSTATES : self.lastTCycle)
     }
     
-    func updateFlashing() {
+    final func updateFlashing() {
         for i in 0..<0x300 {
             addressUpdated.append(0x5800 + UInt16(i))
         }
@@ -120,13 +120,13 @@ struct BorderData {
         changed = true
     }
     
-    func setBorderData(borderData: BorderData) {
+    final func setBorderData(borderData: BorderData) {
         previousBorderColor = currentBorderData.color
         currentBorderData = borderData
         changed = true
     }
     
-    func updateScreenBuffer() {
+    final func updateScreenBuffer() {
         updateBitmap()
         changed = false
     }
