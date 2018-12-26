@@ -37,6 +37,7 @@
 		1D8A8259218CAA4400C648AE /* JMZeta80.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1D8A8257218CAA4400C648AE /* JMZeta80.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		1D8A825D218CAD0D00C648AE /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A825C218CAD0D00C648AE /* Extensions.swift */; };
 		1D9723BB2158206000C0781E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1D9723BA2158206000C0781E /* Main.storyboard */; };
+		1DC220CD21D3A3EF00CEDD28 /* Timings48k.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC220CC21D3A3EF00CEDD28 /* Timings48k.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 		1D8A8257218CAA4400C648AE /* JMZeta80.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = JMZeta80.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D8A825C218CAD0D00C648AE /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		1D9723BA2158206000C0781E /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		1DC220CC21D3A3EF00CEDD28 /* Timings48k.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timings48k.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +159,7 @@
 				1D1A1F0C212823CA00749F80 /* Assets.xcassets */,
 				1D1A1F11212823CA00749F80 /* Info.plist */,
 				1D1A1F12212823CA00749F80 /* Sems.entitlements */,
+				1DC220CC21D3A3EF00CEDD28 /* Timings48k.swift */,
 			);
 			path = Sems;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				1D1A1F532128264600749F80 /* Rom.swift in Sources */,
 				1D1A1F542128264600749F80 /* Ram.swift in Sources */,
 				1D1A1F232128251E00749F80 /* TapeBlockSelectorViewController.swift in Sources */,
+				1DC220CD21D3A3EF00CEDD28 /* Timings48k.swift in Sources */,
 				1D1A1F552128264600749F80 /* VoidBusComponent.swift in Sources */,
 				1D1A1F09212823C900749F80 /* AppDelegate.swift in Sources */,
 				1D1A1F5D2128265D00749F80 /* ULAMemory.swift in Sources */,

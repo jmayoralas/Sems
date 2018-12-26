@@ -101,8 +101,8 @@ final class Clock: SystemClock {
     private func getContentionDelay(tCycle: Int) -> Int {
         var delay = 0
         
-        if 14335 <= tCycle && tCycle < 57343 {
-            let index = (tCycle - ((tCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
+        if FIRST_CONTENDED_TSTATE <= tCycle && tCycle < LAST_CONTENDED_TSTATE {
+            let index = (tCycle - ((tCycle + 1) / SCANLINE_TSTATES) * SCANLINE_TSTATES) + 1
             delay = index < 128 ? contentionDelayTable[index] : 0
         }
 

@@ -109,7 +109,7 @@ struct BorderData {
         }
         
         self.lastTCycle = tCycle + 1
-        self.lastTCycle = (self.lastTCycle > kTicsPerFrame ? self.lastTCycle - kTicsPerFrame : self.lastTCycle)
+        self.lastTCycle = (self.lastTCycle > FRAME_TSTATES ? self.lastTCycle - FRAME_TSTATES : self.lastTCycle)
     }
     
     func updateFlashing() {
@@ -321,13 +321,13 @@ struct BorderData {
     }
     
     private func getBorderXY(tCycle: Int) -> (x:Int, y:Int)? {
-        guard tCycle >= 16 * 224 - 24 else {
+        guard tCycle >= FIRST_VISIBLE_SCANLINE * SCANLINE_TSTATES - 24 else {
             return nil
         }
         
-        let y = (tCycle + 24) / 224 - 16
+        let y = (tCycle + 24) / SCANLINE_TSTATES - FIRST_VISIBLE_SCANLINE
         
-        let lineTCycleBase = 3584 + y * 224 // left border first pixel
+        let lineTCycleBase = 3584 + y * SCANLINE_TSTATES // left border first pixel
         let x = (tCycle + 24 - lineTCycleBase) / 4
         
         guard 2 <= x && x < 44 - 2 else {
