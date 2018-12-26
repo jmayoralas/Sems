@@ -28,7 +28,6 @@ class SemsTests: XCTestCase {
         
         vm = VirtualMachine(bus: bus, cpu: cpu, ula: ula, clock: clock, screen: screen)
         loadRomData()
-        vm.configureOldCpu()
     }
     
     private func loadRomData() {
@@ -43,46 +42,23 @@ class SemsTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testCpu_1() {
-        let cpu_s = vm.oldCpu!
+    func write(data: [UInt8], atAddress address: UInt16, inBus bus: Bus16) {
+        var laddress = address
         
-        cpu_s.bus.write(0x8288, value: 0xED)
-        cpu_s.bus.write(0x8289, value: 0xA3)
-        cpu_s.bus.write(0x880C, value: 0x86)
-        cpu_s.cpu.regs.af = 0xAA2E
-        cpu_s.cpu.regs.bc = 0x40FE
-        cpu_s.cpu.regs.hl = 0x880C
-        cpu_s.cpu.org(0x8288)
-        cpu_s.clock.frameTCycles = 15117
-        
-        bus.write(0x8288, value: 0xED)
-        bus.write(0x8289, value: 0xA3)
-        bus.write(0x880C, value: 0x86)
-        cpu.setRegisterAF(value: 0xAA2E)
-        cpu.setRegisterBC(value: 0x40FE)
-        cpu.setRegisterHL(value: 0x880C)
-        cpu.org(0x8288)
-        clock.frameTCycles = 15117
-
-        vm.step()
-        vm.stepOldCpu()
-        
-        XCTAssertEqual(cpu_s.clock.frameTCycles, clock.frameTCycles)
-    }
-    
-    func testCpu_2() {
-        let cpu_s = vm.oldCpu!
-        
-        cpu_s.cpu.org(0x05E2)
-        cpu_s.clock.frameTCycles = 17061
-        
-        cpu.org(0x05E2)
-        clock.frameTCycles = 17061
-        
-        vm.step()
-        vm.stepOldCpu()
-        
-        XCTAssertEqual(cpu_s.clock.frameTCycles, clock.frameTCycles)
+        for byte in data {
+            bus.write(laddress, value: byte)
+            laddress += 1
+        }
     }
 
+    func testScreenTiming() {
+        cpu.org(0x8000)
+        
+        write(data: [0x3E, 0x06, 0xD3, 0xFE], atAddress: 0x8000, inBus: bus)
+        
+        clock.frameTCycles = 14112 - 11 - 7
+        vm.step()
+        vm.step()
+        XCTAssertEqual(clock.frameTCycles, 14112)
+    }
 }
