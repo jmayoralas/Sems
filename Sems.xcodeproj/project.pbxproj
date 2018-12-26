@@ -23,8 +23,6 @@
 		1D1A1F4E2128264600749F80 /* BusBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F452128264600749F80 /* BusBase.swift */; };
 		1D1A1F4F2128264600749F80 /* Bus16.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F462128264600749F80 /* Bus16.swift */; };
 		1D1A1F502128264600749F80 /* BusComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F472128264600749F80 /* BusComponent.swift */; };
-		1D1A1F512128264600749F80 /* GenericIODevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F482128264600749F80 /* GenericIODevice.swift */; };
-		1D1A1F522128264600749F80 /* IoBus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F492128264600749F80 /* IoBus.swift */; };
 		1D1A1F532128264600749F80 /* Rom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F4A2128264600749F80 /* Rom.swift */; };
 		1D1A1F542128264600749F80 /* Ram.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F4B2128264600749F80 /* Ram.swift */; };
 		1D1A1F552128264600749F80 /* VoidBusComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F4C2128264600749F80 /* VoidBusComponent.swift */; };
@@ -84,8 +82,6 @@
 		1D1A1F452128264600749F80 /* BusBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusBase.swift; sourceTree = "<group>"; };
 		1D1A1F462128264600749F80 /* Bus16.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bus16.swift; sourceTree = "<group>"; };
 		1D1A1F472128264600749F80 /* BusComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BusComponent.swift; sourceTree = "<group>"; };
-		1D1A1F482128264600749F80 /* GenericIODevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenericIODevice.swift; sourceTree = "<group>"; };
-		1D1A1F492128264600749F80 /* IoBus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IoBus.swift; sourceTree = "<group>"; };
 		1D1A1F4A2128264600749F80 /* Rom.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rom.swift; sourceTree = "<group>"; };
 		1D1A1F4B2128264600749F80 /* Ram.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ram.swift; sourceTree = "<group>"; };
 		1D1A1F4C2128264600749F80 /* VoidBusComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VoidBusComponent.swift; sourceTree = "<group>"; };
@@ -146,6 +142,7 @@
 				1D1A1F572128265D00749F80 /* Ula */,
 				1D1A1F442128264600749F80 /* Bus */,
 				1D1A1F262128258D00749F80 /* Tape */,
+				1DC220CC21D3A3EF00CEDD28 /* Timings48k.swift */,
 				1D8A825C218CAD0D00C648AE /* Extensions.swift */,
 				1D1A1F1A2128251E00749F80 /* AudioStreamer.swift */,
 				1D1A1F1C2128251E00749F80 /* Clock.swift */,
@@ -159,7 +156,6 @@
 				1D1A1F0C212823CA00749F80 /* Assets.xcassets */,
 				1D1A1F11212823CA00749F80 /* Info.plist */,
 				1D1A1F12212823CA00749F80 /* Sems.entitlements */,
-				1DC220CC21D3A3EF00CEDD28 /* Timings48k.swift */,
 			);
 			path = Sems;
 			sourceTree = "<group>";
@@ -181,8 +177,6 @@
 				1D1A1F452128264600749F80 /* BusBase.swift */,
 				1D1A1F462128264600749F80 /* Bus16.swift */,
 				1D1A1F472128264600749F80 /* BusComponent.swift */,
-				1D1A1F482128264600749F80 /* GenericIODevice.swift */,
-				1D1A1F492128264600749F80 /* IoBus.swift */,
 				1D1A1F4A2128264600749F80 /* Rom.swift */,
 				1D1A1F4B2128264600749F80 /* Ram.swift */,
 				1D1A1F4C2128264600749F80 /* VoidBusComponent.swift */,
@@ -323,7 +317,6 @@
 				1D1A1F222128251E00749F80 /* Clock.swift in Sources */,
 				1D1A1F2C2128258D00749F80 /* TapeBlock.swift in Sources */,
 				1D1A1F2E2128258D00749F80 /* Tape.swift in Sources */,
-				1D1A1F522128264600749F80 /* IoBus.swift in Sources */,
 				1D1A1F5B2128265D00749F80 /* ULAIo.swift in Sources */,
 				1D1A1F212128251E00749F80 /* KeyEventHandler.swift in Sources */,
 				1D1A1F532128264600749F80 /* Rom.swift in Sources */,
@@ -334,7 +327,6 @@
 				1D1A1F09212823C900749F80 /* AppDelegate.swift in Sources */,
 				1D1A1F5D2128265D00749F80 /* ULAMemory.swift in Sources */,
 				1D8A825D218CAD0D00C648AE /* Extensions.swift in Sources */,
-				1D1A1F512128264600749F80 /* GenericIODevice.swift in Sources */,
 				1D1A1F4E2128264600749F80 /* BusBase.swift in Sources */,
 				1D1A1F1F2128251E00749F80 /* VirtualMachine.swift in Sources */,
 				1D1A1F562128264600749F80 /* BusComponentBase.swift in Sources */,

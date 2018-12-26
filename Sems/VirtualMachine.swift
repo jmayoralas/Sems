@@ -129,10 +129,6 @@ class VirtualMachine: CpuNotifyInternalOperation
         return 0
     }
     
-    public func addIoDevice(_ port: UInt8) {
-        bus.addIOBusComponent(GenericIODevice(base_address: UInt16(port), block_size: 1))
-    }
-    
     public func loadRamAtAddress(_ address: Int, data: [UInt8]) {
         for i in 0..<data.count {
             bus.write(UInt16(address + i), value: data[i])
