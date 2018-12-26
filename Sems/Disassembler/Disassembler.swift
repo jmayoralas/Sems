@@ -8,6 +8,13 @@
 
 import Foundation
 
+// id opcode table
+let table_NONE = 0
+let table_XX = 1
+let table_CB = 2
+let table_XXCB = 3
+let table_ED = 4
+
 class Disassembler {
     typealias OpcodeTable = [() -> Void]
     
@@ -75,6 +82,6 @@ class Disassembler {
     func dataRead(_ pc: UInt16) -> UInt8 {
         self.clock.add(tCycles: 3)
         
-        return data.peek(pc)
+        return data.read(pc)
     }
 }

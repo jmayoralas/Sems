@@ -77,9 +77,9 @@ class Instruction {
         }
         
         if params.count == 1 {
-            data = params[0].hexStr()
+            data = String(format: "0x%02X", params[0])
         } else {
-            data = addressFromPair(params[1], params[0]).hexStr()
+            data = String(format: "0x%04X", addressFromPair(params[1], params[0]))
         }
         
         return String(format: "0x%@", data)

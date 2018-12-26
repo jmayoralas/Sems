@@ -144,7 +144,7 @@ class VirtualMachine: CpuNotifyInternalOperation
     }
     
     public func getDataBus() -> Bus16 {
-        return self.cpu.dataBus
+        return bus
     }
     
     public func setPc(_ pc: UInt16) {
