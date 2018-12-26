@@ -53,15 +53,15 @@ final class Ula: InternalUlaOperationDelegate {
             self.audioStreamer.updateSample(tCycle: self.clock.frameTCycles, value: signal)
         }
         
-        if clock.frameTCycles >= kTicsPerFrame {
+        if clock.frameTCycles >= FRAME_TSTATES {
             frameCompleted()
-            clock.frameTCycles -= kTicsPerFrame
+            clock.frameTCycles -= FRAME_TSTATES
         }
 
         int_req = false
         var screen_updated = false
         
-        if clock.frameTCycles < 32 {
+        if clock.frameTCycles < LAST_ULA_INTERRUPT_TSTATE {
             int_req = true
             
             if screen.changed {
@@ -140,6 +140,6 @@ final class Ula: InternalUlaOperationDelegate {
         self.ioData = value
         
         // get the border color from value
-        screen.setBorderData(borderData: BorderData(color: colorTable[Int(value) & 0x07], tCycle: clock.frameTCycles - 2))
+        screen.setBorderData(borderData: BorderData(color: colorTable[Int(value) & 0x07], tCycle: clock.frameTCycles - 3))
     }
 }

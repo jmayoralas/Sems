@@ -24,13 +24,20 @@ final class Clock: SystemClock {
         add(cycles: tCycles)
     }
     
-    func sub(tCycles: Int) {
-        sub(cycles: tCycles)
-    }
-    
     func add(cycles: Int) {
         self.cycles += cycles
         self.frameTCycles += cycles
+    }
+    
+    func add(address: UInt16, cycles: Int) {
+        if address & 0xC000 == 0x4000 {
+            for _ in 1...cycles {
+                self.add(cycles: getContentionDelay(tCycle: frameTCycles) + 1)
+            }
+        } else {
+            self.add(cycles: cycles)
+        }
+        
     }
 
     func sub(cycles: Int) {
@@ -94,8 +101,8 @@ final class Clock: SystemClock {
     private func getContentionDelay(tCycle: Int) -> Int {
         var delay = 0
         
-        if 14335 <= tCycle && tCycle < 57344 {
-            let index = (tCycle - ((tCycle + 1) / kTicsPerLine) * kTicsPerLine) + 1
+        if FIRST_CONTENDED_TSTATE <= tCycle && tCycle < LAST_CONTENDED_TSTATE {
+            let index = (tCycle - ((tCycle + 1) / SCANLINE_TSTATES) * SCANLINE_TSTATES) + 1
             delay = index < 128 ? contentionDelayTable[index] : 0
         }
 

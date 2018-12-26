@@ -49,10 +49,11 @@ struct Attribute {
 }
 
 let kBaseWidth = 320
+let kBorderLastTCycle = 62639 // last tcycle for coord. x=312, y=239
 
 struct BorderData {
     let color: PixelData
-    let tCycle: Int
+    var tCycle: Int
 }
 
 @objc final public class VmScreen: NSObject {
@@ -71,7 +72,8 @@ struct BorderData {
     private var lastTCycle: Int = 0
     private var memoryScreen: Ram
     private var addressUpdated: [UInt16] = []
-    private var currentBorderColor: PixelData = kWhiteColor
+    private var currentBorderData: BorderData
+    private var previousBorderColor: PixelData = kWhiteColor
     private var floatDataTable: [UInt16?] = Array(repeating: nil, count: 224 * 192)
     
     public init(zoomFactor: Int) {
@@ -83,13 +85,14 @@ struct BorderData {
         buffer = VmScreen.initBuffer(zoomFactor: zoomFactor)
         
         memoryScreen = Ram(base_address: 16384, block_size: 0x1B00)
+        currentBorderData = BorderData(color: kWhiteColor, tCycle: 0)
 
         super.init()
         
         fillFloatingDataTable()
     }
     
-    public func setZoomFactor(zoomFactor: Int) {
+    final func setZoomFactor(zoomFactor: Int) {
         if self.zoomFactor != zoomFactor {
             self.zoomFactor = zoomFactor
             
@@ -100,16 +103,16 @@ struct BorderData {
         }
     }
     
-    func step(tCycle: Int) {
+    final func step(tCycle: Int) {
         for i in self.lastTCycle...tCycle {
             processTCycle(tCycle: i)
         }
         
         self.lastTCycle = tCycle + 1
-        self.lastTCycle = (self.lastTCycle > kTicsPerFrame ? self.lastTCycle - kTicsPerFrame : self.lastTCycle)
+        self.lastTCycle = (self.lastTCycle > FRAME_TSTATES ? self.lastTCycle - FRAME_TSTATES : self.lastTCycle)
     }
     
-    func updateFlashing() {
+    final func updateFlashing() {
         for i in 0..<0x300 {
             addressUpdated.append(0x5800 + UInt16(i))
         }
@@ -117,12 +120,13 @@ struct BorderData {
         changed = true
     }
     
-    func setBorderData(borderData: BorderData) {
-        currentBorderColor = borderData.color
+    final func setBorderData(borderData: BorderData) {
+        previousBorderColor = currentBorderData.color
+        currentBorderData = borderData
         changed = true
     }
     
-    func updateScreenBuffer() {
+    final func updateScreenBuffer() {
         updateBitmap()
         changed = false
     }
@@ -258,11 +262,7 @@ struct BorderData {
 
     private func processTCycle(tCycle: Int) {
         if let coord = getBorderXY(tCycle: tCycle) {
-            if buffer[getBufferIndex(coord.x, coord.y)] != currentBorderColor {
-                for i in 0...7 {
-                    setBuffer(atIndex: getBufferIndex(coord.x + i, coord.y), withPixelData: currentBorderColor)
-                }
-            }
+            updateBorderData(coord: coord, tCycle: tCycle)
         }
         
         guard let address = self.getMemoryAddress(tCycle: tCycle) else {
@@ -276,6 +276,22 @@ struct BorderData {
         
         saveByteIntoBuffer(address: address, byte: newValue)
         saveByteIntoBuffer(address: attributeAddress, byte: newAttribute)
+    }
+    
+    private func updateBorderData(coord: (x: Int, y: Int), tCycle: Int) {
+        let colorToSet = tCycle < currentBorderData.tCycle ? previousBorderColor : currentBorderData.color
+        
+        if buffer[getBufferIndex(coord.x, coord.y)] != colorToSet {
+            for i in 0...7 {
+                setBuffer(atIndex: getBufferIndex(coord.x + i, coord.y), withPixelData: colorToSet)
+            }
+        }
+        
+        // when we are at the end of frame,
+        // assume current border data from the beginning of next frame
+        if tCycle >= kBorderLastTCycle {
+            currentBorderData.tCycle = 0
+        }
     }
     
     private func saveByteIntoBuffer(address: UInt16, byte: UInt8) {
@@ -305,13 +321,13 @@ struct BorderData {
     }
     
     private func getBorderXY(tCycle: Int) -> (x:Int, y:Int)? {
-        guard tCycle >= 16 * 224 - 24 else {
+        guard tCycle >= FIRST_VISIBLE_SCANLINE * SCANLINE_TSTATES - 24 else {
             return nil
         }
         
-        let y = (tCycle + 24) / 224 - 16
+        let y = (tCycle + 24) / SCANLINE_TSTATES - FIRST_VISIBLE_SCANLINE
         
-        let lineTCycleBase = 3584 + y * 224 // left border first pixel
+        let lineTCycleBase = 3584 + y * SCANLINE_TSTATES // left border first pixel
         let x = (tCycle + 24 - lineTCycleBase) / 4
         
         guard 2 <= x && x < 44 - 2 else {

@@ -9,10 +9,6 @@
 import Foundation
 import AudioToolbox
 
-let kTicsPerLine = 224
-let kScreenLines = 312 // 64 + 192 + 56
-let kTicsPerFrame = kTicsPerLine * kScreenLines
-
 private let kSampleRate = 48000.0
 private let kSamplesPerFrame = Int(kSampleRate) / 50
 private let kNumberBuffers = 3
@@ -98,7 +94,7 @@ class AudioStreamer {
         sample -= sample / 8
         sample += amplitude / 8
         
-        let offset: Int = (tCycle * kSamplesPerFrame) / kTicsPerFrame;
+        let offset: Int = (tCycle * kSamplesPerFrame) / FRAME_TSTATES;
         if offset < kSamplesPerFrame {
             audioData[offset] = sample
         }
