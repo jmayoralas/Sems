@@ -77,12 +77,12 @@ class Instruction {
         }
         
         if params.count == 1 {
-            data = String(format: "0x%02X", params[0])
+            data = String(format: "$%02X", params[0])
         } else {
-            data = String(format: "0x%04X", addressFromPair(params[1], params[0]))
+            data = String(format: "$%04X", addressFromPair(params[1], params[0]))
         }
         
-        return String(format: "0x%@", data)
+        return data
     }
     
     private func addressFromPair(_ val_h: UInt8, _ val_l: UInt8) -> UInt16 {
