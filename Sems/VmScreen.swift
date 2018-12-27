@@ -56,7 +56,7 @@ struct BorderData {
     var tCycle: Int
 }
 
-@objc final public class VmScreen: NSObject {
+final class VmScreen: NSObject {
     var flashState: Bool = false
     
     public var width: Int
@@ -207,9 +207,7 @@ struct BorderData {
     private func setBuffer(atIndex index: Int, withPixelData pixelData: PixelData) {
         for i in 0 ..< zoomFactor {
             for j in 0 ..< zoomFactor {
-                if buffer[index + i + j * width] != pixelData {
-                    buffer[index + i + j * width] = pixelData
-                }
+                buffer[index + i + j * width] = pixelData
             }
         }
     }
@@ -388,7 +386,7 @@ struct BorderData {
         return floatDataTable[tCycle - 14339]
     }
 
-    func getFloatData(tCycle: Int) -> UInt8 {
+    final func getFloatData(tCycle: Int) -> UInt8 {
         guard let address = getFloatDataAddress(tCycle: tCycle) else {
             return 0xFF
         }
