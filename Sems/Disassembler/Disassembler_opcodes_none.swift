@@ -25,7 +25,6 @@ extension Disassembler {
             self.current_instruction.caption = "ld (bc),a"
         }
         opcodes[0x03] = { // INC BC
-            self.clock.add(tCycles: 2)
             self.current_instruction.caption = "inc bc"
         }
         opcodes[0x04] = { // INC B
@@ -52,7 +51,6 @@ extension Disassembler {
             self.current_instruction.caption = "ld a,(bc)"
         }
         opcodes[0x0B] = { // DEC BC
-            self.clock.add(tCycles: 2)
             self.current_instruction.caption = "dec bc"
         }
         opcodes[0x0C] = { // INC C
@@ -85,7 +83,6 @@ extension Disassembler {
             self.current_instruction.caption = "ld (de),a"
         }
         opcodes[0x13] = { // INC DE
-            self.clock.add(tCycles: 2)
             self.current_instruction.caption = "inc de"
         }
         opcodes[0x14] = { // INC D
@@ -106,17 +103,14 @@ extension Disassembler {
             self.current_instruction.caption = "jr %@"
             self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
-            self.clock.add(tCycles: 5)
         }
         opcodes[0x19] = { // ADD HL,DE
-            self.clock.add(tCycles: 7)
             self.current_instruction.caption = "add hl,de"
         }
         opcodes[0x1A] = { // LD A,(DE)
             self.current_instruction.caption = "ld a,(de)"
         }
         opcodes[0x1B] = { // DEC DE
-            self.clock.add(tCycles: 2)
             self.current_instruction.caption = "dec de"
         }
         opcodes[0x1C] = { // INC E
@@ -151,7 +145,6 @@ extension Disassembler {
             self.pc = self.pc &+ 2
         }
         opcodes[0x23] = { // INC HL
-            self.clock.add(tCycles: 2)
             self.current_instruction.caption = "inc hl"
         }
         opcodes[0x24] = { // INC H
@@ -174,7 +167,6 @@ extension Disassembler {
             self.pc = self.pc &+ 1
         }
         opcodes[0x29] = { // ADD HL,HL
-            self.clock.add(tCycles: 7)
             self.current_instruction.caption = "add hl,hl"
         }
         opcodes[0x2A] = { // LD HL,(&0000)
@@ -184,7 +176,6 @@ extension Disassembler {
             self.pc = self.pc &+ 2
         }
         opcodes[0x2B] = { // DEC HL
-            self.clock.add(tCycles: 2)
             self.current_instruction.caption = "dec hl"
         }
         opcodes[0x2C] = { // INC L
@@ -219,16 +210,13 @@ extension Disassembler {
             self.pc = self.pc &+ 2
         }
         opcodes[0x33] = { // INC SP
-            self.clock.add(tCycles: 2)
             self.current_instruction.caption = "inc sp"
         }
         opcodes[0x34] = { // INC (HL)
             self.current_instruction.caption = "inc (hl)"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0x35] = { // DEC (HL)
             self.current_instruction.caption = "dec (hl)"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0x36] = { // LD (HL),&00
             self.current_instruction.caption = "ld (hl),%@"
@@ -244,7 +232,6 @@ extension Disassembler {
             self.pc = self.pc &+ 1
         }
         opcodes[0x39] = { // ADD HL,SP
-            self.clock.add(tCycles: 7)
             self.current_instruction.caption = "add hl,sp"
         }
         opcodes[0x3A] = { // LD A,(&0000)
@@ -254,7 +241,6 @@ extension Disassembler {
             self.pc = self.pc &+ 2
         }
         opcodes[0x3B] = { // DEC SP
-            self.clock.add(tCycles: 2)
             self.current_instruction.caption = "dec sp"
         }
         opcodes[0x3C] = { // INC A
@@ -656,7 +642,6 @@ extension Disassembler {
             self.current_instruction.caption = "cp a"
         }
         opcodes[0xC0] = { // RET NZ
-            self.clock.add(tCycles: 1)
             self.current_instruction.caption = "ret nz"
         }
         opcodes[0xC1] = { // POP BC
@@ -683,7 +668,6 @@ extension Disassembler {
 
         }
         opcodes[0xC5] = { // PUSH BC
-            self.clock.add(tCycles: 1)
             self.current_instruction.caption = "push bc"
         }
         opcodes[0xC6] = { // ADD A,&00
@@ -697,7 +681,6 @@ extension Disassembler {
         }
         opcodes[0xC8] = { // RET Z
             self.current_instruction.caption = "ret z"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0xC9] = { // RET
             self.current_instruction.caption = "ret"
@@ -739,7 +722,6 @@ extension Disassembler {
         }
         opcodes[0xD0] = { // RET NC
             self.current_instruction.caption = "ret nc"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0xD1] = { // POP DE
             self.current_instruction.caption = "pop de"
@@ -763,7 +745,6 @@ extension Disassembler {
         }
         opcodes[0xD5] = { // PUSH DE
             self.current_instruction.caption = "push de"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0xD6] = { // SUB A,&00
             self.current_instruction.caption = "sub a,%@"
@@ -776,7 +757,6 @@ extension Disassembler {
         }
         opcodes[0xD8] = { // RET C
             self.current_instruction.caption = "ret c"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0xD9] = { // EXX
             self.current_instruction.caption = "exx"
@@ -816,7 +796,6 @@ extension Disassembler {
         }
         opcodes[0xE0] = { // RET PO
             self.current_instruction.caption = "ret po"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0xE1] = { // POP HL
             self.current_instruction.caption = "pop hl"
@@ -829,7 +808,6 @@ extension Disassembler {
         }
         opcodes[0xE3] = { // EX (SP), HL
             self.current_instruction.caption = "ex (sp),hl"
-            self.clock.add(tCycles: 3)
         }
         opcodes[0xE4] = { // CALL PO &0000
             self.current_instruction.caption = "call po %@"
@@ -839,7 +817,6 @@ extension Disassembler {
         }
         opcodes[0xE5] = { // PUSH HL
             self.current_instruction.caption = "push hl"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0xE6] = { // AND &00
             self.current_instruction.caption = "and %@"
@@ -852,7 +829,6 @@ extension Disassembler {
         }
         opcodes[0xE8] = { // RET PE
             self.current_instruction.caption = "ret pe"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0xE9] = { // JP (HL)
             self.current_instruction.caption = "jp (hl)"
@@ -888,7 +864,6 @@ extension Disassembler {
         }
         opcodes[0xF0] = { // RET P
             self.current_instruction.caption = "ret p"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0xF1] = { // POP AF
             self.current_instruction.caption = "pop af"
@@ -910,7 +885,6 @@ extension Disassembler {
         }
         opcodes[0xF5] = { // PUSH AF
             self.current_instruction.caption = "push af"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0xF6] = { // OR &00
             self.current_instruction.caption = "or %@"
@@ -923,11 +897,9 @@ extension Disassembler {
         }
         opcodes[0xF8] = { // RET M
             self.current_instruction.caption = "ret m"
-            self.clock.add(tCycles: 1)
         }
         opcodes[0xF9] = { // LD SP, HL
             self.current_instruction.caption = "ld sp,hl"
-            self.clock.add(tCycles: 2)
         }
         opcodes[0xFA] = { // JP M &0000
             self.current_instruction.caption = "jp m %@"

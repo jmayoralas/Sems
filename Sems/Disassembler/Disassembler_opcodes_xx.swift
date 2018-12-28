@@ -72,7 +72,6 @@ extension Disassembler {
             self.current_instruction.caption = String(format: "inc (%@+", self.xx_reg) + "%@)"
             self.current_instruction.addParam(param: self.dataRead(self.pc))
             self.pc = self.pc &+ 1
-            self.clock.add(tCycles: 6)
         }
 /*
         opcodes[0x35] = { // DEC (xx+0)

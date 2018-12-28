@@ -18,7 +18,6 @@ let table_ED = 4
 class Disassembler {
     typealias OpcodeTable = [() -> Void]
     
-    let clock = Clock()
     var opcode_tables : [OpcodeTable]!
     var id_opcode_table : Int
     let data : Bus16
@@ -47,8 +46,6 @@ class Disassembler {
         initOpcodeTableXXCB(&opcode_tables[table_XXCB])
         initOpcodeTableCB(&opcode_tables[table_CB])
         initOpcodeTableED(&opcode_tables[table_ED])
-        
-        self.clock.reset()
     }
     
     func org(_ pc: UInt16) {
@@ -74,14 +71,10 @@ class Disassembler {
         self.current_instruction.addOpcodeByte(byte: dataRead(pc))
         pc = pc &+ 1
         
-        self.clock.add(tCycles: 1)
-        
         self.opcode_tables[id_opcode_table][Int(current_instruction.opcode)]()
     }
     
     func dataRead(_ pc: UInt16) -> UInt8 {
-        self.clock.add(tCycles: 3)
-        
         return data.read(pc)
     }
 }
