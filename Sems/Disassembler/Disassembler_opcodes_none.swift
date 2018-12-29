@@ -918,6 +918,7 @@ extension Disassembler {
         }
         opcodes[0xFD] = { // PREFIX *** FD ***
             self.id_opcode_table = table_XX
+            self.xx_reg = "iy"
             self.processInstruction()
             self.id_opcode_table = table_NONE
         }

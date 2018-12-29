@@ -61,4 +61,24 @@ class SemsTests: XCTestCase {
         vm.step()
         XCTAssertEqual(clock.frameTCycles, 14112)
     }
+    
+    func testDisasmDDCB() {
+        let disasm = Disassembler(dataBus: bus)
+        cpu.org(0x8000)
+        disasm.org(0x8000)
+        
+        write(data: [0xDD, 0xCB, 0xFE, 0x00], atAddress: 0x8000, inBus: bus)
+        let inst = disasm.next()
+        XCTAssertEqual(inst.toString(), "rlc (ix+$FE) -> b")
+    }
+    
+    func testDisasmFD() {
+        let disasm = Disassembler(dataBus: bus)
+        cpu.org(0x8000)
+        disasm.org(0x8000)
+        
+        write(data: [0xFD, 0xBE, 0xFE], atAddress: 0x8000, inBus: bus)
+        let inst = disasm.next()
+        XCTAssertEqual(inst.toString(), "cp (iy+$FE)")
+    }
 }
