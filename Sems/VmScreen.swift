@@ -240,18 +240,18 @@ final class VmScreen: NSObject {
             return nil
         }
         
-        let line = (tCycle / 224 - 64)
+        let line = (tCycle / SCANLINE_TSTATES - SCANLINES_UPPER_BORDER)
         
-        guard 0 <= line && line <= 191 else {
+        guard 0 <= line && line < SCANLINES_BITMAP else {
             return nil
         }
         
-        let lineTCycleBase = 14336 + (224 * line)
-        let lineBaseAddress = 16384 + 32 * line
+        let lineTCycleBase = FIRST_BITMAP_BYTE_TSTATE + (SCANLINE_TSTATES * line)
+        let lineBaseAddress = SCREEN_START_ADDRESS + SCREEN_CHAR_WIDTH * line
         
         let offset = (tCycle - lineTCycleBase) / 4
         
-        guard 0 <= offset && offset <= 31 else {
+        guard 0 <= offset && offset < SCREEN_CHAR_WIDTH else {
             return nil
         }
         
