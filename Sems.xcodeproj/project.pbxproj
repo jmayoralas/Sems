@@ -31,11 +31,6 @@
 		1D1A1F5C2128265D00749F80 /* Ula.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F592128265D00749F80 /* Ula.swift */; };
 		1D1A1F5D2128265D00749F80 /* ULAMemory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1F5A2128265D00749F80 /* ULAMemory.swift */; };
 		1D500C5E219DEB4600C32BE9 /* SemsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D500C5D219DEB4600C32BE9 /* SemsTests.swift */; };
-		1D8A8258218CAA4400C648AE /* JMZeta80.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D8A8257218CAA4400C648AE /* JMZeta80.framework */; };
-		1D8A8259218CAA4400C648AE /* JMZeta80.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1D8A8257218CAA4400C648AE /* JMZeta80.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		1D8A825D218CAD0D00C648AE /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A825C218CAD0D00C648AE /* Extensions.swift */; };
-		1D9723BB2158206000C0781E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1D9723BA2158206000C0781E /* Main.storyboard */; };
-		1DC220CD21D3A3EF00CEDD28 /* Timings48k.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC220CC21D3A3EF00CEDD28 /* Timings48k.swift */; };
 		1D5CAA40212B08FA002DB452 /* DebuggerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D5CAA3F212B08FA002DB452 /* DebuggerViewController.swift */; };
 		1D630741212C5E9B0013D41F /* Disassembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D630740212C5E9B0013D41F /* Disassembler.swift */; };
 		1D630747212C60450013D41F /* Disassembler_opcodes_cb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D630742212C60450013D41F /* Disassembler_opcodes_cb.swift */; };
@@ -44,6 +39,11 @@
 		1D63074A212C60450013D41F /* Disassembler_opcodes_xx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D630745212C60450013D41F /* Disassembler_opcodes_xx.swift */; };
 		1D63074B212C60450013D41F /* Disassembler_opcodes_none.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D630746212C60450013D41F /* Disassembler_opcodes_none.swift */; };
 		1D6DCFC32131B1A3000D9DF1 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D6DCFC22131B1A3000D9DF1 /* Instruction.swift */; };
+		1D8A8258218CAA4400C648AE /* JMZeta80.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D8A8257218CAA4400C648AE /* JMZeta80.framework */; };
+		1D8A8259218CAA4400C648AE /* JMZeta80.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 1D8A8257218CAA4400C648AE /* JMZeta80.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1D8A825D218CAD0D00C648AE /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D8A825C218CAD0D00C648AE /* Extensions.swift */; };
+		1D9723BB2158206000C0781E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1D9723BA2158206000C0781E /* Main.storyboard */; };
+		1DC220CD21D3A3EF00CEDD28 /* Timings48k.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DC220CC21D3A3EF00CEDD28 /* Timings48k.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,10 +100,6 @@
 		1D500C5B219DEB4600C32BE9 /* SemsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SemsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D500C5D219DEB4600C32BE9 /* SemsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SemsTests.swift; sourceTree = "<group>"; };
 		1D500C5F219DEB4600C32BE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1D8A8257218CAA4400C648AE /* JMZeta80.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = JMZeta80.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		1D8A825C218CAD0D00C648AE /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		1D9723BA2158206000C0781E /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		1DC220CC21D3A3EF00CEDD28 /* Timings48k.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timings48k.swift; sourceTree = "<group>"; };
 		1D5CAA3F212B08FA002DB452 /* DebuggerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerViewController.swift; sourceTree = "<group>"; };
 		1D630740212C5E9B0013D41F /* Disassembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Disassembler.swift; sourceTree = "<group>"; };
 		1D630742212C60450013D41F /* Disassembler_opcodes_cb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Disassembler_opcodes_cb.swift; sourceTree = "<group>"; };
@@ -112,6 +108,10 @@
 		1D630745212C60450013D41F /* Disassembler_opcodes_xx.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Disassembler_opcodes_xx.swift; sourceTree = "<group>"; };
 		1D630746212C60450013D41F /* Disassembler_opcodes_none.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Disassembler_opcodes_none.swift; sourceTree = "<group>"; };
 		1D6DCFC22131B1A3000D9DF1 /* Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
+		1D8A8257218CAA4400C648AE /* JMZeta80.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = JMZeta80.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D8A825C218CAD0D00C648AE /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		1D9723BA2158206000C0781E /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		1DC220CC21D3A3EF00CEDD28 /* Timings48k.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timings48k.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -348,18 +348,13 @@
 				1D630747212C60450013D41F /* Disassembler_opcodes_cb.swift in Sources */,
 				1D1A1F1E2128251E00749F80 /* VmScreen.swift in Sources */,
 				1D1A1F5C2128265D00749F80 /* Ula.swift in Sources */,
-				1D1A1F422128261A00749F80 /* ControlUnit_opcodes_ed.swift in Sources */,
-				1D1A1F3E2128261A00749F80 /* ControlUnit_opcodes_xx.swift in Sources */,
 				1D630749212C60450013D41F /* Disassembler_opcodes_xxcb.swift in Sources */,
-				1D1A1F432128261A00749F80 /* types.swift in Sources */,
 				1D1A1F2D2128258D00749F80 /* TapeData.swift in Sources */,
 				1D1A1F202128251E00749F80 /* AudioStreamer.swift in Sources */,
 				1D1A1F222128251E00749F80 /* Clock.swift in Sources */,
 				1D1A1F2C2128258D00749F80 /* TapeBlock.swift in Sources */,
 				1D1A1F2E2128258D00749F80 /* Tape.swift in Sources */,
 				1D63074A212C60450013D41F /* Disassembler_opcodes_xx.swift in Sources */,
-				1D1A1F3C2128261A00749F80 /* ControlUnit_opcodes_none.swift in Sources */,
-				1D1A1F522128264600749F80 /* IoBus.swift in Sources */,
 				1D1A1F5B2128265D00749F80 /* ULAIo.swift in Sources */,
 				1D1A1F212128251E00749F80 /* KeyEventHandler.swift in Sources */,
 				1D1A1F532128264600749F80 /* Rom.swift in Sources */,
@@ -371,7 +366,6 @@
 				1D1A1F5D2128265D00749F80 /* ULAMemory.swift in Sources */,
 				1D8A825D218CAD0D00C648AE /* Extensions.swift in Sources */,
 				1D6DCFC32131B1A3000D9DF1 /* Instruction.swift in Sources */,
-				1D1A1F512128264600749F80 /* GenericIODevice.swift in Sources */,
 				1D1A1F4E2128264600749F80 /* BusBase.swift in Sources */,
 				1D1A1F1F2128251E00749F80 /* VirtualMachine.swift in Sources */,
 				1D1A1F562128264600749F80 /* BusComponentBase.swift in Sources */,
