@@ -56,6 +56,11 @@ struct BorderData {
     var tCycle: Int
 }
 
+struct Coord {
+    var x: Int
+    var y: Int
+}
+
 final class VmScreen: NSObject {
     var flashState: Bool = false
     
@@ -74,7 +79,9 @@ final class VmScreen: NSObject {
     private var addressUpdated: [UInt16] = []
     private var currentBorderData: BorderData
     private var previousBorderColor: PixelData = kWhiteColor
-    private var floatDataTable: [UInt16?] = Array(repeating: nil, count: 224 * 192)
+    private var floatDataTable: [UInt16?] = Array(repeating: nil, count: SCANLINE_TSTATES * SCANLINES_BITMAP)
+    private var borderCoord: [Coord?] = Array(repeating: nil, count: FRAME_TSTATES + 100)
+    private var tstatesAddress: [UInt16?] = Array(repeating: nil, count: FRAME_TSTATES + 100)
     
     public init(zoomFactor: Int) {
         self.zoomFactor = zoomFactor
@@ -90,6 +97,7 @@ final class VmScreen: NSObject {
         super.init()
         
         fillFloatingDataTable()
+        fillTStatesTables()
     }
     
     final func setZoomFactor(zoomFactor: Int) {
@@ -157,7 +165,7 @@ final class VmScreen: NSObject {
         fillEightBitLineAt(coord: coord, value: value, attribute: attribute)
     }
 
-    private func fillEightBitLineAt(coord: (x: Int, y: Int), value: UInt8, attribute: Attribute) {
+    private func fillEightBitLineAt(coord: Coord, value: UInt8, attribute: Attribute) {
         let inkColor: PixelData!
         let paperColor: PixelData!
         
@@ -169,11 +177,11 @@ final class VmScreen: NSObject {
             paperColor = attribute.paperColor
         }
         
-        let bitmapCoord = (x: coord.x * 8 + 32, y: coord.y + 24)
+        let bitmapCoord = Coord(x: coord.x * 8 + 32, y: coord.y + 24)
         var bit = 0
         
         for i in (0...7).reversed() {
-            let index = getBufferIndex(bitmapCoord.x + bit, bitmapCoord.y)
+            let index = getBufferIndex(Coord(x: bitmapCoord.x + bit, y: bitmapCoord.y))
             let pixelData: PixelData = ((Int(value) & 1 << i) > 0) ? inkColor : paperColor
             
             setBuffer(atIndex: index, withPixelData: pixelData)
@@ -195,13 +203,13 @@ final class VmScreen: NSObject {
         line_address_corrected |= (line_address & 0x1F)
         
         for i in 0...7 {
-            let coord_i = (coord.x, coord.y + i)
+            let coord_i = Coord(x: coord.x, y: coord.y + i)
             fillEightBitLineAt(coord: coord_i, value: memoryScreen.read(line_address_corrected + UInt16(i * 0x100)), attribute: attribute)
         }
     }
 
-    private func getBufferIndex(_ x: Int, _ y: Int) -> Int {
-        return y * zoomFactor * width + x * zoomFactor
+    private func getBufferIndex(_ coord: Coord) -> Int {
+        return coord.y * zoomFactor * width + coord.x * zoomFactor
     }
     
     private func setBuffer(atIndex index: Int, withPixelData pixelData: PixelData) {
@@ -259,11 +267,11 @@ final class VmScreen: NSObject {
     }
 
     private func processTCycle(tCycle: Int) {
-        if let coord = getBorderXY(tCycle: tCycle) {
+        if let coord = borderCoord[tCycle] {
             updateBorderData(coord: coord, tCycle: tCycle)
         }
         
-        guard let address = self.getMemoryAddress(tCycle: tCycle) else {
+        guard let address = tstatesAddress[tCycle] else {
             return
         }
 
@@ -276,12 +284,12 @@ final class VmScreen: NSObject {
         saveByteIntoBuffer(address: attributeAddress, byte: newAttribute)
     }
     
-    private func updateBorderData(coord: (x: Int, y: Int), tCycle: Int) {
+    private func updateBorderData(coord: Coord, tCycle: Int) {
         let colorToSet = tCycle < currentBorderData.tCycle ? previousBorderColor : currentBorderData.color
         
-        if buffer[getBufferIndex(coord.x, coord.y)] != colorToSet {
+        if buffer[getBufferIndex(coord)] != colorToSet {
             for i in 0...7 {
-                setBuffer(atIndex: getBufferIndex(coord.x + i, coord.y), withPixelData: colorToSet)
+                setBuffer(atIndex: getBufferIndex(Coord(x: coord.x + i, y: coord.y)), withPixelData: colorToSet)
             }
         }
         
@@ -303,7 +311,7 @@ final class VmScreen: NSObject {
         changed = true
     }
     
-    private func getXYForAddress(_ address: UInt16) -> (x: Int, y: Int)? {
+    private func getXYForAddress(_ address: UInt16) -> Coord? {
         let local_address = address & 0x3FFF
 
         guard local_address < 0x1800 else {
@@ -315,10 +323,10 @@ final class VmScreen: NSObject {
         y |= (local_address.low & 0b11100000) >> 2
         y |= local_address.high & 0b00000111
         
-        return (Int(x),Int(y))
+        return Coord(x: Int(x),y: Int(y))
     }
     
-    private func getBorderXY(tCycle: Int) -> (x:Int, y:Int)? {
+    private func getBorderXY(tCycle: Int) -> Coord? {
         guard tCycle >= FIRST_VISIBLE_SCANLINE * SCANLINE_TSTATES - 24 else {
             return nil
         }
@@ -343,7 +351,7 @@ final class VmScreen: NSObject {
             return nil
         }
         
-        return (res_x, res_y)
+        return Coord(x: res_x, y: res_y)
     }
 
     private func updateBitmap() {
@@ -366,6 +374,13 @@ final class VmScreen: NSObject {
             floatDataTable[i + 3] = getAttributeAddress(address + 1)
             
             address += 2
+        }
+    }
+    
+    private func fillTStatesTables() {
+        for i in 0 ... FRAME_TSTATES {
+            borderCoord[i] = getBorderXY(tCycle: i)
+            tstatesAddress[i] = getMemoryAddress(tCycle: i)
         }
     }
     
