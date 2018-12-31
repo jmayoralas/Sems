@@ -112,11 +112,7 @@ final class VmScreen: NSObject {
     }
     
     final func step(tCycle: Int) {
-        guard self.lastTCycle <= tCycle else {
-            return
-        }
-        
-        for i in self.lastTCycle ... tCycle {
+        for i in self.lastTCycle...tCycle {
             processTCycle(tCycle: i)
         }
         
