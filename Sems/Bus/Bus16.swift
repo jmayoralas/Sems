@@ -13,9 +13,11 @@ class Bus16 : BusBase, AccessibleBus {
     private var paged_components : [BusComponentBase]
     private var io_components : [BusComponentBase]
     private var clock: Clock
+    private var screen: VmScreen
     
     init(clock: Clock, screen: VmScreen) {
         self.clock = clock
+        self.screen = screen
         
         let dummy_component = BusComponent(base_address: 0x0000, block_size: 0x0000)
         let io_dummy_component = VoidBusComponent(
@@ -61,6 +63,12 @@ class Bus16 : BusBase, AccessibleBus {
     }
     
     override func write(_ address: UInt16, value: UInt8) {
+        // when writing into screen memory
+        // we need to force a scan line update before write operation
+        if 0x4000 <= address && address <= 0x5AFF {
+            screen.step(tCycle: clock.frameTCycles)
+        }
+
         let index_component = Int(address) / 1024
         paged_components[index_component].write(address, value: value)
         
